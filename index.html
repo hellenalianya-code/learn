@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LearnReach</title>
+<meta name="description" content="Offline-first audio-visual learning and wellbeing platform for adolescent girls, by Vivanet Solutions Ltd.">
+<style>
+:root { --bg: #f3f6f5; --surface: #fff; --ink: #14302d; --muted: #566b68; --line: #d7e1df; --teal: #136f63; --sun: #e9a23b; --rose: #b5476b; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0f1a19; --surface: #162523; --ink: #e4efec; --muted: #9bb1ad; --line: #263a37; --teal: #4fbfae; --sun: #f0b65e; --rose: #e48aa8; color-scheme: dark; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 "Segoe UI", system-ui, sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 40px 16px 56px; display: flex; flex-direction: column; gap: 28px; }
+h1 { font-size: 2.2rem; margin: 0; } h2 { margin: 0; font-size: 1.2rem; }
+p { margin: 0; max-width: 65ch; }
+.muted { color: var(--muted); }
+.brand { display: flex; align-items: center; gap: 12px; }
+.sun { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle, var(--sun) 0 42%, transparent 43%), repeating-conic-gradient(var(--sun) 0 4%, transparent 4% 12.5%); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: inherit; }
+.card:hover { border-color: var(--teal); }
+.card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border-bottom: 1px solid var(--line); }
+.card div { padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.go { color: var(--teal); font-weight: 700; }
+.note { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--rose); border-radius: 10px; padding: 14px 16px; }
+code { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><span class="sun" aria-hidden="true"></span><h1>LearnReach</h1></div>
+  <p>Offline-first, audio-visual learning and wellbeing for adolescent girls in marginalised communities. Lessons play on solar-powered TVs, projectors and radios. Built by Vivanet Solutions Ltd.</p>
+  <div class="cards">
+    <a class="card" href="teacher-portal/">
+      <img src="docs/images/portal-class.png" alt="Teacher portal showing the girls' club class list">
+      <div><h2>Teacher portal</h2><p class="muted">Present narrated lessons on the classroom screen, grade learning modules, ask questions and track wellbeing attendance.</p><span class="go">Open the portal →</span></div>
+    </a>
+    <a class="card" href="dashboard/">
+      <img src="docs/images/dashboard.png" alt="Programme dashboard with milestones and learner figures">
+      <div><h2>Programme dashboard</h2><p class="muted">Milestones, learners and sessions, pilot sites, content library, module completion and budget.</p><span class="go">Open the dashboard →</span></div>
+    </a>
+  </div>
+  <p class="note">This is a prototype with sample data. Sign in to the teacher portal with the test account <code>user1</code> / <code>1234</code>.</p>
+</main>
+</body>
+</html>

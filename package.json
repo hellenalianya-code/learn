@@ -1,0 +1,17 @@
+{
+  "name": "learnreach",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline-first audio-visual learning and wellbeing platform for adolescent girls",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/smoke-test.mjs",
+    "capture": "node scripts/capture.mjs",
+    "vendor": "node -e \"require('fs').copyFileSync('node_modules/d3/dist/d3.min.js','dashboard/d3.min.js')\""
+  },
+  "devDependencies": {
+    "d3": "7.9.0",
+    "playwright": "1.48.2"
+  }
+}

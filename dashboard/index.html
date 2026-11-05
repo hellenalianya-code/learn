@@ -1,0 +1,318 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LearnReach Programme Dashboard</title>
+<style>
+:root{--color-fg:#1d2430;--color-fg-muted:#5d6675;--color-bg:#f6f7f9;--color-panel:#ffffff;--color-border-line:#e2e5ea;--color-ok:#1f7a4d;--color-warn:#a35f00;--color-bad:#b3261e;
+--cds-chart-grid:#e9ecf0;--cds-chart-muted:#b8bec8;--cds-chart-axis:#9aa1ad;--cds-chart-status-critical:#c8372d;--cds-surface-popover:#fff;--cds-border:#d9dde3;--cds-text-secondary:#5d6675;--cds-shadow-popover:0 4px 14px rgba(20,30,50,.12);
+--c0:#2f6fd6;--c1:#c2417a;--c2:#1a9a8a;--c3:#8a5cd1;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--color-fg:#e8ebf0;--color-fg-muted:#9ba3b0;--color-bg:#14171c;--color-panel:#1c2027;--color-border-line:#2c323c;--color-ok:#5cc28d;--color-warn:#e0a54a;--color-bad:#f07a70;
+--cds-chart-grid:#2a3039;--cds-chart-muted:#4b5361;--cds-chart-axis:#5d6675;--cds-chart-status-critical:#f07a70;--cds-surface-popover:#232832;--cds-border:#363d48;--cds-text-secondary:#9ba3b0;--cds-shadow-popover:0 4px 14px rgba(0,0,0,.4);
+--c0:#6a9cf0;--c1:#e07aa6;--c2:#4fc3b2;--c3:#ad8be6;color-scheme:dark}}
+:root{--font-anthropic-sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--font-anthropic-serif:Georgia,"Times New Roman",serif;
+--cds-font-size-caption:12.5px;--cds-font-size-body:14px;--cds-font-size-heading:17px;--cds-font-size-title:30px;--cds-font-weight-medium:600;
+--cds-gap-xs:4px;--cds-gap-sm:8px;--cds-gap-md:14px;--cds-gap-lg:20px;--cds-gap-xl:32px;--cds-pad-xs:4px;--cds-pad-sm:8px;--cds-pad-md:12px;--cds-pad-lg:18px;--cds-radius:8px;--cds-dur-slow:.3s}
+html,body{margin:0;background:var(--color-bg);color:var(--color-fg);font:14px var(--font-anthropic-sans)}
+#dash-root{max-width:1200px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 40px max(16px,env(safe-area-inset-right,0px))}
+.offline-note{font-size:12px;color:var(--color-fg-muted);margin-top:24px}
+</style><!-- d3 v7.9.0: uses ./d3.min.js when present (fully offline), otherwise loads it from cdnjs -->
+<script src="d3.min.js"></script>
+<script>window.d3||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"><\/script>')</script><script>
+(function(){
+const RAW={"milestones": [{"milestone": "Requirements & child-safeguarding review", "phase": "Discovery", "due": "2026-02-28", "status": "Done", "progress": "100"}, {"milestone": "Offline-first architecture & sync design", "phase": "Design", "due": "2026-04-15", "status": "Done", "progress": "100"}, {"milestone": "Content library MVP (video, audio, PDF)", "phase": "Build", "due": "2026-06-30", "status": "Done", "progress": "100"}, {"milestone": "Teacher & admin dashboards", "phase": "Build", "due": "2026-08-31", "status": "Done", "progress": "100"}, {"milestone": "Adolescent girls wellbeing module", "phase": "Build", "due": "2026-09-30", "status": "On track", "progress": "85"}, {"milestone": "Multilingual support (Swahili, Turkana, Somali)", "phase": "Build", "due": "2026-11-15", "status": "At risk", "progress": "55"}, {"milestone": "Pilot in 8 solar-powered sites", "phase": "Pilot", "due": "2026-12-15", "status": "On track", "progress": "60"}, {"milestone": "Data protection audit", "phase": "Pilot", "due": "2027-01-31", "status": "Not started", "progress": "0"}, {"milestone": "Open-source release v1.0", "phase": "Launch", "due": "2027-03-31", "status": "Not started", "progress": "0"}, {"milestone": "AI multilingual assistant (research)", "phase": "Future", "due": "2027-06-30", "status": "Not started", "progress": "5"}], "monthly": [{"month": "2026-05", "active_learners": "120", "sessions": "14", "content_views": "410"}, {"month": "2026-06", "active_learners": "310", "sessions": "38", "content_views": "1180"}, {"month": "2026-07", "active_learners": "540", "sessions": "71", "content_views": "2240"}, {"month": "2026-08", "active_learners": "860", "sessions": "112", "content_views": "3610"}, {"month": "2026-09", "active_learners": "1240", "sessions": "158", "content_views": "5320"}, {"month": "2026-10", "active_learners": "1685", "sessions": "214", "content_views": "7480"}], "sites": [{"site": "Lodwar Primary", "county": "Turkana", "learners": "312", "girls": "168", "sessions": "41", "teachers": "6", "last_sync": "2026-11-02"}, {"site": "Kakuma Learning Centre", "county": "Turkana", "learners": "284", "girls": "151", "sessions": "37", "teachers": "5", "last_sync": "2026-10-30"}, {"site": "Marsabit Girls Hub", "county": "Marsabit", "learners": "198", "girls": "198", "sessions": "29", "teachers": "4", "last_sync": "2026-11-01"}, {"site": "Garissa Township", "county": "Garissa", "learners": "226", "girls": "109", "sessions": "27", "teachers": "4", "last_sync": "2026-10-24"}, {"site": "Kilifi Coastal School", "county": "Kilifi", "learners": "181", "girls": "94", "sessions": "24", "teachers": "3", "last_sync": "2026-11-02"}, {"site": "Kwale Community Hall", "county": "Kwale", "learners": "152", "girls": "80", "sessions": "19", "teachers": "3", "last_sync": "2026-10-31"}, {"site": "Homa Bay Lakeside", "county": "Homa Bay", "learners": "176", "girls": "92", "sessions": "22", "teachers": "3", "last_sync": "2026-10-18"}, {"site": "Narok Maasai Centre", "county": "Narok", "learners": "156", "girls": "83", "sessions": "15", "teachers": "2", "last_sync": "2026-10-29"}], "content": [{"type": "Video", "language": "English", "items": "64", "views": "2310"}, {"type": "Video", "language": "Swahili", "items": "41", "views": "1980"}, {"type": "Video", "language": "Turkana", "items": "9", "views": "410"}, {"type": "Audio", "language": "English", "items": "38", "views": "620"}, {"type": "Audio", "language": "Swahili", "items": "52", "views": "1140"}, {"type": "Audio", "language": "Somali", "items": "14", "views": "330"}, {"type": "Interactive", "language": "English", "items": "22", "views": "840"}, {"type": "Interactive", "language": "Swahili", "items": "11", "views": "390"}, {"type": "Document", "language": "English", "items": "47", "views": "280"}, {"type": "Document", "language": "Swahili", "items": "19", "views": "160"}], "modules": [{"module": "Foundational literacy", "area": "Learning", "started": "1420", "completed": "980"}, {"module": "Numeracy basics", "area": "Learning", "started": "1310", "completed": "860"}, {"module": "Science through stories", "area": "Learning", "started": "780", "completed": "410"}, {"module": "Menstrual health", "area": "Wellbeing", "started": "640", "completed": "520"}, {"module": "Mental wellbeing", "area": "Wellbeing", "started": "910", "completed": "610"}, {"module": "Personal safety", "area": "Wellbeing", "started": "1050", "completed": "830"}, {"module": "Reproductive health (15+)", "area": "Wellbeing", "started": "260", "completed": "170"}], "budget": [{"line": "Software development", "budget_usd": "68000", "spent_usd": "44500"}, {"line": "Content production & translation", "budget_usd": "32000", "spent_usd": "17800"}, {"line": "Solar AV equipment", "budget_usd": "41000", "spent_usd": "38200"}, {"line": "Teacher training", "budget_usd": "18000", "spent_usd": "9400"}, {"line": "Monitoring & evaluation", "budget_usd": "12000", "spent_usd": "4100"}, {"line": "Safeguarding & data protection", "budget_usd": "8000", "spent_usd": "3600"}, {"line": "Project management", "budget_usd": "15000", "spent_usd": "9800"}]}; const calcs={}; const draws=[];
+const css=(v)=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const get=(id)=>{ if(RAW[id]) return RAW[id]; const c=calcs[id]; if(!c) return null; if(!c.v) c.v=c.fn(...c.inputs.map(get)); return c.v; };
+window.dash={
+ colors:['--c0','--c1','--c2','--c3','--c0','--c1','--c2','--c3'].map(css),
+ data:(id)=>{const d=get(id); return d?{status:'ok',data:d,columns:Object.keys(d[0]||{}),meta:[]}:{status:'missing',data:[]};},
+ calc:(id,o)=>{calcs[id]={inputs:o.inputs,fn:o.fn};},
+ loader:()=>{}, onData:(fn)=>{fn();}, params:()=>({}), setParams:()=>{}, resetParams:()=>{}, setLink:()=>{}, refresh:()=>{},
+ draw:(name,fn)=>{ if(typeof fn==='function') draws.push([name,fn]); },
+};
+const runAll=()=>draws.forEach(([n,fn])=>document.querySelectorAll('[data-draw="'+n+'"]').forEach((el)=>{try{fn(el)}catch(e){console.error(n,e)}}));
+window.addEventListener('DOMContentLoaded',runAll);
+let t; window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(runAll,150);});
+})();
+</script></head><body><div id="dash-root">
+<style>
+#dash-root .lr { font-family: var(--font-anthropic-sans); display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-variant-numeric: tabular-nums; }
+.lr h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.lr h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.lr h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.lr p { margin: 0; }
+.lr .muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.lr .head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+.lr .lede { max-width: 70ch; color: var(--color-fg-muted); }
+.lr .lede b { color: var(--color-fg); font-weight: 600; }
+.lr .sample { display: inline-block; font-size: var(--cds-font-size-caption); color: var(--color-warn); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 0 var(--cds-pad-xs); margin-left: var(--cds-gap-xs); vertical-align: middle; }
+.lr .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--cds-gap-md); }
+.lr .tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+.lr .tile .v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.15; min-height: 1.15em; }
+.lr .tile .d { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.lr .up { color: var(--color-ok); }
+.lr .down { color: var(--color-bad); }
+.lr section { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+.lr .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-md); }
+.lr .card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+.lr .chart { position: relative; min-height: 220px; }
+.lr .chart.short { min-height: 0; }
+.lr .tw { overflow-x: auto; }
+.lr table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); }
+.lr th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.lr td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: middle; }
+.lr th.n, .lr td.n { text-align: right; }
+.lr .pill { display: inline-block; padding: 0 var(--cds-pad-sm); border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.lr .pill.done { color: var(--color-ok); }
+.lr .pill.track { color: var(--color-fg); }
+.lr .pill.risk { color: var(--color-warn); }
+.lr .pill.none { color: var(--color-fg-muted); }
+.lr .prog { display: flex; align-items: center; gap: var(--cds-gap-sm); justify-content: flex-end; }
+.lr .bar { width: 4.5rem; height: 6px; border-radius: 3px; background: var(--cds-chart-grid); overflow: hidden; flex: none; }
+.lr .bar i { display: block; height: 100%; background: var(--cds-chart-muted); }
+.lr .stale { color: var(--color-warn); }
+.lr .legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.lr .legend span::before { content: ""; display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; margin-right: .35rem; vertical-align: -1px; background: var(--sw); }
+.lr .tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; }
+.lr .tip .k { color: var(--cds-text-secondary); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+.lr .fail { display: flex; align-items: center; justify-content: center; gap: .4rem; min-height: inherit; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.lr .fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+</style>
+
+<div class="lr">
+  <header class="head">
+    <h1 id="top">LearnReach programme dashboard <span class="sample">Sample data</span></h1>
+    <p class="lede">In <b data-draw="t-month" data-source="latest" data-field="month">—</b>, <b data-draw="t-learners" data-source="latest" data-field="active_learners">—</b> learners were active across <b data-draw="t-sites" data-source="reach" data-field="sites">—</b> pilot sites. <b data-draw="t-done" data-source="ms" data-field="done">—</b> of <span data-draw="t-total" data-source="ms" data-field="total">—</span> milestones are done, <b data-draw="t-risk" data-source="ms" data-field="at_risk">—</b> at risk, and <b data-draw="t-spent" data-source="budget_total" data-field="spent_share">—</b> of the budget is spent.</p>
+  </header>
+
+  <div class="tiles" id="kpis">
+    <div class="tile"><span class="muted">Active learners, latest month</span><div class="v" data-draw="k-learners" data-source="latest" data-field="active_learners">—</div><div class="d"><span data-draw="k-learners-d" data-source="latest" data-field="learners_change">—</span> vs previous month</div></div>
+    <div class="tile"><span class="muted">Learning sessions, latest month</span><div class="v" data-draw="k-sessions" data-source="latest" data-field="sessions">—</div><div class="d"><span data-draw="k-sessions-d" data-source="latest" data-field="sessions_change">—</span> vs previous month</div></div>
+    <div class="tile"><span class="muted">Content views, latest month</span><div class="v" data-draw="k-views" data-source="latest" data-field="content_views">—</div><div class="d"><span data-draw="k-views-d" data-source="latest" data-field="views_change">—</span> vs previous month</div></div>
+    <div class="tile"><span class="muted">Girls among enrolled learners</span><div class="v" data-draw="k-girls" data-source="reach" data-field="girls_share">—</div><div class="d"><span data-draw="k-girls-n" data-source="reach" data-field="girls">—</span> of <span data-draw="k-enrolled" data-source="reach" data-field="learners">—</span> enrolled</div></div>
+    <div class="tile"><span class="muted">Milestones complete</span><div class="v" data-draw="k-ms" data-source="ms" data-field="done">—</div><div class="d"><span data-draw="k-ms-risk" data-source="ms" data-field="at_risk">—</span> at risk</div></div>
+    <div class="tile"><span class="muted">Budget spent</span><div class="v" data-draw="k-budget" data-source="budget_total" data-field="spent_share">—</div><div class="d">USD <span data-draw="k-spent" data-source="budget_total" data-field="spent">—</span> of <span data-draw="k-budget-t" data-source="budget_total" data-field="budget">—</span></div></div>
+  </div>
+
+  <section id="milestones">
+    <h2>Milestones</h2>
+    <div class="card">
+      <h3>Delivery plan, 2026–2027</h3>
+      <p class="muted">Progress is the share of each milestone's deliverables signed off.</p>
+      <div class="tw">
+        <table data-source="milestones" data-row-key="milestone">
+          <thead><tr><th data-field="milestone">Milestone</th><th data-field="phase">Phase</th><th data-field="due">Due</th><th data-field="status">Status</th><th class="n" data-field="progress">Progress</th></tr></thead>
+          <tbody data-draw="ms-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="learners">
+    <h2>Learners and sessions</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Active learners by month</h3>
+        <p class="muted">Learners who opened at least one lesson, May–Oct 2026.</p>
+        <div class="chart" data-draw="c-learners" data-source="monthly"></div>
+      </div>
+      <div class="card">
+        <h3>Facilitated sessions by month</h3>
+        <p class="muted">Group sessions run on solar TVs, projectors or radios.</p>
+        <div class="chart" data-draw="c-sessions" data-source="monthly"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Pilot sites</h3>
+      <p class="muted">Enrolment and activity per site to date. Sync dates in amber are more than a week behind the most recent sync.</p>
+      <div class="tw">
+        <table data-source="sites" data-row-key="site">
+          <thead><tr><th data-field="site">Site</th><th data-field="county">County</th><th class="n" data-field="learners">Learners</th><th class="n" data-field="girls">Girls</th><th class="n" data-field="teachers">Teachers</th><th class="n" data-field="sessions">Sessions</th><th data-field="last_sync">Last sync</th></tr></thead>
+          <tbody data-draw="site-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="content">
+    <h2>Content library and modules</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Content views by language</h3>
+        <p class="muted">All library items, all time. Items in library shown in brackets.</p>
+        <div class="chart short" data-draw="c-lang" data-source="content_lang"></div>
+      </div>
+      <div class="card">
+        <h3>Content views by format</h3>
+        <p class="muted">Video, audio, interactive lessons and documents.</p>
+        <div class="chart short" data-draw="c-type" data-source="content_type"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Module completion rate</h3>
+      <p class="muted">Share of learners who started a module and completed it. Wellbeing modules cover menstrual, reproductive and mental health and personal safety.</p>
+      <div class="legend"><span style="--sw: var(--lr-c0)">Learning</span><span style="--sw: var(--lr-c1)">Wellbeing</span></div>
+      <div class="chart short" data-draw="c-modules" data-source="module_rates"></div>
+    </div>
+  </section>
+
+  <section id="budget">
+    <h2>Budget</h2>
+    <div class="card">
+      <h3>Spent against budget by line</h3>
+      <p class="muted">USD, project to date. The pale bar is the full budget line; the solid bar is spent. Lines more than <span data-draw="b-limit">—</span> spent are in red.</p>
+      <div class="chart short" data-draw="c-budget" data-source="budget_lines"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Shared helpers
+  const f0 = d3.format(','), pct = d3.format('.0%');
+  window.LR = { f0, pct,
+    signed: (n) => (n > 0 ? '+' : n < 0 ? '−' : '') + f0(Math.abs(n)),
+    month: (m) => d3.utcFormat('%B %Y')(new Date(m + '-01T00:00:00Z')),
+    mshort: (m) => d3.utcFormat('%b')(new Date(m + '-01T00:00:00Z')),
+    day: (s) => d3.utcFormat('%b %-d, %Y')(new Date(s + 'T00:00:00Z')),
+    fail: (el, d) => { el.replaceChildren(); if (d.status === 'error') { const p = document.createElement('div'); p.className = 'fail'; p.textContent = 'Failed to load'; el.append(p); } },
+  };
+  document.querySelectorAll('#dash-root .lr').forEach((r) => { r.style.setProperty('--lr-c0', dash.colors[0]); r.style.setProperty('--lr-c1', dash.colors[1]); });
+</script>
+
+<script>
+  // Calcs
+  dash.calc('latest', { inputs: ['monthly'], title: 'Latest month vs previous', description: 'Active learners, sessions and content views in the latest month, with the change from the month before.',
+    fn: (monthly) => { const r = monthly.slice().sort((a, b) => a.month < b.month ? -1 : 1); const c = r[r.length - 1], p = r[r.length - 2] || c;
+      return [{ month: c.month, active_learners: +c.active_learners, learners_change: c.active_learners - p.active_learners, sessions: +c.sessions, sessions_change: c.sessions - p.sessions, content_views: +c.content_views, views_change: c.content_views - p.content_views }]; } });
+  dash.calc('reach', { inputs: ['sites'], title: 'Reach across pilot sites', description: 'Totals of enrolled learners, girls, teachers and sessions over all pilot sites.',
+    fn: (sites) => { const s = (k) => d3.sum(sites, (r) => +r[k]); const learners = s('learners'), girls = s('girls');
+      return [{ sites: sites.length, learners, girls, girls_share: learners ? girls / learners : 0, teachers: s('teachers'), sessions: s('sessions') }]; } });
+  dash.calc('ms', { inputs: ['milestones'], title: 'Milestone summary', description: 'Count of milestones done, at risk and in total.',
+    fn: (milestones) => [{ done: milestones.filter((m) => m.status === 'Done').length, at_risk: milestones.filter((m) => m.status === 'At risk').length, total: milestones.length }] });
+  dash.calc('budget_total', { inputs: ['budget'], title: 'Budget totals', description: 'Total budget, total spent and the share spent.',
+    fn: (budget) => { const b = d3.sum(budget, (r) => +r.budget_usd), s = d3.sum(budget, (r) => +r.spent_usd); return [{ budget: b, spent: s, spent_share: b ? s / b : 0 }]; } });
+  dash.calc('budget_lines', { inputs: ['budget'], title: 'Budget lines with share spent', description: 'Each budget line with its spent share.',
+    fn: (budget) => budget.map((r) => ({ line: r.line, budget_usd: +r.budget_usd, spent_usd: +r.spent_usd, share: +r.spent_usd / +r.budget_usd })) });
+  dash.calc('module_rates', { inputs: ['modules'], title: 'Module completion rates', description: 'Completed divided by started, per module.',
+    fn: (modules) => modules.map((m) => ({ module: m.module, area: m.area, started: +m.started, completed: +m.completed, rate: +m.completed / +m.started })) });
+  dash.calc('content_lang', { inputs: ['content'], title: 'Content by language', description: 'Library items and views summed per language.',
+    fn: (content) => d3.rollups(content, (v) => ({ items: d3.sum(v, (r) => +r.items), views: d3.sum(v, (r) => +r.views) }), (r) => r.language).map(([language, o]) => ({ language, ...o })) });
+  dash.calc('content_type', { inputs: ['content'], title: 'Content by format', description: 'Library items and views summed per format.',
+    fn: (content) => d3.rollups(content, (v) => ({ items: d3.sum(v, (r) => +r.items), views: d3.sum(v, (r) => +r.views) }), (r) => r.type).map(([type, o]) => ({ type, ...o })) });
+</script>
+
+<script>
+  // Text figures
+  const one = (id, f) => (el) => { const d = dash.data(id); el.textContent = d.status === 'ok' && d.data.length ? f(d.data[0], el) : '—'; };
+  const delta = (k) => (r, el) => { el.className = r[k] > 0 ? 'up' : r[k] < 0 ? 'down' : ''; return LR.signed(r[k]); };
+  dash.draw('t-month', one('latest', (r) => LR.month(r.month)));
+  dash.draw('t-learners', one('latest', (r) => LR.f0(r.active_learners)));
+  dash.draw('t-sites', one('reach', (r) => LR.f0(r.sites)));
+  dash.draw('t-done', one('ms', (r) => LR.f0(r.done)));
+  dash.draw('t-total', one('ms', (r) => LR.f0(r.total)));
+  dash.draw('t-risk', one('ms', (r) => LR.f0(r.at_risk)));
+  dash.draw('t-spent', one('budget_total', (r) => LR.pct(r.spent_share)));
+  dash.draw('k-learners', one('latest', (r) => LR.f0(r.active_learners)));
+  dash.draw('k-learners-d', one('latest', delta('learners_change')));
+  dash.draw('k-sessions', one('latest', (r) => LR.f0(r.sessions)));
+  dash.draw('k-sessions-d', one('latest', delta('sessions_change')));
+  dash.draw('k-views', one('latest', (r) => LR.f0(r.content_views)));
+  dash.draw('k-views-d', one('latest', delta('views_change')));
+  dash.draw('k-girls', one('reach', (r) => LR.pct(r.girls_share)));
+  dash.draw('k-girls-n', one('reach', (r) => LR.f0(r.girls)));
+  dash.draw('k-enrolled', one('reach', (r) => LR.f0(r.learners)));
+  dash.draw('k-ms', one('ms', (r) => LR.f0(r.done)));
+  dash.draw('k-ms-risk', one('ms', (r) => LR.f0(r.at_risk)));
+  dash.draw('k-budget', one('budget_total', (r) => LR.pct(r.spent_share)));
+  dash.draw('k-spent', one('budget_total', (r) => LR.f0(r.spent)));
+  dash.draw('k-budget-t', one('budget_total', (r) => LR.f0(r.budget)));
+</script>
+
+<script>
+  // Tables
+  const cell = (tr, text, cls) => { const td = tr.insertCell(); td.textContent = text; if (cls) td.className = cls; return td; };
+  const pillCls = { 'Done': 'done', 'On track': 'track', 'At risk': 'risk', 'Not started': 'none' };
+  dash.draw('ms-rows', (tb) => {
+    const d = dash.data('milestones'); tb.replaceChildren(); if (d.status !== 'ok') return;
+    d.data.forEach((m) => {
+      const tr = tb.insertRow(); cell(tr, m.milestone); cell(tr, m.phase); cell(tr, LR.day(m.due));
+      const st = tr.insertCell(); const p = document.createElement('span'); p.className = 'pill ' + (pillCls[m.status] || 'none'); p.textContent = m.status; st.append(p);
+      const pc = tr.insertCell(); pc.className = 'n'; const w = document.createElement('div'); w.className = 'prog';
+      const t = document.createElement('span'); t.textContent = m.progress + '%';
+      const b = document.createElement('span'); b.className = 'bar'; const i = document.createElement('i'); i.style.width = Math.max(0, Math.min(100, +m.progress)) + '%';
+      i.style.background = m.status === 'Done' ? 'var(--color-ok)' : m.status === 'At risk' ? 'var(--color-warn)' : dash.colors[0];
+      b.append(i); w.append(t, b); pc.append(w);
+    });
+  });
+  dash.draw('site-rows', (tb) => {
+    const d = dash.data('sites'); tb.replaceChildren(); if (d.status !== 'ok') return;
+    const newest = d3.max(d.data, (r) => new Date(r.last_sync + 'T00:00:00Z'));
+    d.data.slice().sort((a, b) => b.learners - a.learners).forEach((s) => {
+      const tr = tb.insertRow(); cell(tr, s.site); cell(tr, s.county);
+      ['learners', 'girls', 'teachers', 'sessions'].forEach((k) => cell(tr, LR.f0(+s[k]), 'n'));
+      const late = (newest - new Date(s.last_sync + 'T00:00:00Z')) / 864e5 > 7;
+      cell(tr, LR.day(s.last_sync), late ? 'stale' : '');
+    });
+  });
+</script>
+
+<script>
+  // Charts
+  const LIMIT = 0.9;
+  const tipFor = (el) => { const t = document.createElement('div'); t.className = 'tip'; t.hidden = true; el.append(t); return t; };
+  const placeTip = (el, tip, x, y) => { const w = tip.offsetWidth, W = el.clientWidth; tip.style.left = Math.max(0, Math.min(W - w, x - w / 2)) + 'px'; tip.style.top = Math.max(0, y - tip.offsetHeight - 8) + 'px'; };
+  const tipText = (tip, k, v) => { tip.replaceChildren(); const a = document.createElement('div'); a.className = 'k'; a.textContent = k; const b = document.createElement('div'); b.textContent = v; tip.append(a, b); };
+
+  function monthBars(el, field, label, color) {
+    const d = dash.data('monthly'); if (d.status !== 'ok') return LR.fail(el, d);
+    el.replaceChildren();
+    const rows = d.data.map((r) => ({ m: r.month, v: +r[field] })).sort((a, b) => a.m < b.m ? -1 : 1);
+    const W = Math.max(260, el.clientWidth), H = 220, m = { t: 12, r: 8, b: 24, l: 8 };
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const y = d3.scaleLinear([0, d3.max(rows, (r) => r.v) || 1], [H - m.b, m.t]).nice();
+    const tk = y.ticks(4); const probe = svg.append('text').attr('font-size', 11).text(LR.f0(tk[tk.length - 1])); m.l = probe.node().getComputedTextLength() + 10; probe.remove();
+    const x = d3.scaleBand(rows.map((r) => r.m), [m.l, W - m.r]).padding(0.3);
+    svg.append('g').selectAll('line').data(tk).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(tk).join('text').attr('x', m.l - 6).attr('y', y).attr('dy', '0.32em').attr('text-anchor', 'end').attr('font-size', 11).attr('fill', 'var(--color-fg-muted)').text(LR.f0);
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x', (r) => x(r.m) + x.bandwidth() / 2).attr('y', H - 6).attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', 'var(--color-fg-muted)').text((r) => LR.mshort(r.m));
+    const bw = Math.min(32, x.bandwidth()), off = (x.bandwidth() - bw) / 2;
+    const tip = tipFor(el);
+    svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.m) + off).attr('width', bw).attr('y', (r) => y(r.v)).attr('height', (r) => y(0) - y(r.v)).attr('rx', 3).attr('fill', color)
+      .on('pointerenter pointermove', function (e, r) { d3.select(this).attr('opacity', 0.8); tipText(tip, LR.month(r.m), `${LR.f0(r.v)} ${label}`); tip.hidden = false; const b = el.getBoundingClientRect(); placeTip(el, tip, e.clientX - b.left, e.clientY - b.top); })
+      .on('pointerleave', function () { d3.select(this).attr('opacity', 1); tip.hidden = true; });
+  }
+  dash.draw('c-learners', (el) => monthBars(el, 'active_learners', 'active learners', dash.colors[0]));
+  dash.draw('c-sessions', (el) => monthBars(el, 'sessions', 'sessions', dash.colors[2]));
+
+  // Horizontal bars: rows [{label, v, bg?, note?, color}]
+  function hbars(el, rows, fmt, opts = {}) {
+    el.replaceChildren();
+    const W = Math.max(260, el.clientWidth), rh = 30, H = rows.length * rh + 4;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const probe = svg.append('text').attr('font-size', 12);
+    const lw = d3.max(rows, (r) => { probe.text(r.label); return probe.node().getComputedTextLength(); }) + 12;
+    const vw = d3.max(rows, (r) => { probe.text(r.end); return probe.node().getComputedTextLength(); }) + 10; probe.remove();
+    const labW = Math.min(lw, W * 0.45);
+    const x = d3.scaleLinear([0, opts.max ?? (d3.max(rows, (r) => Math.max(r.v, r.bg || 0)) || 1)], [labW, W - vw]);
+    const tip = tipFor(el);
+    const g = svg.selectAll('g.r').data(rows).join('g').attr('transform', (r, i) => `translate(0,${i * rh + 4})`);
+    g.append('text').attr('x', labW - 10).attr('y', 11).attr('dy', '0.32em').attr('text-anchor', 'end').attr('font-size', 12).attr('fill', 'var(--color-fg)').text((r) => r.label);
+    g.filter((r) => r.bg != null).append('rect').attr('x', labW).attr('y', 2).attr('height', 18).attr('rx', 3).attr('width', (r) => x(r.bg) - labW).attr('fill', 'var(--cds-chart-grid)');
+    g.append('rect').attr('x', labW).attr('y', 2).attr('height', 18).attr('rx', 3).attr('width', (r) => Math.max(1, x(r.v) - labW)).attr('fill', (r) => r.color);
+    g.append('text').attr('x', (r) => x(Math.max(r.v, r.bg || 0)) + 6).attr('y', 11).attr('dy', '0.32em').attr('font-size', 12).attr('fill', 'var(--color-fg-muted)').text((r) => r.end);
+    g.append('rect').attr('x', 0).attr('width', W).attr('height', rh).attr('fill', 'transparent')
+      .on('pointerenter pointermove', (e, r) => { tipText(tip, r.label, r.tip); tip.hidden = false; const b = el.getBoundingClientRect(); placeTip(el, tip, e.clientX - b.left, e.clientY - b.top); })
+      .on('pointerleave', () => { tip.hidden = true; });
+  }
+  const sorted = (a, k) => a.slice().sort((p, q) => q[k] - p[k]);
+  dash.draw('c-lang', (el) => { const d = dash.data('content_lang'); if (d.status !== 'ok') return LR.fail(el, d);
+    hbars(el, sorted(d.data, 'views').map((r) => ({ label: r.language, v: r.views, color: dash.colors[0], end: `${LR.f0(r.views)} (${LR.f0(r.items)})`, tip: `${LR.f0(r.views)} views · ${LR.f0(r.items)} items` }))); });
+  dash.draw('c-type', (el) => { const d = dash.data('content_type'); if (d.status !== 'ok') return LR.fail(el, d);
+    hbars(el, sorted(d.data, 'views').map((r) => ({ label: r.type, v: r.views, color: dash.colors[3], end: `${LR.f0(r.views)} (${LR.f0(r.items)})`, tip: `${LR.f0(r.views)} views · ${LR.f0(r.items)} items` }))); });
+  dash.draw('c-modules', (el) => { const d = dash.data('module_rates'); if (d.status !== 'ok') return LR.fail(el, d);
+    hbars(el, sorted(d.data, 'rate').map((r) => ({ label: r.module, v: r.rate, color: r.area === 'Wellbeing' ? dash.colors[1] : dash.colors[0], end: LR.pct(r.rate), tip: `${LR.f0(r.completed)} of ${LR.f0(r.started)} completed · ${r.area}` })), null, { max: 1 }); });
+  dash.draw('c-budget', (el) => { const d = dash.data('budget_lines'); if (d.status !== 'ok') return LR.fail(el, d);
+    hbars(el, sorted(d.data, 'budget_usd').map((r) => ({ label: r.line, v: r.spent_usd, bg: r.budget_usd, color: r.share > LIMIT ? 'var(--cds-chart-status-critical)' : dash.colors[0], end: `${LR.pct(r.share)} of ${d3.format('$,.0f')(r.budget_usd)}`, tip: `${d3.format('$,')(r.spent_usd)} spent of ${d3.format('$,')(r.budget_usd)}` }))); });
+  dash.draw('b-limit', (el) => { el.textContent = LR.pct(LIMIT); });
+</script>
+
+<p class="offline-note">Offline copy: opens without internet. Figures are sample data embedded in this file; the same rows are in the data folder as CSV.</p>
+</div></body></html>

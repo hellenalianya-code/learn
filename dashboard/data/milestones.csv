@@ -1,0 +1,11 @@
+milestone,phase,due,status,progress
+Requirements & child-safeguarding review,Discovery,2026-02-28,Done,100
+Offline-first architecture & sync design,Design,2026-04-15,Done,100
+"Content library MVP (video, audio, PDF)",Build,2026-06-30,Done,100
+Teacher & admin dashboards,Build,2026-08-31,Done,100
+Adolescent girls wellbeing module,Build,2026-09-30,On track,85
+"Multilingual support (Swahili, Turkana, Somali)",Build,2026-11-15,At risk,55
+Pilot in 8 solar-powered sites,Pilot,2026-12-15,On track,60
+Data protection audit,Pilot,2027-01-31,Not started,0
+Open-source release v1.0,Launch,2027-03-31,Not started,0
+AI multilingual assistant (research),Future,2027-06-30,Not started,5

@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important} body{margin:0} img{max-width:100%}</style>
+<title>LearnReach Teacher Portal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Nunito:wght@400;600;700&display=swap">
+<style>
+/* Layout: one app column, sticky bar with tabs; a full-screen "classroom screen" for the TV/projector. Palette: lake-teal ink + solar amber, rose for girls' wellbeing. */
+:root {
+  --bg: #f3f6f5; --surface: #ffffff; --ink: #14302d; --muted: #566b68; --line: #d7e1df;
+  --teal: #136f63; --teal-soft: #dcefeb; --sun: #e9a23b; --sun-soft: #fbedd6; --rose: #b5476b; --rose-soft: #f6e1e8;
+  --ok: #1f7a4d; --warn: #9a5b00; --bad: #b3261e; --on-accent: #ffffff;
+  --screen-bg: #0d1f1d; --screen-fg: #f4f1e8; --screen-muted: #a9c2bd;
+  --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+  --r: 12px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1a19; --surface: #162523; --ink: #e4efec; --muted: #9bb1ad; --line: #263a37;
+  --teal: #4fbfae; --teal-soft: #173632; --sun: #f0b65e; --sun-soft: #3a2c16; --rose: #e48aa8; --rose-soft: #3a1f29;
+  --ok: #5cc28d; --warn: #e0a54a; --bad: #f07a70; --on-accent: #0f1a19; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1a19; --surface: #162523; --ink: #e4efec; --muted: #9bb1ad; --line: #263a37;
+  --teal: #4fbfae; --teal-soft: #173632; --sun: #f0b65e; --sun-soft: #3a2c16; --rose: #e48aa8; --rose-soft: #3a1f29;
+  --ok: #5cc28d; --warn: #e0a54a; --bad: #f07a70; --on-accent: #0f1a19; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+* { box-sizing: border-box; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; margin: 0; text-wrap: balance; }
+h1 { font-size: 1.9rem; } h2 { font-size: 1.35rem; } h3 { font-size: 1.05rem; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.label { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+
+/* Controls */
+.btn { border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 700; cursor: pointer; background: var(--teal); color: var(--on-accent); display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--teal); border: 1.5px solid var(--line); }
+.btn.sun { background: var(--sun); color: #2a1a00; }
+.btn.rose { background: var(--rose); color: var(--on-accent); }
+.btn.sm { padding: 6px 12px; font-size: .875rem; }
+.btn[disabled] { opacity: .5; cursor: default; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label { font-weight: 700; font-size: .9rem; }
+.field input, .field select, .field textarea { padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); width: 100%; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--teal); outline: none; box-shadow: 0 0 0 3px var(--teal-soft); }
+.err { color: var(--bad); font-size: .9rem; font-weight: 600; min-height: 1.4em; }
+.lang-switch { display: flex; gap: 6px; }
+.lang-switch button { border: 1.5px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: .85rem; font-weight: 700; }
+.lang-switch button[aria-pressed="true"] { background: var(--teal-soft); border-color: var(--teal); color: var(--teal); }
+
+/* Login */
+.login { min-height: 100%; display: grid; place-items: center; padding-block: 40px; }
+.login-card { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 18px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 1.15rem; }
+.brand small { font-family: var(--body); font-weight: 700; font-size: .75rem; color: var(--teal); background: var(--teal-soft); border-radius: 999px; padding: 2px 8px; }
+.sunmark { width: 30px; height: 30px; border-radius: 50%; flex: none; background: radial-gradient(circle, var(--sun) 0 42%, transparent 43%), repeating-conic-gradient(var(--sun) 0 4%, transparent 4% 12.5%); }
+.demo { background: var(--sun-soft); border-radius: 10px; padding: 10px 12px; font-size: .875rem; }
+.demo code { font-weight: 700; }
+
+/* Shell */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; flex-wrap: wrap; }
+.top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabs button { border: 0; background: transparent; padding: 10px 14px; font-weight: 700; color: var(--muted); border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--teal); border-bottom-color: var(--teal); }
+main { padding-block: 24px 56px; }
+section.view { display: flex; flex-direction: column; gap: 22px; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+.stat b { display: block; font-family: var(--display); font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.card.well { border-color: color-mix(in srgb, var(--rose) 40%, var(--line)); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: .75rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--teal-soft); color: var(--teal); white-space: nowrap; }
+.chip.well { background: var(--rose-soft); color: var(--rose); }
+.chip.av { background: var(--sun-soft); color: var(--ink); }
+.chip.line { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.lesson-list { display: flex; flex-direction: column; gap: 8px; }
+.lesson-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.lesson-row .ttl { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 200px; }
+.lesson-row .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.banner { background: var(--rose-soft); border-radius: var(--r); padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+.empty { padding: 24px; text-align: center; border: 1.5px dashed var(--line); border-radius: var(--r); }
+
+/* Tables */
+.tw { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--surface); position: sticky; top: 0; }
+td.n, th.n { text-align: center; }
+.score { width: 4.2rem; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--bg); text-align: center; }
+.score:focus { border-color: var(--teal); outline: none; }
+.lvl { display: inline-block; min-width: 2.4rem; font-weight: 700; font-size: .8rem; border-radius: 6px; padding: 1px 6px; text-align: center; }
+.lvl.EE { background: var(--teal-soft); color: var(--ok); }
+.lvl.ME { background: var(--teal-soft); color: var(--teal); }
+.lvl.AE { background: var(--sun-soft); color: var(--warn); }
+.lvl.BE { background: var(--rose-soft); color: var(--bad); }
+.tick { width: 1.3rem; height: 1.3rem; accent-color: var(--rose); }
+
+/* Lesson detail */
+.detail { display: flex; flex-direction: column; gap: 16px; max-width: 760px; }
+.media { aspect-ratio: 16 / 9; max-width: 100%; border-radius: var(--r); background: var(--screen-bg); color: var(--screen-fg); display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; padding: 20px; position: relative; overflow: hidden; }
+.media::before { content: ""; position: absolute; right: -40px; top: -40px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, var(--sun) 0 30%, transparent 31%), repeating-conic-gradient(var(--sun) 0 3%, transparent 3% 8.33%); opacity: .5; }
+.media.well::before { background: radial-gradient(circle, var(--rose) 0 30%, transparent 31%), repeating-conic-gradient(var(--rose) 0 3%, transparent 3% 8.33%); }
+.media b { font-family: var(--display); font-size: 1.4rem; position: relative; }
+.media span { color: var(--screen-muted); font-size: .9rem; position: relative; }
+.body-text { display: flex; flex-direction: column; gap: 10px; font-size: 1.05rem; }
+.body-text p.speaking { background: var(--sun-soft); border-radius: 6px; }
+.q-item { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.q-item ol { margin: 0; padding-left: 1.4em; }
+.q-item li.ans { color: var(--ok); font-weight: 700; }
+.opt-row { display: flex; gap: 8px; align-items: center; }
+.opt-row input[type=radio] { accent-color: var(--teal); width: 1.1rem; height: 1.1rem; flex: none; }
+
+/* Classroom screen (TV / projector) */
+.screen { position: fixed; inset: 0; z-index: 30; background: var(--screen-bg); color: var(--screen-fg); display: flex; flex-direction: column;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); }
+.screen-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--screen-muted); }
+.screen-stage { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 24px; max-width: 1100px; width: 100%; margin: 0 auto; padding-block: 20px; min-height: 0; overflow: auto; }
+.screen-stage h2 { font-size: clamp(1.6rem, 4.5vw, 3.4rem); }
+.screen-stage p.big { font-size: clamp(1.25rem, 3.2vw, 2.4rem); line-height: 1.35; max-width: 30ch; }
+.screen-opts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.screen-opts div { border: 2px solid var(--screen-muted); border-radius: 14px; padding: 14px 18px; font-size: clamp(1.1rem, 2.6vw, 1.8rem); font-weight: 700; }
+.screen-opts div.ans { border-color: var(--sun); background: color-mix(in srgb, var(--sun) 22%, transparent); }
+.screen-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.screen .btn.ghost { color: var(--screen-fg); border-color: color-mix(in srgb, var(--screen-fg) 30%, transparent); }
+.dots { display: flex; gap: 6px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: color-mix(in srgb, var(--screen-fg) 25%, transparent); }
+.dots i.on { background: var(--sun); }
+.eyebrow { color: var(--sun); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: .85rem; }
+.screen.well .eyebrow { color: var(--rose); }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; z-index: 40; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
+@media (prefers-reduced-motion: no-preference) { .screen-stage > * { animation: rise .35s ease-out both; } @keyframes rise { from { opacity: .001; transform: translateY(8px); } } }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login wrap">
+  <form id="login-form" class="login-card" novalidate>
+    <div class="row">
+      <div class="brand"><span class="sunmark" aria-hidden="true"></span>LearnReach <small>Teacher</small></div>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="sw" aria-pressed="false">SW</button>
+      </div>
+    </div>
+    <div>
+      <h1 data-t="loginTitle">Teacher sign-in</h1>
+      <p class="muted" data-t="loginSub">Run girls' club sessions on the classroom screen, ask questions and track each girl's progress.</p>
+    </div>
+    <div class="field"><label for="u" data-t="username">Username</label><input id="u" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+    <div class="field"><label for="p" data-t="password">Password</label><input id="p" type="password" inputmode="numeric" autocomplete="current-password"></div>
+    <p class="err" id="login-err" role="alert"></p>
+    <button class="btn" type="submit" data-t="signIn">Sign in</button>
+    <p class="demo"><span data-t="demoNote">Test account for the pilot:</span> <code>user1</code> / <code>1234</code></p>
+  </form>
+</div>
+
+<!-- APP -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="wrap">
+      <div class="top-row">
+        <div class="brand"><span class="sunmark" aria-hidden="true"></span>LearnReach <small>Teacher</small></div>
+        <div class="top-actions">
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button type="button" data-lang="en" aria-pressed="true">EN</button>
+            <button type="button" data-lang="sw" aria-pressed="false">SW</button>
+          </div>
+          <button class="btn ghost sm" id="logout" type="button" data-t="signOut">Sign out</button>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button role="tab" id="tab-class" data-view="class" aria-selected="true" data-t="tClass">My class</button>
+        <button role="tab" id="tab-modules" data-view="modules" aria-selected="false" data-t="tModules">Modules</button>
+        <button role="tab" id="tab-grades" data-view="grades" aria-selected="false" data-t="tGrades">Gradebook</button>
+        <button role="tab" id="tab-questions" data-view="questions" aria-selected="false" data-t="tQuestions">Questions</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- CLASS -->
+    <section class="view" id="view-class">
+      <div class="row">
+        <div>
+          <p class="label" id="class-line">Lodwar Girls' Club · Ages 10–17</p>
+          <h1><span data-t="hello">Hello</span>, <span id="teacher-name">Mr Ekai</span></h1>
+        </div>
+        <button class="btn sun" id="next-lesson" type="button"><span data-t="presentNext">Present next lesson</span></button>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="muted small" data-t="sLearners">Girls enrolled</span><b id="st-learners">0</b></div>
+        <div class="stat"><span class="muted small" data-t="sGirls">Aged 15 and over</span><b id="st-girls">0</b></div>
+        <div class="stat"><span class="muted small" data-t="sAvg">Class average</span><b id="st-avg">0</b></div>
+        <div class="stat"><span class="muted small" data-t="sSupport">Need support (below 50%)</span><b id="st-support">0</b></div>
+        <div class="stat"><span class="muted small" data-t="sWell">Attended all wellbeing modules</span><b id="st-well">0</b></div>
+      </div>
+      <div class="stack">
+        <h2 data-t="learnersH">Learners</h2>
+        <div class="tw">
+          <table>
+            <thead><tr><th data-t="hName">Name</th><th class="n" data-t="hGender">Age</th><th class="n" data-t="hAvg">Average</th><th class="n" data-t="hLevel">Level</th><th class="n" data-t="hWellS">Wellbeing sessions</th></tr></thead>
+            <tbody id="class-rows"></tbody>
+          </table>
+        </div>
+        <p class="small muted" data-t="levelNote">Levels follow the CBC rubric: EE 80–100, ME 50–79, AE 30–49, BE below 30.</p>
+      </div>
+    </section>
+
+    <!-- MODULES -->
+    <section class="view" id="view-modules" hidden>
+      <div><h2 data-t="tModules">Modules</h2><p class="muted" data-t="modSub">Every lesson can be shown on the classroom TV or projector with narration. Reading lessons have a Listen button so they can be heard on the radio or a speaker.</p></div>
+      <div class="banner">
+        <span class="label" style="color: var(--rose)" data-t="girlsLabel">Girls' wellbeing</span>
+        <p data-t="girlsText">LearnReach clubs serve adolescent girls in marginalised communities.</p>
+      </div>
+      <div class="cards" id="module-cards"></div>
+    </section>
+
+    <!-- LESSON DETAIL -->
+    <section class="view" id="view-lesson" hidden>
+      <button class="btn ghost sm" id="back" type="button" style="align-self:flex-start" data-t="back">← Back to modules</button>
+      <article class="detail" id="lesson-detail"></article>
+    </section>
+
+    <!-- GRADEBOOK -->
+    <section class="view" id="view-grades" hidden>
+      <div class="row">
+        <div><h2 data-t="tGrades">Gradebook</h2><p class="muted" data-t="gradeSub">Enter a score out of 100 for each learner. Changes save on this device.</p></div>
+        <div class="field" style="max-width: 280px"><label for="g-module" data-t="fModule">Module</label><select id="g-module"></select></div>
+      </div>
+      <div class="tw"><table><thead id="grade-head"></thead><tbody id="grade-rows"></tbody></table></div>
+      <p class="small muted" id="grade-note"></p>
+    </section>
+
+    <!-- QUESTIONS -->
+    <section class="view" id="view-questions" hidden>
+      <div><h2 data-t="tQuestions">Questions</h2><p class="muted" data-t="qSub">Write questions for a lesson, then ask them on the classroom screen. The answer stays hidden until you reveal it.</p></div>
+      <form class="card" id="q-form" novalidate>
+        <h3 data-t="newQ">New question</h3>
+        <div class="field"><label for="q-lesson" data-t="qLesson">Lesson</label><select id="q-lesson"></select></div>
+        <div class="field"><label for="q-text" data-t="qText">Question</label><textarea id="q-text" rows="2"></textarea></div>
+        <div class="field"><label for="q-type" data-t="qType">Type</label>
+          <select id="q-type"><option value="mc" data-t="mc">Multiple choice</option><option value="open" data-t="open">Open discussion</option></select></div>
+        <div class="stack" id="q-opts">
+          <span class="small muted" data-t="optsHint">Add up to four choices and select the correct one.</span>
+          <div class="opt-row"><input type="radio" name="q-ans" id="qa0" value="0" checked><input class="score" style="width:100%;text-align:left" id="qo0" aria-label="Choice 1"></div>
+          <div class="opt-row"><input type="radio" name="q-ans" id="qa1" value="1"><input class="score" style="width:100%;text-align:left" id="qo1" aria-label="Choice 2"></div>
+          <div class="opt-row"><input type="radio" name="q-ans" id="qa2" value="2"><input class="score" style="width:100%;text-align:left" id="qo2" aria-label="Choice 3"></div>
+          <div class="opt-row"><input type="radio" name="q-ans" id="qa3" value="3"><input class="score" style="width:100%;text-align:left" id="qo3" aria-label="Choice 4"></div>
+        </div>
+        <p class="err" id="q-err" role="alert"></p>
+        <button class="btn" type="submit" style="align-self:flex-start" data-t="saveQ">Save question</button>
+      </form>
+      <div class="stack" id="q-bank"></div>
+    </section>
+  </main>
+</div>
+
+<!-- CLASSROOM SCREEN -->
+<div class="screen" id="screen" hidden role="dialog" aria-modal="true" aria-label="Classroom screen">
+  <div class="screen-top">
+    <span id="sc-title"></span>
+    <div class="top-actions">
+      <button class="btn ghost sm" id="sc-voice" type="button"></button>
+      <button class="btn ghost sm" id="sc-full" type="button" data-t="fullscreen">Full screen</button>
+      <button class="btn ghost sm" id="sc-close" type="button" data-t="close">Close</button>
+    </div>
+  </div>
+  <div class="screen-stage" id="sc-stage"></div>
+  <div class="screen-bar">
+    <button class="btn ghost" id="sc-prev" type="button" data-t="prev">← Previous</button>
+    <div class="dots" id="sc-dots"></div>
+    <button class="btn sun" id="sc-next" type="button" data-t="next">Next →</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// ---------- Sample content and class (placeholders for the pilot) ----------
+const MODULES = [
+  { id: 'lit', name: { en: 'Foundational literacy', sw: 'Kusoma na kuandika' }, area: 'learn' },
+  { id: 'num', name: { en: 'Numeracy basics', sw: 'Hesabu za msingi' }, area: 'learn' },
+  { id: 'sci', name: { en: 'Science through stories', sw: 'Sayansi kwa hadithi' }, area: 'learn' },
+  { id: 'men', name: { en: 'Menstrual health', sw: 'Afya ya hedhi' }, area: 'well' },
+  { id: 'mind', name: { en: 'Mental wellbeing', sw: 'Afya ya akili' }, area: 'well' },
+  { id: 'safe', name: { en: 'Personal safety', sw: 'Usalama binafsi' }, area: 'well' },
+  { id: 'repro', name: { en: 'Reproductive health', sw: 'Afya ya uzazi' }, area: 'well', minAge: 15 },
+];
+const LESSONS = [
+  { id: 'lit1', mod: 'lit', format: 'Audio', lang: 'Swahili', min: 10, title: 'Sauti za herufi: a, e, i, o, u',
+    body: ['Sikiliza na urudie kila sauti mara tatu: a, e, i, o, u.', 'Kila neno la Kiswahili lina irabu. Tafuta irabu katika maneno haya: maji, simba, kuku, embe.'] },
+  { id: 'lit2', mod: 'lit', format: 'Reading', lang: 'English', min: 15, title: 'The solar radio',
+    body: ['Akiru lives in Lodwar. Every evening her family turns on a small radio that runs on the sun.', 'One day the battery is low. Akiru moves the solar panel to face the sun, and the radio plays again.', 'Read the story aloud to a friend. Then find three words that describe the sun.'] },
+  { id: 'lit3', mod: 'lit', format: 'Video', lang: 'English', min: 8, title: 'Writing a sentence',
+    body: ['A sentence starts with a capital letter and ends with a full stop.', 'Write three sentences about your school.'] },
+  { id: 'num1', mod: 'num', format: 'Reading', lang: 'English', min: 12, title: 'Counting in groups of ten',
+    body: ['Ten sticks tied together make one bundle. Three bundles and four sticks make 34.', 'Use stones or bottle tops to make 27, 41 and 50.'] },
+  { id: 'num2', mod: 'num', format: 'Video', lang: 'Swahili', min: 10, title: 'Kujumlisha sokoni',
+    body: ['Mama Wanjiru anauza nyanya 12 asubuhi na 9 jioni. Ameuza ngapi kwa jumla?', 'Jaribu na matunda mengine sokoni.'] },
+  { id: 'sci1', mod: 'sci', format: 'Reading', lang: 'English', min: 14, title: 'How the sun makes electricity',
+    body: ['A solar panel turns sunlight into electricity. The electricity is stored in a battery so we can use it at night.', 'Look at the solar panel at your school. Which way does it face? Why?'] },
+  { id: 'men1', mod: 'men', format: 'Video', lang: 'English', min: 9, title: 'What is a period?',
+    body: ['A period is a normal part of growing up. Once a month, blood and tissue leave the body through the vagina. It usually lasts 3 to 7 days.', 'Most girls get their first period between ages 9 and 16. Every body is different, and early or late are both normal.', 'A period is healthy. It does not mean you are sick or unclean.'] },
+  { id: 'men2', mod: 'men', format: 'Audio', lang: 'Swahili', min: 10, title: 'Kujitunza wakati wa hedhi',
+    body: ['Badilisha pedi kila saa 4 hadi 8, au mapema ikijaa.', 'Osha mikono kabla na baada ya kubadilisha pedi. Oga kila siku kwa maji safi.', 'Pedi za kufua zioshwe kwa sabuni na zikaushwe juani.'] },
+  { id: 'mind1', mod: 'mind', format: 'Audio', lang: 'English', min: 6, title: 'Naming your feelings',
+    body: ['Everyone feels happy, sad, angry, worried or scared sometimes. All feelings are okay.', 'When a feeling is big, try this: breathe in slowly while you count to four, then breathe out while you count to four. Do it five times.', 'Talking to someone you trust can make a heavy feeling lighter.'] },
+  { id: 'safe1', mod: 'safe', format: 'Video', lang: 'English', min: 8, title: 'My body belongs to me',
+    body: ['Your body belongs to you. You can say no if someone touches you in a way that feels wrong or confusing.', 'Some secrets are not okay to keep, like a secret about touching. Tell a trusted adult.', 'If something bad happens, it is never your fault. You can call Childline Kenya on 116 for free.'] },
+  { id: 'rep1', mod: 'repro', format: 'Video', lang: 'English', min: 12, title: 'How pregnancy happens',
+    body: ['Pregnancy can happen when a girl has sex with a boy or man, even the first time and even before her first period.', 'You have the right to decide about your own body. No one may force or pressure you, and that includes a boyfriend or a husband.', 'Staying in school and planning when to have children helps girls stay healthy and reach their goals.'] },
+  { id: 'rep2', mod: 'repro', format: 'Audio', lang: 'Swahili', min: 8, title: 'Huduma za afya kwa vijana',
+    body: ['Vituo vingi vya afya vina huduma rafiki kwa vijana. Unaweza kuuliza maswali kuhusu mwili wako bila kuhukumiwa.', 'Huduma hizi ni za siri. Ukiwa na swali, muulize mhudumu wa afya au mwalimu unayemwamini.'] },
+  { id: 'safe2', mod: 'safe', format: 'Audio', lang: 'Swahili', min: 7, title: 'Watu ninaoweza kuwaamini',
+    body: ['Taja watu watatu unaoweza kuwaambia ukiwa na shida: mzazi, mwalimu, au mlezi.', 'Ukihitaji msaada, piga simu 116 bure.'] },
+];
+const SEED_Q = [
+  { id: 'q1', lesson: 'lit2', text: 'Why did the radio stop?', type: 'mc', opts: ['It was broken', 'The battery was low', 'It was raining'], a: 1 },
+  { id: 'q2', lesson: 'num1', text: 'How many is 5 bundles of ten and 2 sticks?', type: 'mc', opts: ['25', '52', '7'], a: 1 },
+  { id: 'q3', lesson: 'sci1', text: 'Where is the electricity kept for night time?', type: 'mc', opts: ['In the panel', 'In a battery', 'In the wires'], a: 1 },
+  { id: 'q4', lesson: 'men1', text: 'Is a period a normal part of growing up?', type: 'mc', opts: ['Yes', 'No'], a: 0 },
+  { id: 'q5', lesson: 'mind1', text: 'Who are two people you could talk to when you feel worried?', type: 'open', opts: [], a: null },
+  { id: 'q7', lesson: 'rep1', text: 'Can a girl get pregnant the first time she has sex?', type: 'mc', opts: ['Yes', 'No'], a: 0 },
+  { id: 'q6', lesson: 'safe1', text: 'If someone asks you to keep a secret about touching, what should you do?', type: 'mc', opts: ['Keep the secret', 'Tell a trusted adult'], a: 1 },
+];
+const STUDENTS = [ // sample girls' club members
+  ['s01', 'Akiru Lokol', 12], ['s02', 'Ekal Nakiru', 14], ['s03', 'Nanyang Ewoi', 16], ['s04', 'Achuka Ekiru', 11],
+  ['s05', 'Napeyok Loree', 15], ['s06', 'Atabo Lokwang', 13], ['s07', 'Amina Hassan', 17], ['s08', 'Esekon Edome', 10],
+  ['s09', 'Nakai Arot', 15], ['s10', 'Ngikwai Lotiir', 13], ['s11', 'Asekon Nawoi', 16], ['s12', 'Lokaale Lomulen', 12],
+].map(([id, name, age]) => ({ id, name, age }));
+const SEED_GRADES = { // module -> student -> score (sample)
+  lit: [82, 74, 61, 90, 45, 68, 88, 52, 71, 39, 77, 64],
+  num: [70, 81, 58, 76, 42, 73, 92, 47, 65, 28, 69, 80],
+  sci: [75, 66, 72, 84, 51, 60, 79, null, 58, 44, 71, 67],
+};
+const SEED_ATT = { men: ['s01', 's02', 's03', 's04', 's05', 's07', 's09', 's10', 's11'], mind: ['s01', 's02', 's03', 's04', 's05', 's07', 's08', 's09', 's11', 's12'], safe: ['s01', 's02', 's04', 's05', 's06', 's07', 's09', 's11'], repro: ['s03', 's07', 's09'] };
+const USERS = { user1: { pass: '1234', name: 'Ms Nakiru', site: "Lodwar Girls' Club", ages: '10–17' } }; // basic login for the pilot only
+
+// ---------- Two languages for the interface ----------
+const T = {
+  en: { loginTitle: 'Teacher sign-in', loginSub: 'Run girls\' club sessions on the classroom screen, ask questions and track each girl\'s progress.', username: 'Username', password: 'Password', signIn: 'Sign in', demoNote: 'Test account for the pilot:', badLogin: 'That username or password is not right. Check and try again.', missing: 'Enter your username and password.', signOut: 'Sign out', tClass: 'My class', tModules: 'Modules', tGrades: 'Gradebook', tQuestions: 'Questions', hello: 'Hello', presentNext: 'Present next lesson', sLearners: 'Girls enrolled', sGirls: 'Aged 15 and over', sAvg: 'Class average', sSupport: 'Need support (below 50%)', sWell: 'Attended all wellbeing modules', learnersH: 'Club members', hName: 'Name', hGender: 'Age', age15: 'Ages 15+', ageNote: 'This module is for girls aged 15 and over, so only they are listed.', hAvg: 'Average', hLevel: 'Level', hWellS: 'Wellbeing sessions', levelNote: 'Levels follow the CBC rubric: EE 80–100, ME 50–79, AE 30–49, BE below 30.', modSub: 'Every lesson can be shown on the classroom TV or projector with narration. Reading lessons have a Listen button so they can be heard on the radio or a speaker.', girlsLabel: "Girls' wellbeing", girlsText: "LearnReach clubs serve adolescent girls in marginalised communities. Wellbeing modules are delivered as video and audio sessions. They are not graded; mark attendance only, and girls' answers are never recorded. Reproductive health is for ages 15 and over.", back: '← Back to modules', gradeSub: 'Enter a score out of 100 for each learner. Changes save on this device.', fModule: 'Module', qSub: 'Write questions for a lesson, then ask them on the classroom screen. The answer stays hidden until you reveal it.', newQ: 'New question', qLesson: 'Lesson', qText: 'Question', qType: 'Type', mc: 'Multiple choice', open: 'Open discussion', optsHint: 'Add up to four choices and select the correct one.', saveQ: 'Save question', fullscreen: 'Full screen', close: 'Close', prev: '← Previous', next: 'Next →', present: 'Present to class', listen: 'Listen', stop: 'Stop', ask: 'Ask class', del: 'Delete', reveal: 'Reveal answer', narrOn: 'Narration on', narrOff: 'Narration off', lessons: 'lessons', min: 'min', graded: 'Graded', attendance: 'Attendance only', questionsN: 'questions', score: 'Score', level: 'Level', attended: 'Attended', attNote: 'Wellbeing modules record attendance only. No scores are kept.', gradeNote: 'Scores save as you type.', saved: 'Saved', qSaved: 'Question saved', qDeleted: 'Question deleted', needText: 'Write the question first.', needOpts: 'Add at least two choices, and select one that has text.', noQ: 'No questions for this lesson yet. Add one in the Questions tab.', noBank: 'No questions yet.', mediaV: 'Video lesson · plays on the classroom TV or projector', mediaA: 'Audio lesson · plays on the radio or speaker', mediaR: 'Reading lesson · tap Listen to hear it read aloud', mediaFile: 'Sample: the media file is not attached yet. Narration reads the lesson aloud.', discuss: 'Discuss with a partner, then share.', question: 'Question', lessonQ: 'Questions for this lesson', noVoice: 'This device has no voice for reading aloud. Try another browser.', noSw: 'No Kiswahili voice on this device; using the default voice.', F: 'Girl', M: 'Boy', allDone: 'Every lesson has been presented. Well done!' , slideOf: 'of', avA: 'Audio + visual' },
+  sw: { loginTitle: 'Kuingia kwa mwalimu', loginSub: 'Panga masomo, yaonyeshe kwenye skrini ya darasa na uwape wanafunzi alama.', username: 'Jina la mtumiaji', password: 'Nenosiri', signIn: 'Ingia', demoNote: 'Akaunti ya majaribio:', badLogin: 'Jina au nenosiri si sahihi. Angalia na ujaribu tena.', missing: 'Weka jina na nenosiri.', signOut: 'Toka', tClass: 'Darasa langu', tModules: 'Moduli', tGrades: 'Daftari la alama', tQuestions: 'Maswali', hello: 'Habari', presentNext: 'Onyesha somo linalofuata', sLearners: 'Wasichana waliosajiliwa', sGirls: 'Umri 15 na zaidi', sAvg: 'Wastani wa darasa', sSupport: 'Wanahitaji msaada (chini ya 50%)', sWell: 'Wamehudhuria moduli zote za ustawi', learnersH: 'Wanachama', hName: 'Jina', hGender: 'Umri', age15: 'Umri 15+', ageNote: 'Moduli hii ni ya wasichana wenye umri wa miaka 15 na zaidi, kwa hiyo ni wao tu wanaoonyeshwa.', hAvg: 'Wastani', hLevel: 'Kiwango', hWellS: 'Vipindi vya ustawi', levelNote: 'Viwango vinafuata CBC: EE 80–100, ME 50–79, AE 30–49, BE chini ya 30.', modSub: 'Kila somo linaweza kuonyeshwa kwenye TV au projekta ya darasa pamoja na sauti. Masomo ya kusoma yana kitufe cha Sikiliza ili yasikike kwenye redio au spika.', girlsLabel: 'Ustawi wa wasichana', girlsText: 'Klabu za LearnReach zinahudumia wasichana balehe katika jamii zilizotengwa. Moduli za ustawi zinatolewa kwa video na sauti. Hazipewi alama; weka mahudhurio tu, na majibu ya wasichana hayahifadhiwi. Afya ya uzazi ni ya umri wa miaka 15 na zaidi.', back: '← Rudi kwenye moduli', gradeSub: 'Weka alama kati ya 100 kwa kila mwanafunzi. Mabadiliko yanahifadhiwa kwenye kifaa hiki.', fModule: 'Moduli', qSub: 'Andika maswali ya somo, kisha uyaulize kwenye skrini ya darasa. Jibu linafichwa hadi ulionyeshe.', newQ: 'Swali jipya', qLesson: 'Somo', qText: 'Swali', qType: 'Aina', mc: 'Chaguo nyingi', open: 'Majadiliano', optsHint: 'Ongeza hadi chaguo nne na uchague jibu sahihi.', saveQ: 'Hifadhi swali', fullscreen: 'Skrini nzima', close: 'Funga', prev: '← Iliyotangulia', next: 'Inayofuata →', present: 'Onyesha darasani', listen: 'Sikiliza', stop: 'Simamisha', ask: 'Uliza darasa', del: 'Futa', reveal: 'Onyesha jibu', narrOn: 'Sauti imewashwa', narrOff: 'Sauti imezimwa', lessons: 'masomo', min: 'dak', graded: 'Yanapewa alama', attendance: 'Mahudhurio tu', questionsN: 'maswali', score: 'Alama', level: 'Kiwango', attended: 'Alihudhuria', attNote: 'Moduli za ustawi zinarekodi mahudhurio tu. Hakuna alama zinazohifadhiwa.', gradeNote: 'Alama zinahifadhiwa unapoandika.', saved: 'Imehifadhiwa', qSaved: 'Swali limehifadhiwa', qDeleted: 'Swali limefutwa', needText: 'Andika swali kwanza.', needOpts: 'Ongeza angalau chaguo mbili, na uchague lenye maandishi.', noQ: 'Bado hakuna maswali ya somo hili. Ongeza kwenye kichupo cha Maswali.', noBank: 'Bado hakuna maswali.', mediaV: 'Somo la video · linacheza kwenye TV au projekta', mediaA: 'Somo la sauti · linacheza kwenye redio au spika', mediaR: 'Somo la kusoma · bonyeza Sikiliza kulisikia', mediaFile: 'Mfano: faili ya media bado haijawekwa. Sauti inasoma somo.', discuss: 'Jadili na mwenzako, kisha mshiriki.', question: 'Swali', lessonQ: 'Maswali ya somo hili', noVoice: 'Kifaa hiki hakina sauti ya kusoma. Jaribu kivinjari kingine.', noSw: 'Hakuna sauti ya Kiswahili kwenye kifaa hiki; tunatumia sauti ya kawaida.', F: 'Msichana', M: 'Mvulana', allDone: 'Masomo yote yameonyeshwa. Hongera!', slideOf: 'kati ya', avA: 'Sauti + picha' },
+};
+const FORMAT = { en: { Video: 'Video', Audio: 'Audio', Reading: 'Reading' }, sw: { Video: 'Video', Audio: 'Sauti', Reading: 'Kusoma' } };
+const LANGS = { en: { English: 'English', Swahili: 'Kiswahili' }, sw: { English: 'Kiingereza', Swahili: 'Kiswahili' } };
+
+// ---------- State (kept in this browser only) ----------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('lrg_' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('lrg_' + k, JSON.stringify(v)); } catch {} },
+};
+let lang = store.get('lang', 'en');
+let user = null, grades, attendance, questions, presented;
+const $ = (s) => document.querySelector(s);
+const t = (k) => T[lang][k] ?? T.en[k] ?? k;
+const mod = (id) => MODULES.find((m) => m.id === id);
+const lesson = (id) => LESSONS.find((l) => l.id === id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const btn = (label, cls, fn) => { const b = el('button', 'btn ' + (cls || ''), label); b.type = 'button'; if (fn) b.addEventListener('click', fn); return b; };
+const levelOf = (s) => s == null ? null : s >= 80 ? 'EE' : s >= 50 ? 'ME' : s >= 30 ? 'AE' : 'BE';
+let tt; const toast = (m) => { const n = $('#toast'); n.textContent = m; n.hidden = false; clearTimeout(tt); tt = setTimeout(() => { n.hidden = true; }, 2000); };
+
+function loadState() {
+  grades = store.get('grades', null);
+  if (!grades) { grades = {}; Object.entries(SEED_GRADES).forEach(([m, arr]) => { grades[m] = {}; STUDENTS.forEach((s, i) => { if (arr[i] != null) grades[m][s.id] = arr[i]; }); }); }
+  attendance = store.get('attendance', null) || JSON.parse(JSON.stringify(SEED_ATT));
+  questions = store.get('questions', null) || SEED_Q.slice();
+  presented = store.get('presented', []);
+}
+const save = () => { store.set('grades', grades); store.set('attendance', attendance); store.set('questions', questions); store.set('presented', presented); };
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach((n) => { n.textContent = t(n.dataset.t); });
+  document.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  if (user) renderAll();
+}
+document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('click', () => { lang = b.dataset.lang; store.set('lang', lang); applyLang(); }));
+
+// ---------- Login ----------
+$('#login-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const u = $('#u').value.trim().toLowerCase(), p = $('#p').value, err = $('#login-err');
+  if (!u || !p) { err.textContent = t('missing'); return; }
+  if (!USERS[u] || USERS[u].pass !== p) { err.textContent = t('badLogin'); $('#p').value = ''; $('#p').focus(); return; }
+  err.textContent = ''; signIn(u);
+});
+function signIn(u) {
+  user = { id: u, ...USERS[u] }; try { sessionStorage.setItem('lrt_session', u); } catch {}
+  loadState();
+  $('#login-screen').hidden = true; $('#app').hidden = false;
+  $('#teacher-name').textContent = user.name; $('#class-line').textContent = `${user.site} · ${lang === 'sw' ? 'Umri' : 'Ages'} ${user.ages}`;
+  show('class'); renderAll();
+}
+$('#logout').addEventListener('click', () => { stopSpeech(); user = null; try { sessionStorage.removeItem('lrt_session'); } catch {} $('#app').hidden = true; $('#login-screen').hidden = false; $('#u').value = ''; $('#p').value = ''; });
+
+// ---------- Navigation ----------
+function show(view) {
+  stopSpeech();
+  ['class', 'modules', 'lesson', 'grades', 'questions'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
+  const tab = view === 'lesson' ? 'modules' : view;
+  document.querySelectorAll('.tabs [data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === tab)));
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll('.tabs [data-view]').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
+$('#back').addEventListener('click', () => show('modules'));
+
+function renderAll() { renderClass(); renderModules(); renderGradeSelect(); renderGrades(); renderQForm(); renderBank(); if (!$('#view-lesson').hidden && currentLesson) renderLesson(currentLesson); }
+
+// ---------- Class ----------
+function avgFor(sid) { const v = ['lit', 'num', 'sci'].map((m) => grades[m]?.[sid]).filter((x) => x != null); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null; }
+function renderClass() {
+  const wellMods = MODULES.filter((m) => m.area === 'well');
+  const eligible = (s, m) => !m.minAge || s.age >= m.minAge;
+  const avgs = STUDENTS.map((s) => avgFor(s.id)).filter((x) => x != null);
+  $('#st-learners').textContent = STUDENTS.length;
+  $('#st-girls').textContent = STUDENTS.filter((s) => s.age >= 15).length;
+  $('#st-avg').textContent = avgs.length ? Math.round(avgs.reduce((a, b) => a + b, 0) / avgs.length) + '%' : '–';
+  $('#st-support').textContent = avgs.filter((a) => a < 50).length;
+  const full = STUDENTS.filter((s) => wellMods.every((m) => !eligible(s, m) || (attendance[m.id] || []).includes(s.id)));
+  $('#st-well').textContent = `${full.length} / ${STUDENTS.length}`;
+  const tb = $('#class-rows'); tb.replaceChildren();
+  STUDENTS.forEach((s) => {
+    const a = avgFor(s.id), lv = levelOf(a), tr = el('tr');
+    const lvTd = el('td', 'n'); if (lv) lvTd.append(el('span', 'lvl ' + lv, lv)); else lvTd.textContent = '–';
+    const mine = wellMods.filter((m) => eligible(s, m));
+    const wn = mine.filter((m) => (attendance[m.id] || []).includes(s.id)).length;
+    tr.append(el('td', null, s.name), el('td', 'n', String(s.age)), el('td', 'n', a == null ? '–' : a + '%'), lvTd, el('td', 'n', `${wn} / ${mine.length}`));
+    tb.append(tr);
+  });
+}
+$('#next-lesson').addEventListener('click', () => { const n = LESSONS.find((l) => !presented.includes(l.id)); if (n) present(n.id); else toast(t('allDone')); });
+
+// ---------- Modules ----------
+function renderModules() {
+  const box = $('#module-cards'); box.replaceChildren();
+  MODULES.forEach((m) => {
+    const ls = LESSONS.filter((l) => l.mod === m.id);
+    const c = el('div', 'card' + (m.area === 'well' ? ' well' : ''));
+    const chips = el('div', 'chips');
+    chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.area === 'well' ? t('attendance') : t('graded')), el('span', 'chip line', `${ls.length} ${t('lessons')}`));
+    if (m.area === 'well') chips.append(el('span', 'chip av', t('avA')));
+    if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
+    c.append(el('h3', null, m.name[lang]), chips);
+    const list = el('div', 'lesson-list');
+    ls.forEach((l) => {
+      const r = el('div', 'lesson-row'); const ttl = el('div', 'ttl');
+      const open = el('button', null, l.title); open.type = 'button'; open.style.cssText = 'all:unset;cursor:pointer;font-weight:700;color:var(--ink)';
+      open.addEventListener('click', () => openLesson(l.id));
+      ttl.append(open, el('span', 'small muted', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}`));
+      const acts = el('div', 'acts');
+      acts.append(btn('▶ ' + t('present'), 'sm' + (m.area === 'well' ? ' rose' : ''), () => present(l.id)));
+      if (l.format === 'Reading') acts.append(btn('♪ ' + t('listen'), 'ghost sm', (e) => toggleListen(l, e.currentTarget)));
+      r.append(ttl, acts); list.append(r);
+    });
+    c.append(list); box.append(c);
+  });
+}
+
+// ---------- Lesson detail ----------
+let currentLesson = null;
+function openLesson(id) { currentLesson = id; renderLesson(id); show('lesson'); }
+function renderLesson(id) {
+  const l = lesson(id), m = mod(l.mod), box = $('#lesson-detail'); box.replaceChildren();
+  const chips = el('div', 'chips');
+  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang]), el('span', 'chip', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', `${l.min} ${t('min')}`));
+  const media = el('div', 'media' + (m.area === 'well' ? ' well' : ''));
+  media.append(el('b', null, l.title), el('span', null, t(l.format === 'Video' ? 'mediaV' : l.format === 'Audio' ? 'mediaA' : 'mediaR')), el('span', null, t('mediaFile')));
+  const acts = el('div', 'row'); acts.style.justifyContent = 'flex-start';
+  acts.append(btn('▶ ' + t('present'), m.area === 'well' ? 'rose' : '', () => present(l.id)));
+  acts.append(btn('♪ ' + t('listen'), 'ghost', (e) => toggleListen(l, e.currentTarget)));
+  const body = el('div', 'body-text'); body.id = 'lesson-body'; l.body.forEach((p) => body.append(el('p', null, p)));
+  const qs = el('div', 'stack'); qs.append(el('h3', null, t('lessonQ')));
+  const list = questions.filter((q) => q.lesson === id);
+  if (!list.length) qs.append(el('p', 'muted small', t('noQ')));
+  list.forEach((q) => qs.append(qItem(q)));
+  box.append(chips, el('h1', null, l.title), media, acts, body, qs);
+}
+
+// ---------- Narration (text to speech) ----------
+const synth = window.speechSynthesis;
+let speakingBtn = null;
+function voiceFor(langName) {
+  if (!synth) return null;
+  const want = langName === 'Swahili' ? 'sw' : 'en';
+  const vs = synth.getVoices();
+  const v = vs.find((x) => x.lang.toLowerCase().startsWith(want));
+  if (!v && want === 'sw' && vs.length) toast(t('noSw'));
+  return v || null;
+}
+function speak(texts, langName, onPara, onEnd) {
+  if (!synth) { toast(t('noVoice')); onEnd && onEnd(); return; }
+  synth.cancel();
+  const v = voiceFor(langName);
+  texts.forEach((txt, i) => {
+    const u = new SpeechSynthesisUtterance(txt);
+    if (v) u.voice = v; u.lang = v ? v.lang : (langName === 'Swahili' ? 'sw-KE' : 'en-GB'); u.rate = 0.9;
+    u.onstart = () => onPara && onPara(i);
+    if (i === texts.length - 1) { u.onend = () => onEnd && onEnd(); u.onerror = () => onEnd && onEnd(); }
+    synth.speak(u);
+  });
+}
+function stopSpeech() { try { synth && synth.cancel(); } catch {} if (speakingBtn) { speakingBtn.textContent = '♪ ' + t('listen'); speakingBtn = null; } document.querySelectorAll('.speaking').forEach((p) => p.classList.remove('speaking')); }
+function toggleListen(l, b) {
+  if (speakingBtn === b) { stopSpeech(); return; }
+  stopSpeech(); speakingBtn = b; b.textContent = '■ ' + t('stop');
+  const paras = document.querySelectorAll('#lesson-body p');
+  speak([l.title, ...l.body], l.lang, (i) => { paras.forEach((p, j) => p.classList.toggle('speaking', j === i - 1)); }, () => stopSpeech());
+}
+
+// ---------- Classroom screen ----------
+let slides = [], si = 0, narrate = true, scLesson = null;
+function present(id) {
+  stopSpeech();
+  const l = lesson(id); scLesson = l; const m = mod(l.mod);
+  slides = [{ kind: 'title' }, ...l.body.map((p) => ({ kind: 'text', p })), ...questions.filter((q) => q.lesson === id).map((q) => ({ kind: 'q', q, shown: false }))];
+  si = 0; $('#screen').classList.toggle('well', m.area === 'well'); $('#screen').hidden = false;
+  if (!presented.includes(id)) { presented.push(id); save(); }
+  drawSlide();
+}
+function askOne(q) { const l = lesson(q.lesson); scLesson = l; slides = [{ kind: 'q', q, shown: false }]; si = 0; $('#screen').classList.toggle('well', mod(l.mod).area === 'well'); $('#screen').hidden = false; drawSlide(); }
+function slideText(s) {
+  if (s.kind === 'title') return [scLesson.title];
+  if (s.kind === 'text') return [s.p];
+  return [s.q.text, ...s.q.opts.map((o, i) => `${String.fromCharCode(65 + i)}. ${o}`)];
+}
+function drawSlide() {
+  const l = scLesson, m = mod(l.mod), s = slides[si], st = $('#sc-stage'); st.replaceChildren();
+  $('#sc-title').textContent = `${m.name[lang]} · ${l.title}`;
+  $('#sc-voice').textContent = t(narrate ? 'narrOn' : 'narrOff');
+  if (s.kind === 'title') {
+    st.append(el('span', 'eyebrow', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`), el('h2', null, l.title), el('p', 'big', t('mediaFile')));
+  } else if (s.kind === 'text') {
+    st.append(el('span', 'eyebrow', m.name[lang]), el('p', 'big', s.p));
+  } else {
+    st.append(el('span', 'eyebrow', t('question')), el('h2', null, s.q.text));
+    if (s.q.type === 'mc') {
+      const g = el('div', 'screen-opts');
+      s.q.opts.forEach((o, i) => g.append(el('div', s.shown && i === s.q.a ? 'ans' : '', `${String.fromCharCode(65 + i)}. ${o}`)));
+      st.append(g);
+      if (!s.shown) st.append(btn(t('reveal'), 'sun', () => { s.shown = true; drawSlide(); }));
+    } else st.append(el('p', 'big', t('discuss')));
+  }
+  const dots = $('#sc-dots'); dots.replaceChildren(); slides.forEach((_, i) => dots.append(el('i', i === si ? 'on' : '')));
+  $('#sc-prev').disabled = si === 0; $('#sc-next').textContent = si === slides.length - 1 ? t('close') : t('next');
+  if (narrate) speak(slideText(s), l.lang); else stopSpeech();
+}
+$('#sc-prev').addEventListener('click', () => { if (si > 0) { si--; drawSlide(); } });
+$('#sc-next').addEventListener('click', () => { if (si < slides.length - 1) { si++; drawSlide(); } else closeScreen(); });
+$('#sc-voice').addEventListener('click', () => { narrate = !narrate; drawSlide(); });
+$('#sc-full').addEventListener('click', () => { const s = $('#screen'); try { document.fullscreenElement ? document.exitFullscreen() : s.requestFullscreen?.().catch(() => {}); } catch {} });
+function closeScreen() { stopSpeech(); try { if (document.fullscreenElement) document.exitFullscreen(); } catch {} $('#screen').hidden = true; renderClass(); }
+$('#sc-close').addEventListener('click', closeScreen);
+document.addEventListener('keydown', (e) => { if ($('#screen').hidden) return; if (e.key === 'ArrowRight') $('#sc-next').click(); if (e.key === 'ArrowLeft') $('#sc-prev').click(); if (e.key === 'Escape') closeScreen(); });
+
+// ---------- Gradebook ----------
+function renderGradeSelect() { const s = $('#g-module'), v = s.value || 'lit'; s.replaceChildren(...MODULES.map((m) => new Option(m.name[lang], m.id))); s.value = v; }
+$('#g-module').addEventListener('change', renderGrades);
+function renderGrades() {
+  const mid = $('#g-module').value || 'lit', m = mod(mid), head = $('#grade-head'), tb = $('#grade-rows');
+  head.replaceChildren(); tb.replaceChildren();
+  const hr = el('tr'); hr.append(el('th', null, t('hName')));
+  if (m.area === 'well') {
+    hr.append(el('th', 'n', t('attended'))); head.append(hr);
+    STUDENTS.filter((s) => !m.minAge || s.age >= m.minAge).forEach((s) => {
+      const tr = el('tr'), td = el('td', 'n'), cb = el('input', 'tick'); cb.type = 'checkbox'; cb.id = `att-${mid}-${s.id}`; cb.setAttribute('aria-label', `${s.name} ${t('attended')}`);
+      cb.checked = (attendance[mid] || []).includes(s.id);
+      cb.addEventListener('change', () => { const list = new Set(attendance[mid] || []); cb.checked ? list.add(s.id) : list.delete(s.id); attendance[mid] = [...list]; save(); renderClass(); toast(t('saved')); });
+      td.append(cb); tr.append(el('td', null, s.name), td); tb.append(tr);
+    });
+    $('#grade-note').textContent = t('attNote') + (m.minAge ? ' ' + t('ageNote') : '');
+  } else {
+    hr.append(el('th', 'n', t('score')), el('th', 'n', t('level'))); head.append(hr);
+    STUDENTS.forEach((s) => {
+      const tr = el('tr'), td = el('td', 'n'), inp = el('input', 'score'); inp.type = 'number'; inp.min = 0; inp.max = 100; inp.inputMode = 'numeric';
+      inp.id = `g-${mid}-${s.id}`; inp.setAttribute('aria-label', `${s.name} ${t('score')}`); inp.value = grades[mid]?.[s.id] ?? '';
+      const lvTd = el('td', 'n');
+      const paint = () => { const v = grades[mid]?.[s.id]; lvTd.replaceChildren(); const lv = levelOf(v); if (lv) lvTd.append(el('span', 'lvl ' + lv, lv)); else lvTd.textContent = '–'; };
+      inp.addEventListener('input', () => {
+        grades[mid] = grades[mid] || {};
+        if (inp.value === '') delete grades[mid][s.id];
+        else { const n = Math.max(0, Math.min(100, Math.round(+inp.value))); grades[mid][s.id] = n; }
+        save(); paint(); renderClass();
+      });
+      inp.addEventListener('blur', () => { if (inp.value !== '' && grades[mid]?.[s.id] != null) inp.value = grades[mid][s.id]; });
+      paint(); td.append(inp); tr.append(el('td', null, s.name), td, lvTd); tb.append(tr);
+    });
+    $('#grade-note').textContent = t('gradeNote') + ' ' + t('levelNote');
+  }
+}
+
+// ---------- Questions ----------
+function renderQForm() {
+  const s = $('#q-lesson'), v = s.value;
+  s.replaceChildren(...MODULES.map((m) => { const g = document.createElement('optgroup'); g.label = m.name[lang]; LESSONS.filter((l) => l.mod === m.id).forEach((l) => g.append(new Option(l.title, l.id))); return g; }));
+  if (v) s.value = v;
+}
+$('#q-type').addEventListener('change', () => { $('#q-opts').hidden = $('#q-type').value !== 'mc'; });
+$('#q-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = $('#q-text').value.trim(), type = $('#q-type').value, err = $('#q-err');
+  if (!text) { err.textContent = t('needText'); return; }
+  let opts = [], a = null;
+  if (type === 'mc') {
+    const raw = [0, 1, 2, 3].map((i) => $('#qo' + i).value.trim());
+    const pick = +document.querySelector('input[name="q-ans"]:checked').value;
+    if (raw.filter(Boolean).length < 2 || !raw[pick]) { err.textContent = t('needOpts'); return; }
+    opts = raw.filter(Boolean); a = opts.indexOf(raw[pick]);
+  }
+  err.textContent = '';
+  questions.push({ id: 'q' + Date.now(), lesson: $('#q-lesson').value, text, type, opts, a });
+  save(); toast(t('qSaved'));
+  $('#q-text').value = ''; [0, 1, 2, 3].forEach((i) => { $('#qo' + i).value = ''; }); $('#qa0').checked = true;
+  renderBank();
+});
+function qItem(q) {
+  const d = el('div', 'q-item'); d.append(el('strong', null, q.text));
+  if (q.type === 'mc') { const ol = el('ol'); ol.type = 'A'; q.opts.forEach((o, i) => ol.append(el('li', i === q.a ? 'ans' : '', o))); d.append(ol); }
+  else d.append(el('span', 'small muted', t('open')));
+  const acts = el('div', 'row'); acts.style.justifyContent = 'flex-start';
+  acts.append(btn('▶ ' + t('ask'), 'sm sun', () => askOne(q)), btn(t('del'), 'ghost sm', () => { questions = questions.filter((x) => x.id !== q.id); save(); toast(t('qDeleted')); renderBank(); if (!$('#view-lesson').hidden) renderLesson(currentLesson); }));
+  d.append(acts); return d;
+}
+function renderBank() {
+  const box = $('#q-bank'); box.replaceChildren();
+  if (!questions.length) { box.append(el('p', 'empty muted', t('noBank'))); return; }
+  MODULES.forEach((m) => {
+    const qs = questions.filter((q) => lesson(q.lesson)?.mod === m.id); if (!qs.length) return;
+    const c = el('div', 'card' + (m.area === 'well' ? ' well' : ''));
+    c.append(el('div', 'row', null)); c.firstChild.append(el('h3', null, m.name[lang]), el('span', 'small muted', `${qs.length} ${t('questionsN')}`));
+    qs.forEach((q) => { const it = qItem(q); it.prepend(el('span', 'label', lesson(q.lesson).title)); c.append(it); });
+    box.append(c);
+  });
+}
+
+// ---------- Start ----------
+if (synth) { try { synth.getVoices(); synth.onvoiceschanged = () => {}; } catch {} }
+applyLang();
+try { const s = sessionStorage.getItem('lrt_session'); if (s && USERS[s]) signIn(s); } catch {}
+</script>
+</body>
+</html>

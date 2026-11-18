@@ -69,6 +69,10 @@ td.n, th.n { text-align: right; }
 .chart svg text { font-family: var(--body); }
 .empty { padding: 24px; text-align: center; color: var(--muted); }
 #load-err:empty { display: none; }
+.sk { display: block; height: 1.9rem; width: 4.5rem; margin: 4px 0; border-radius: 8px; background: linear-gradient(90deg, var(--line) 0%, var(--bg) 50%, var(--line) 100%); background-size: 200% 100%; animation: sk 1.2s linear infinite; }
+@keyframes sk { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
+.loading-row td { color: var(--muted); padding: 18px 10px; }
 </style>
 </head>
 <body>
@@ -179,9 +183,10 @@ $('#login-form').addEventListener('submit', async (e) => {
   b.disabled = false; b.textContent = 'Sign in';
   if (res.error) { err.textContent = /not confirmed/i.test(res.error.message) ? 'Confirm your email first, then sign in.' : /invalid/i.test(res.error.message) ? 'That email or password is not right.' : 'Could not reach the server. Try again.'; $('#p').value = ''; return; }
   $('#p').value = '';
-  if (!(await checkAdmin(res.data.user))) return;
+  enter(res.data.user, true); // show the page with placeholders straight away
+  if (!(await checkAdmin(res.data.user))) { backToLogin(); return; }
   try { if (sessionStorage.getItem('lr_admin_counted') !== res.data.user.id) { await sb.rpc('record_sign_in', { p_app: 'admin', p_device: deviceLabel() }); sessionStorage.setItem('lr_admin_counted', res.data.user.id); } } catch {}
-  enter(res.data.user);
+  load();
 });
 async function checkAdmin(au) {
   const { data } = await sb.from('profiles').select('role').eq('id', au.id).maybeSingle();
@@ -190,7 +195,17 @@ async function checkAdmin(au) {
   $('#login-err').textContent = 'This account is not an admin. Ask an existing admin to promote it in Supabase.';
   return false;
 }
-function enter(au) { $('#login').hidden = true; $('#app').hidden = false; $('#who').textContent = au.email || ''; $('#demo-banner').hidden = !DEMO; load(); }
+function enter(au, later) { $('#login').hidden = true; $('#app').hidden = false; $('#who').textContent = au.email || ''; $('#demo-banner').hidden = !DEMO; setLoading(); if (!later) load(); }
+function backToLogin() { $('#app').hidden = true; $('#login').hidden = false; }
+// Grey placeholders while the data is on its way, so the page never looks frozen
+function setLoading() {
+  ['#k-total', '#k-new', '#k-active7', '#k-sign30', '#k-unconf', '#k-never'].forEach((s) => { $(s).replaceChildren(el('span', 'sk')); });
+  ['#k-total-sub', '#k-off', '#u-count'].forEach((s) => { $(s).textContent = ''; });
+  $('#updated').textContent = 'Loading…';
+  const ph = el('span', 'sk'); ph.style.cssText = 'width:100%;height:160px'; $('#chart').replaceChildren(ph);
+  const row = (sel, cols, text) => { const tr = el('tr', 'loading-row'), td = el('td', null, text); td.colSpan = cols; tr.append(td); $(sel).replaceChildren(tr); };
+  row('#users tbody', 11, 'Loading accounts…'); row('#signins tbody', 6, 'Loading sign-ins…');
+}
 $('#logout').addEventListener('click', async () => {
   if (sb) { try { await sb.auth.signOut(); } catch {} }
   try { sessionStorage.removeItem('lr_admin_counted'); } catch {}
@@ -332,7 +347,7 @@ function sampleData() {
 // ---------- Start: reuse a saved admin session ----------
 (async () => {
   if (!sb) return;
-  try { const { data } = await sb.auth.getSession(); if (data.session && (await checkAdmin(data.session.user))) enter(data.session.user); } catch {}
+  try { const { data } = await sb.auth.getSession(); if (data.session) { enter(data.session.user, true); if (await checkAdmin(data.session.user)) load(); else backToLogin(); } } catch {}
 })();
 </script>
 </body>

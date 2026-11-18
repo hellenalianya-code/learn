@@ -43,7 +43,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site
-          cp -r index.html teacher-portal dashboard docs _site/
+          cp -r index.html teacher-portal dashboard docs admin supabase-config.js _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

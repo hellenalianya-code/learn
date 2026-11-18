@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LearnReach Admin · Teachers and sign-ins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Nunito:wght@400;600;700&display=swap">
+<style>
+/* Same palette and type as the teacher portal: lake-teal ink, solar amber, rose. */
+:root {
+  --bg: #f3f6f5; --surface: #ffffff; --ink: #14302d; --muted: #566b68; --line: #d7e1df;
+  --teal: #136f63; --teal-soft: #dcefeb; --sun: #e9a23b; --sun-soft: #fbedd6; --rose: #b5476b; --rose-soft: #f6e1e8;
+  --ok: #1f7a4d; --warn: #9a5b00; --bad: #b3261e; --on-accent: #ffffff;
+  --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", "Segoe UI", system-ui, sans-serif; --r: 12px; color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #0f1a19; --surface: #162523; --ink: #e4efec; --muted: #9bb1ad; --line: #263a37;
+  --teal: #4fbfae; --teal-soft: #173632; --sun: #f0b65e; --sun-soft: #3a2c16; --rose: #e48aa8; --rose-soft: #3a1f29;
+  --ok: #5cc28d; --warn: #e0a54a; --bad: #f07a70; --on-accent: #0f1a19; color-scheme: dark } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.15; margin: 0; text-wrap: balance; }
+h1 { font-size: 1.8rem; } h2 { font-size: 1.3rem; }
+p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
+.muted { color: var(--muted); } .small { font-size: .875rem; }
+.label { font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.btn { border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 700; cursor: pointer; background: var(--teal); color: var(--on-accent); }
+.btn.ghost { background: transparent; color: var(--teal); border: 1.5px solid var(--line); }
+.btn.sm { padding: 6px 12px; font-size: .875rem; }
+.btn[disabled] { opacity: .5; cursor: default; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-weight: 700; font-size: .9rem; }
+.field input, .field select { padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); width: 100%; }
+.err { color: var(--bad); font-size: .9rem; font-weight: 600; min-height: 1.4em; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 1.15rem; }
+.brand small { font-family: var(--body); font-size: .75rem; color: var(--rose); background: var(--rose-soft); border-radius: 999px; padding: 2px 8px; }
+.sunmark { width: 30px; height: 30px; border-radius: 50%; flex: none; background: radial-gradient(circle, var(--sun) 0 42%, transparent 43%), repeating-conic-gradient(var(--sun) 0 4%, transparent 4% 12.5%); }
+.note { background: var(--sun-soft); border-radius: 10px; padding: 10px 12px; font-size: .9rem; }
+.login { min-height: 100vh; display: grid; place-items: center; padding-block: 40px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+.login .card { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; }
+.top { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top .row { padding-block: 12px; }
+main { padding-block: 24px 56px; display: flex; flex-direction: column; gap: 26px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+.stat b { display: block; font-family: var(--display); font-size: 1.8rem; font-variant-numeric: tabular-nums; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.tw { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); max-height: 70vh; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--surface); position: sticky; top: 0; cursor: pointer; user-select: none; }
+th[aria-sort="ascending"]::after { content: " ▲"; } th[aria-sort="descending"]::after { content: " ▼"; }
+td.n, th.n { text-align: right; }
+.chip { font-size: .75rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--teal-soft); color: var(--teal); white-space: nowrap; }
+.chip.admin { background: var(--rose-soft); color: var(--rose); }
+.chip.warn { background: var(--sun-soft); color: var(--warn); }
+.chip.line { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.filters .field { min-width: min(100%, 220px); }
+.chart svg text { font-family: var(--body); }
+.empty { padding: 24px; text-align: center; color: var(--muted); }
+#load-err:empty { display: none; }
+</style>
+</head>
+<body>
+
+<div id="login" class="login wrap">
+  <form class="card" id="login-form" novalidate>
+    <div class="brand"><span class="sunmark" aria-hidden="true"></span>LearnReach <small>Admin</small></div>
+    <div><h1>Admin sign-in</h1><p class="muted">See who has registered and who is signing in to the teacher portal.</p></div>
+    <div class="field"><label for="u">Email</label><input id="u" type="email" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+    <div class="field"><label for="p">Password</label><input id="p" type="password" autocomplete="current-password"></div>
+    <p class="err" id="login-err" role="alert"></p>
+    <button class="btn" type="submit" id="login-btn">Sign in</button>
+    <p class="note" id="demo-note" hidden>Demo mode: no Supabase project is set in <code>supabase-config.js</code>, so this page shows <b>sample</b> accounts. Sign in with any email and password.</p>
+    <p class="small muted">Admins are teacher accounts promoted in Supabase. Register in the <a href="../teacher-portal/">teacher portal</a> first.</p>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <header class="top"><div class="wrap row">
+    <div class="brand"><span class="sunmark" aria-hidden="true"></span>LearnReach <small>Admin</small></div>
+    <div class="row">
+      <span class="small muted" id="who"></span>
+      <button class="btn ghost sm" id="refresh" type="button">Refresh</button>
+      <button class="btn ghost sm" id="logout" type="button">Sign out</button>
+    </div>
+  </div></header>
+  <main class="wrap">
+    <div>
+      <p class="label" id="updated"></p>
+      <h1>Teachers and sign-ins</h1>
+      <p class="muted">Live from Supabase. Only adult staff accounts are listed; no learner data is held here.</p>
+    </div>
+    <p class="note" id="demo-banner" hidden>Sample data. Connect Supabase in <code>supabase-config.js</code> to see real accounts.</p>
+    <p class="err" id="load-err" role="alert"></p>
+
+    <div class="stats">
+      <div class="stat"><span class="muted small">Registered accounts</span><b id="k-total">–</b><span class="small muted" id="k-total-sub"></span></div>
+      <div class="stat"><span class="muted small">New in the last 30 days</span><b id="k-new">–</b></div>
+      <div class="stat"><span class="muted small">Signed in, last 7 days</span><b id="k-active7">–</b><span class="small muted">different people</span></div>
+      <div class="stat"><span class="muted small">Sign-ins, last 30 days</span><b id="k-sign30">–</b><span class="small muted" id="k-off"></span></div>
+      <div class="stat"><span class="muted small">Email not confirmed</span><b id="k-unconf">–</b></div>
+      <div class="stat"><span class="muted small">Never signed in</span><b id="k-never">–</b></div>
+    </div>
+
+    <section class="stack">
+      <h2>Sign-ins per day, last 30 days</h2>
+      <div class="panel"><div class="chart" id="chart"></div><p class="small muted">Teal bars are sign-ins to the teacher portal. Amber marks days when new accounts were registered.</p></div>
+    </section>
+
+    <section class="stack">
+      <div class="row"><h2>Registered accounts</h2><button class="btn ghost sm" id="csv-users" type="button">Download CSV</button></div>
+      <div class="filters">
+        <div class="field"><label for="q">Search</label><input id="q" type="search" placeholder="Name, email, club or county"></div>
+        <div class="field"><label for="f-role">Role</label><select id="f-role"><option value="">All</option><option value="teacher">Teachers</option><option value="admin">Admins</option></select></div>
+        <div class="field"><label for="f-act">Activity</label><select id="f-act"><option value="">Any</option><option value="7">Signed in, last 7 days</option><option value="30">Signed in, last 30 days</option><option value="idle">Not in 30 days</option><option value="never">Never signed in</option></select></div>
+      </div>
+      <span class="label" id="u-count"></span>
+      <div class="tw"><table id="users"><thead><tr>
+        <th data-k="full_name">Name</th><th data-k="email">Email</th><th data-k="phone">Phone</th><th data-k="site">Club or school</th><th data-k="county">County</th><th data-k="role">Role</th>
+        <th data-k="registered_at">Registered</th><th data-k="email_confirmed_at">Email confirmed</th><th data-k="last_sign_in_at">Last sign-in</th><th class="n" data-k="sign_ins_30d">Sign-ins 30d</th><th class="n" data-k="sign_ins_total">Total</th>
+      </tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <section class="stack">
+      <div class="row"><h2>Recent sign-ins</h2><button class="btn ghost sm" id="csv-signins" type="button">Download CSV</button></div>
+      <div class="tw"><table id="signins"><thead><tr><th>When</th><th>Name</th><th>Club or school</th><th>App</th><th>Device</th><th>Connection</th></tr></thead><tbody></tbody></table></div>
+      <p class="small muted">"Offline" means the teacher opened the portal without internet using her saved sign-in; the visit was sent when the device reconnected.</p>
+    </section>
+  </main>
+</div>
+
+<script src="../supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const CFG = window.LR_SUPABASE || {};
+const DEMO = window.LR_DEMO === true || !CFG.url || !CFG.anonKey || /YOUR-/.test(CFG.url + CFG.anonKey);
+let sb = null;
+if (!DEMO && window.supabase && window.supabase.createClient) { try { sb = window.supabase.createClient(CFG.url, CFG.anonKey, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'lr_admin_auth' } }); } catch {} }
+const DAY = 864e5;
+const deviceLabel = () => { const ua = navigator.userAgent || ''; const b = (ua.match(/(Edg|Chrome|Firefox|Safari)\/[\d]+/) || [''])[0]; const os = /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : /Windows/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : ''; return [os, b.replace('/', ' ')].filter(Boolean).join(' · '); };
+let users = [], signins = [], sortKey = 'registered_at', sortDir = -1;
+
+// ---------- Formatting ----------
+const fmtDate = (v) => v ? new Date(v).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '–';
+const fmtDT = (v) => v ? new Date(v).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '–';
+function ago(v) {
+  if (!v) return 'Never';
+  const m = Math.round((Date.now() - new Date(v)) / 60000);
+  if (m < 1) return 'Just now'; if (m < 60) return m + ' min ago';
+  const h = Math.round(m / 60); if (h < 24) return h + ' h ago';
+  const d = Math.round(h / 24); return d < 31 ? d + (d === 1 ? ' day ago' : ' days ago') : fmtDate(v);
+}
+const dayKey = (d) => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; };
+
+// ---------- Sign-in ----------
+$('#demo-note').hidden = !DEMO;
+$('#login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('#u').value.trim(), pass = $('#p').value, err = $('#login-err');
+  if (!email || !pass) { err.textContent = 'Enter your email and password.'; return; }
+  if (DEMO) { err.textContent = ''; enter({ email }); return; }
+  if (!sb) { err.textContent = 'Could not load the sign-in service. Check the internet connection and reload.'; return; }
+  const b = $('#login-btn'); b.disabled = true; b.textContent = 'Please wait…';
+  let res; try { res = await sb.auth.signInWithPassword({ email, password: pass }); } catch { res = { error: { message: 'network' } }; }
+  b.disabled = false; b.textContent = 'Sign in';
+  if (res.error) { err.textContent = /not confirmed/i.test(res.error.message) ? 'Confirm your email first, then sign in.' : /invalid/i.test(res.error.message) ? 'That email or password is not right.' : 'Could not reach the server. Try again.'; $('#p').value = ''; return; }
+  $('#p').value = '';
+  if (!(await checkAdmin(res.data.user))) return;
+  try { if (sessionStorage.getItem('lr_admin_counted') !== res.data.user.id) { await sb.rpc('record_sign_in', { p_app: 'admin', p_device: deviceLabel() }); sessionStorage.setItem('lr_admin_counted', res.data.user.id); } } catch {}
+  enter(res.data.user);
+});
+async function checkAdmin(au) {
+  const { data } = await sb.from('profiles').select('role').eq('id', au.id).maybeSingle();
+  if (data && data.role === 'admin') return true;
+  await sb.auth.signOut();
+  $('#login-err').textContent = 'This account is not an admin. Ask an existing admin to promote it in Supabase.';
+  return false;
+}
+function enter(au) { $('#login').hidden = true; $('#app').hidden = false; $('#who').textContent = au.email || ''; $('#demo-banner').hidden = !DEMO; load(); }
+$('#logout').addEventListener('click', async () => {
+  if (sb) { try { await sb.auth.signOut(); } catch {} }
+  try { sessionStorage.removeItem('lr_admin_counted'); } catch {}
+  $('#app').hidden = true; $('#login').hidden = false; $('#u').value = '';
+});
+$('#refresh').addEventListener('click', () => load());
+
+// ---------- Data ----------
+async function load() {
+  const err = $('#load-err'); err.textContent = '';
+  $('#refresh').disabled = true;
+  try {
+    if (DEMO) ({ users, signins } = sampleData());
+    else {
+      const since = new Date(Date.now() - 30 * DAY).toISOString();
+      const [u, s] = await Promise.all([
+        sb.rpc('admin_users'),
+        sb.from('sign_ins').select('id, user_id, signed_in_at, app, device, was_offline').gte('signed_in_at', since).order('signed_in_at', { ascending: false }).limit(5000),
+      ]);
+      if (u.error) throw u.error; if (s.error) throw s.error;
+      users = u.data || []; signins = s.data || [];
+    }
+    $('#updated').textContent = 'Updated ' + fmtDT(new Date());
+    render();
+  } catch (e) {
+    err.textContent = /admins only|42501/.test((e && (e.message || e.code)) || '') ? 'This account is not an admin.' : 'Could not load the data: ' + ((e && e.message) || 'network error') + '. Check that supabase/schema.sql has been run.';
+  } finally { $('#refresh').disabled = false; }
+}
+
+function render() { renderKpis(); renderChart(); renderUsers(); renderSignins(); }
+
+function renderKpis() {
+  const now = Date.now(), within = (v, d) => v && now - new Date(v) <= d * DAY;
+  const admins = users.filter((u) => u.role === 'admin').length;
+  $('#k-total').textContent = users.length;
+  $('#k-total-sub').textContent = `${users.length - admins} teachers · ${admins} admin${admins === 1 ? '' : 's'}`;
+  $('#k-new').textContent = users.filter((u) => within(u.registered_at, 30)).length;
+  const portal = signins.filter((s) => s.app === 'teacher-portal');
+  $('#k-active7').textContent = new Set(portal.filter((s) => within(s.signed_in_at, 7)).map((s) => s.user_id)).size;
+  $('#k-sign30').textContent = portal.length;
+  const off = portal.filter((s) => s.was_offline).length;
+  $('#k-off').textContent = off ? `${off} opened offline` : 'portal only';
+  $('#k-unconf').textContent = users.filter((u) => !u.email_confirmed_at).length;
+  $('#k-never').textContent = users.filter((u) => !u.last_sign_in_at).length;
+}
+
+function renderChart() {
+  const box = $('#chart'); box.replaceChildren();
+  const days = []; for (let i = 29; i >= 0; i--) days.push(dayKey(Date.now() - i * DAY));
+  const count = Object.fromEntries(days.map((d) => [d, 0])), reg = Object.fromEntries(days.map((d) => [d, 0]));
+  signins.filter((s) => s.app === 'teacher-portal').forEach((s) => { const k = dayKey(s.signed_in_at); if (k in count) count[k]++; });
+  users.forEach((u) => { const k = dayKey(u.registered_at); if (k in reg) reg[k]++; });
+  const css = getComputedStyle(document.documentElement), col = (v) => css.getPropertyValue(v).trim();
+  const W = Math.max(320, box.clientWidth || 700), H = 200, ml = 30, mr = 8, mt = 14, mb = 28;
+  const max = Math.max(4, ...Object.values(count)), step = Math.ceil(max / 4);
+  const NS = 'http://www.w3.org/2000/svg', mk = (tag, at) => { const e = document.createElementNS(NS, tag); Object.entries(at).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
+  const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': 'Sign-ins per day for the last 30 days' });
+  const top = step * 4, y = (v) => mt + (1 - v / top) * (H - mt - mb), bw = (W - ml - mr) / days.length;
+  for (let v = 0; v <= top; v += step) { svg.append(mk('line', { x1: ml, x2: W - mr, y1: y(v), y2: y(v), stroke: col('--line') })); const tx = mk('text', { x: ml - 6, y: y(v) + 4, 'text-anchor': 'end', 'font-size': 11, fill: col('--muted') }); tx.textContent = v; svg.append(tx); }
+  days.forEach((d, i) => {
+    const w = Math.max(3, bw * 0.62), x = ml + i * bw + (bw - w) / 2, v = count[d];
+    if (v) { const r = mk('rect', { x, y: y(v), width: w, height: y(0) - y(v), rx: 3, fill: col('--teal') }); const tip = mk('title', {}); tip.textContent = `${fmtDate(d + 'T12:00')}: ${v} sign-in${v === 1 ? '' : 's'}${reg[d] ? `, ${reg[d]} new account${reg[d] === 1 ? '' : 's'}` : ''}`; r.append(tip); svg.append(r); }
+    if (reg[d]) { const c = mk('circle', { cx: x + w / 2, cy: H - mb + 7, r: 4, fill: col('--sun') }); const tip = mk('title', {}); tip.textContent = `${fmtDate(d + 'T12:00')}: ${reg[d]} new account${reg[d] === 1 ? '' : 's'}`; c.append(tip); svg.append(c); }
+    if (i % 5 === 4 || i === days.length - 1) { const lb = mk('text', { x: x + w / 2, y: H - 4, 'text-anchor': 'middle', 'font-size': 11, fill: col('--muted') }); lb.textContent = new Date(d + 'T12:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); svg.append(lb); }
+  });
+  box.append(svg);
+}
+window.addEventListener('resize', () => { if (!$('#app').hidden) renderChart(); });
+
+function filteredUsers() {
+  const q = $('#q').value.trim().toLowerCase(), role = $('#f-role').value, act = $('#f-act').value, now = Date.now();
+  return users.filter((u) => {
+    if (role && u.role !== role) return false;
+    if (q && ![u.full_name, u.email, u.site, u.county, u.phone].some((v) => (v || '').toLowerCase().includes(q))) return false;
+    const last = u.last_sign_in_at ? now - new Date(u.last_sign_in_at) : null;
+    if (act === '7' && !(last != null && last <= 7 * DAY)) return false;
+    if (act === '30' && !(last != null && last <= 30 * DAY)) return false;
+    if (act === 'idle' && !(last != null && last > 30 * DAY)) return false;
+    if (act === 'never' && last != null) return false;
+    return true;
+  }).sort((a, b) => { const x = a[sortKey], y = b[sortKey]; if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1; return (typeof x === 'number' ? x - y : String(x).localeCompare(String(y))) * sortDir; });
+}
+function renderUsers() {
+  const list = filteredUsers(), tb = $('#users tbody'); tb.replaceChildren();
+  $('#u-count').textContent = `${list.length} of ${users.length} accounts`;
+  document.querySelectorAll('#users th').forEach((th) => th.setAttribute('aria-sort', th.dataset.k === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'));
+  if (!list.length) { const tr = el('tr'), td = el('td', 'empty', users.length ? 'No accounts match these filters.' : 'No one has registered yet.'); td.colSpan = 11; tr.append(td); tb.append(tr); return; }
+  list.forEach((u) => {
+    const tr = el('tr'), role = el('td'), conf = el('td'), last = el('td');
+    role.append(el('span', 'chip' + (u.role === 'admin' ? ' admin' : ''), u.role === 'admin' ? 'Admin' : 'Teacher'));
+    if (u.email_confirmed_at) conf.textContent = fmtDate(u.email_confirmed_at); else conf.append(el('span', 'chip warn', 'Not yet'));
+    if (u.last_sign_in_at) { last.textContent = ago(u.last_sign_in_at); last.title = fmtDT(u.last_sign_in_at); } else last.append(el('span', 'chip line', 'Never'));
+    tr.append(el('td', null, u.full_name || '–'), el('td', null, u.email || '–'), el('td', null, u.phone || '–'), el('td', null, u.site || '–'), el('td', null, u.county || '–'), role,
+      el('td', null, fmtDate(u.registered_at)), conf, last, el('td', 'n', String(u.sign_ins_30d ?? 0)), el('td', 'n', String(u.sign_ins_total ?? 0)));
+    tb.append(tr);
+  });
+}
+document.querySelectorAll('#users th').forEach((th) => th.addEventListener('click', () => { const k = th.dataset.k; sortDir = sortKey === k ? -sortDir : (/_at$|sign_ins/.test(k) ? -1 : 1); sortKey = k; renderUsers(); }));
+['#q', '#f-role', '#f-act'].forEach((s) => $(s).addEventListener('input', renderUsers));
+
+function renderSignins() {
+  const byId = Object.fromEntries(users.map((u) => [u.id, u])), tb = $('#signins tbody'); tb.replaceChildren();
+  const rows = signins.slice(0, 200);
+  if (!rows.length) { const tr = el('tr'), td = el('td', 'empty', 'No sign-ins in the last 30 days.'); td.colSpan = 6; tr.append(td); tb.append(tr); return; }
+  rows.forEach((s) => {
+    const u = byId[s.user_id] || {}, tr = el('tr'), when = el('td', null, ago(s.signed_in_at)), conn = el('td');
+    when.title = fmtDT(s.signed_in_at);
+    conn.append(el('span', 'chip' + (s.was_offline ? ' warn' : ' line'), s.was_offline ? 'Offline' : 'Online'));
+    tr.append(when, el('td', null, u.full_name || u.email || 'Unknown'), el('td', null, u.site || '–'), el('td', null, s.app === 'admin' ? 'Admin' : 'Teacher portal'), el('td', null, s.device || '–'), conn);
+    tb.append(tr);
+  });
+}
+
+// ---------- CSV export ----------
+function csv(name, header, rows) {
+  const esc = (v) => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const text = [header, ...rows].map((r) => r.map(esc).join(',')).join('\r\n');
+  const a = el('a'); a.href = URL.createObjectURL(new Blob(['﻿' + text], { type: 'text/csv' })); a.download = name; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+$('#csv-users').addEventListener('click', () => csv(`learnreach-accounts-${dayKey(Date.now())}.csv`,
+  ['Name', 'Email', 'Phone', 'Club or school', 'County', 'Role', 'Registered', 'Email confirmed', 'Last sign-in', 'Sign-ins 30 days', 'Sign-ins total'],
+  filteredUsers().map((u) => [u.full_name, u.email, u.phone, u.site, u.county, u.role, u.registered_at, u.email_confirmed_at, u.last_sign_in_at, u.sign_ins_30d, u.sign_ins_total])));
+$('#csv-signins').addEventListener('click', () => { const byId = Object.fromEntries(users.map((u) => [u.id, u])); csv(`learnreach-sign-ins-${dayKey(Date.now())}.csv`,
+  ['Signed in at', 'Name', 'Email', 'Club or school', 'App', 'Device', 'Offline'],
+  signins.map((s) => { const u = byId[s.user_id] || {}; return [s.signed_in_at, u.full_name, u.email, u.site, s.app, s.device, s.was_offline ? 'yes' : 'no']; })); });
+
+// ---------- Sample data (demo mode only) ----------
+function sampleData() {
+  const names = [['Grace Akai', "Lodwar Girls' Club", 'Turkana'], ['Mercy Lokaale', "Kakuma Girls' Club", 'Turkana'], ['Faith Nanjala', 'Bungoma Girls Hub', 'Bungoma'], ['Halima Abdi', "Garissa Girls' Club", 'Garissa'], ['Ruth Chebet', 'Baringo Girls Club', 'Baringo'], ['Esther Wanjiru', 'Kibera Girls Club', 'Nairobi'], ['Joyce Ekai', "Lokichar Girls' Club", 'Turkana'], ['Admin Vivanet', 'Vivanet Solutions', 'Nairobi']];
+  const now = Date.now(), rnd = (i) => { const x = Math.sin(i * 9301 + 49297) * 233280; return x - Math.floor(x); };
+  const us = names.map(([n, site, county], i) => ({ id: 'u' + i, full_name: n, email: n.toLowerCase().replace(/ /g, '.') + '@example.org', phone: '', site, county, role: i === 7 ? 'admin' : 'teacher', registered_at: new Date(now - (40 - i * 5) * DAY).toISOString(), email_confirmed_at: i === 6 ? null : new Date(now - (40 - i * 5) * DAY + 3600e3).toISOString() }));
+  const ss = []; let id = 0;
+  us.forEach((u, i) => { if (i === 6) return; for (let d = 0; d < 30; d++) if (rnd(i * 31 + d) < (i === 4 ? 0.05 : 0.35) && now - d * DAY > new Date(u.registered_at)) ss.push({ id: id++, user_id: u.id, signed_in_at: new Date(now - d * DAY - rnd(d + i) * 8 * 3600e3).toISOString(), app: i === 7 ? 'admin' : 'teacher-portal', device: ['Android · Chrome 131', 'Windows · Edg 131', 'Android · Chrome 130'][i % 3], was_offline: rnd(i + d * 7) < 0.2 }); });
+  ss.sort((a, b) => b.signed_in_at.localeCompare(a.signed_in_at));
+  us.forEach((u) => { const mine = ss.filter((s) => s.user_id === u.id); u.last_sign_in_at = mine[0]?.signed_in_at || null; u.sign_ins_30d = mine.length; u.sign_ins_total = mine.length + (mine.length ? 3 : 0); });
+  return { users: us, signins: ss };
+}
+
+// ---------- Start: reuse a saved admin session ----------
+(async () => {
+  if (!sb) return;
+  try { const { data } = await sb.auth.getSession(); if (data.session && (await checkAdmin(data.session.user))) enter(data.session.user); } catch {}
+})();
+</script>
+</body>
+</html>

@@ -14,6 +14,7 @@ const browser = await chromium.launch();
 
 async function open(path, viewport = { width: 1280, height: 800 }) {
   const p = await browser.newPage({ viewport, deviceScaleFactor: 1, colorScheme: 'light' });
+  await p.addInitScript(() => { window.LR_DEMO = true; }); // demo mode: screenshots never touch the real Supabase project
   await p.goto(server.url + path, { waitUntil: 'networkidle' });
   return p;
 }

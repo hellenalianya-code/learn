@@ -1,0 +1,39 @@
+name: Rewrite bot commits (one-off)
+
+# Run once by hand: rewrites commits made by github-actions[bot] so they are authored by hellenalianya-code,
+# drops this workflow's own commit, and force-pushes main. A backup of the old history is kept in backup-before-rewrite.
+on: workflow_dispatch
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  rewrite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Rewrite authorship
+        run: |
+          set -e
+          test "$(git log -1 --format=%s)" = "Add one-off workflow to rewrite bot commits"
+          git push origin HEAD:refs/heads/backup-before-rewrite
+          git checkout -B main HEAD~1
+          test ! -e .github/workflows/rewrite-authors.yml
+          export FILTER_BRANCH_SQUELCH_WARNING=1
+          git filter-branch -f --env-filter '
+          BOT="41898282+github-actions[bot]@users.noreply.github.com"
+          ME_NAME="hellenalianya-code"
+          ME_EMAIL="352138320+hellenalianya-code@users.noreply.github.com"
+          if [ "$GIT_AUTHOR_EMAIL" = "$BOT" ]; then export GIT_AUTHOR_NAME="$ME_NAME" GIT_AUTHOR_EMAIL="$ME_EMAIL"; fi
+          if [ "$GIT_COMMITTER_EMAIL" = "$BOT" ]; then export GIT_COMMITTER_NAME="$ME_NAME" GIT_COMMITTER_EMAIL="$ME_EMAIL"; fi
+          ' main
+          git log --format='%h %an <%ae> | committer %cn' | head -40
+          if git log --format='%an %ae %cn %ce' | grep -i 'github-actions'; then echo "bot still present"; exit 1; fi
+          git push --force origin main
+      - name: Redeploy the site
+        run: gh workflow run ci.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}

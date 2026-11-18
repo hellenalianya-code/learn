@@ -1,4 +1,5 @@
 // Smoke test: opens each page in Chromium, exercises the main flows and fails on any page error.
+// Pages run in demo mode (window.LR_DEMO) so the test never signs in to the real Supabase project.
 import { chromium } from 'playwright';
 import { readFile } from 'node:fs/promises';
 import { serve } from './serve.mjs';
@@ -11,6 +12,7 @@ const check = (ok, msg) => { console.log(`${ok ? 'PASS' : 'FAIL'}  ${msg}`); if 
 
 async function page(path) {
   const p = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  await p.addInitScript(() => { window.LR_DEMO = true; });
   const errors = [];
   p.on('pageerror', (e) => errors.push(e.message));
   await p.goto(server.url + path, { waitUntil: 'networkidle' });
@@ -43,6 +45,17 @@ try {
     await p.click('#q-form button[type=submit]');
     check((await p.textContent('#q-bank')).includes('CI check question?'), 'portal: a new question is saved');
     check(errors.length === 0, `portal: no script errors ${errors.join(' | ')}`);
+    await p.close();
+  }
+  // Admin page (sample data in demo mode)
+  {
+    const { p, errors } = await page('/admin/');
+    await p.fill('#u', 'ci@example.org'); await p.fill('#p', 'x');
+    await p.click('#login-form button[type=submit]');
+    await p.waitForSelector('#users tbody tr');
+    check((await p.locator('#users tbody tr').count()) > 0, 'admin: accounts table renders');
+    check((await p.locator('#chart svg').count()) === 1, 'admin: sign-ins chart renders');
+    check(errors.length === 0, `admin: no script errors ${errors.join(' | ')}`);
     await p.close();
   }
   // Dashboard

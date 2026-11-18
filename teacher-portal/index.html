@@ -1,9 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<style>[hidden]{display:none!important} body{margin:0} img{max-width:100%}</style>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>LearnReach Teacher Portal</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,6 +62,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .sunmark { width: 30px; height: 30px; border-radius: 50%; flex: none; background: radial-gradient(circle, var(--sun) 0 42%, transparent 43%), repeating-conic-gradient(var(--sun) 0 4%, transparent 4% 12.5%); }
 .demo { background: var(--sun-soft); border-radius: 10px; padding: 10px 12px; font-size: .875rem; }
 .demo code { font-weight: 700; }
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; }
+.auth-tabs button { border: 0; background: var(--surface); padding: 9px; font-weight: 700; color: var(--muted); cursor: pointer; }
+.auth-tabs button + button { border-left: 1.5px solid var(--line); }
+.auth-tabs button[aria-selected="true"] { background: var(--teal-soft); color: var(--teal); }
+.linkbtn.small { font-size: .875rem; align-self: flex-start; }
+.who { font-size: .85rem; color: var(--muted); font-weight: 700; }
+.offline-chip { font-size: .75rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--sun-soft); color: var(--warn); }
 
 /* Shell */
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
@@ -146,15 +148,85 @@ td.n, th.n { text-align: center; }
 .eyebrow { color: var(--sun); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: .85rem; }
 .screen.well .eyebrow { color: var(--rose); }
 
+/* Sessions */
+.ses-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; align-items: start; }
+.ses { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.ses.well { border-left: 4px solid var(--rose); }
+.ses.learn { border-left: 4px solid var(--teal); }
+.ses .when { flex: none; width: 4.2rem; text-align: center; line-height: 1.1; }
+.ses .when b { display: block; font-family: var(--display); font-size: 1.5rem; }
+.ses .when span { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+.ses .what { flex: 1 1 180px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ses .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip.ok { background: var(--teal-soft); color: var(--ok); }
+.chip.warn { background: var(--sun-soft); color: var(--warn); }
+.chip.bad { background: var(--rose-soft); color: var(--bad); }
+.chart { position: relative; min-height: 200px; }
+.chart svg text { font-family: var(--body); }
+.rate { display: flex; align-items: center; gap: 8px; }
+.rate .bar { width: 5rem; height: 7px; border-radius: 4px; background: var(--line); overflow: hidden; flex: none; }
+.rate .bar i { display: block; height: 100%; background: var(--teal); }
+.rate .bar i.low { background: var(--sun); }
+.reg-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 8px; }
+.reg-item { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; font-weight: 700; }
+.reg-item input { width: 1.4rem; height: 1.4rem; accent-color: var(--teal); flex: none; }
+.reg-item.on { border-color: var(--teal); background: var(--teal-soft); }
+.reg-item small { display: block; font-weight: 400; color: var(--muted); }
+.reg-head { display: flex; flex-direction: column; gap: 6px; }
+.live { display: flex; align-items: center; gap: 10px; background: var(--sun-soft); border-radius: 10px; padding: 10px 14px; font-weight: 700; flex-wrap: wrap; }
+.live b { font-family: var(--display); font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+.live .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bad); }
+@media (prefers-reduced-motion: no-preference) { .live .dot { animation: blink 1.4s infinite; } @keyframes blink { 50% { opacity: .2; } } }
+.reg-card { background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.reg-card.p { border-color: var(--teal); background: var(--teal-soft); }
+.reg-card.l { border-color: var(--sun); background: var(--sun-soft); }
+.reg-card strong small { display: block; font-weight: 400; color: var(--muted); }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); border: 1.5px solid var(--line); border-radius: 9px; overflow: hidden; }
+.seg button { border: 0; background: var(--surface); padding: 7px 4px; font-weight: 700; font-size: .85rem; cursor: pointer; color: var(--muted); }
+.seg button + button { border-left: 1.5px solid var(--line); }
+.seg button[aria-pressed="true"].p { background: var(--teal); color: var(--on-accent); }
+.seg button[aria-pressed="true"].l { background: var(--sun); color: #2a1a00; }
+.seg button[aria-pressed="true"].a { background: var(--bad); color: var(--on-accent); }
+.qz-controls { display: flex; gap: 12px; flex-wrap: wrap; }
+.qz-controls .field { min-width: min(100%, 220px); }
+.qz-opts .opt { border: 2px solid var(--line); border-radius: 14px; padding: 12px 16px; font-size: clamp(1.05rem, 2.2vw, 1.4rem); font-weight: 700; background: var(--surface); }
+.teacher-key { font-size: 1rem; color: var(--muted); }
+.teacher-key b { color: var(--ok); }
+.mark { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 520px; }
+.mark button { border: 2px solid var(--line); border-radius: 14px; padding: 18px; font-size: 1.3rem; font-weight: 700; cursor: pointer; background: var(--surface); }
+.mark button.r[aria-pressed="true"] { border-color: var(--ok); background: var(--teal-soft); color: var(--ok); }
+.mark button.w[aria-pressed="true"] { border-color: var(--bad); background: var(--rose-soft); color: var(--bad); }
+.qz-girl { text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.qz-girl:hover { border-color: var(--teal); }
+.qz-girl.done { background: var(--teal-soft); border-color: var(--teal); }
+.screen.quiz { background: var(--bg); color: var(--ink); }
+.screen.quiz .screen-top { color: var(--muted); font-weight: 700; }
+.screen.quiz .btn.ghost { color: var(--teal); border-color: var(--line); }
+.qz-opts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.qz-opts button { text-align: left; border: 2px solid var(--line); background: var(--surface); border-radius: 14px; padding: 16px 18px; font-size: clamp(1.1rem, 2.6vw, 1.6rem); font-weight: 700; cursor: pointer; }
+.qz-opts button[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); }
+.report { display: flex; flex-direction: column; gap: 18px; max-width: 860px; }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; }
+.kv div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
+.kv b { display: block; font-family: var(--display); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.names { display: flex; flex-wrap: wrap; gap: 6px; }
+.detail-row td { background: var(--bg); white-space: normal; }
+.unit { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line); }
+.unit:first-child { border-top: 0; }
+.miss { font-size: .9rem; padding-left: 14px; border-left: 3px solid var(--bad); }
+.miss .ok { color: var(--ok); font-weight: 700; }
+.miss .no { color: var(--bad); font-weight: 700; }
+.linkbtn { all: unset; cursor: pointer; font-weight: 700; color: var(--teal); }
+.linkbtn:focus-visible { outline: 3px solid var(--sun); }
+video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); background: #000; }
+.screen-stage video { width: 100%; max-height: 62vh; border-radius: 12px; background: #000; }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; z-index: 40; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
 @media (prefers-reduced-motion: no-preference) { .screen-stage > * { animation: rise .35s ease-out both; } @keyframes rise { from { opacity: .001; transform: translateY(8px); } } }
 </style>
-</head>
-<body>
 
-<!-- LOGIN -->
+<!-- LOGIN / REGISTER (Supabase) -->
 <div id="login-screen" class="login wrap">
-  <form id="login-form" class="login-card" novalidate>
+  <div class="login-card">
     <div class="row">
       <div class="brand"><span class="sunmark" aria-hidden="true"></span>LearnReach <small>Teacher</small></div>
       <div class="lang-switch" role="group" aria-label="Language">
@@ -162,16 +234,48 @@ td.n, th.n { text-align: center; }
         <button type="button" data-lang="sw" aria-pressed="false">SW</button>
       </div>
     </div>
-    <div>
-      <h1 data-t="loginTitle">Teacher sign-in</h1>
-      <p class="muted" data-t="loginSub">Run girls' club sessions on the classroom screen, ask questions and track each girl's progress.</p>
+    <div class="auth-tabs" role="tablist" aria-label="Account">
+      <button type="button" role="tab" id="at-in" aria-selected="true" data-t="signIn">Sign in</button>
+      <button type="button" role="tab" id="at-up" aria-selected="false" data-t="register">Register</button>
     </div>
-    <div class="field"><label for="u" data-t="username">Username</label><input id="u" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
-    <div class="field"><label for="p" data-t="password">Password</label><input id="p" type="password" inputmode="numeric" autocomplete="current-password"></div>
-    <p class="err" id="login-err" role="alert"></p>
-    <button class="btn" type="submit" data-t="signIn">Sign in</button>
-    <p class="demo"><span data-t="demoNote">Test account for the pilot:</span> <code>user1</code> / <code>1234</code></p>
-  </form>
+
+    <form id="login-form" class="stack" novalidate>
+      <div>
+        <h1 data-t="loginTitle">Teacher sign-in</h1>
+        <p class="muted" data-t="loginSub">Run girls' club sessions on the classroom screen, ask questions and track each girl's progress.</p>
+      </div>
+      <div class="field"><label for="u" data-t="emailL">Email</label><input id="u" type="email" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+      <div class="field"><label for="p" data-t="password">Password</label><input id="p" type="password" autocomplete="current-password"></div>
+      <p class="err" id="login-err" role="alert"></p>
+      <button class="btn" type="submit" id="login-btn" data-t="signIn">Sign in</button>
+      <button class="linkbtn small" type="button" id="forgot" data-t="forgot">Forgot your password?</button>
+    </form>
+
+    <form id="reg-form" class="stack" novalidate hidden>
+      <div>
+        <h1 data-t="regTitle">Create a teacher account</h1>
+        <p class="muted" data-t="regSub">Register once with internet. After that you can open the portal offline on this device.</p>
+      </div>
+      <div class="field"><label for="r-name" data-t="fullName">Full name</label><input id="r-name" autocomplete="name"></div>
+      <div class="field"><label for="r-email" data-t="emailL">Email</label><input id="r-email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false"></div>
+      <div class="field"><label for="r-phone" data-t="phoneL">Phone (optional)</label><input id="r-phone" type="tel" autocomplete="tel"></div>
+      <div class="field"><label for="r-site" data-t="siteL">Club or school</label><input id="r-site" placeholder="Lodwar Girls' Club"></div>
+      <div class="field"><label for="r-county" data-t="countyL">County</label><input id="r-county" placeholder="Turkana"></div>
+      <div class="field"><label for="r-pass" data-t="password">Password</label><input id="r-pass" type="password" autocomplete="new-password"><span class="small muted" data-t="passHint">At least 8 characters.</span></div>
+      <p class="err" id="reg-err" role="alert"></p>
+      <button class="btn" type="submit" id="reg-btn" data-t="register">Register</button>
+    </form>
+
+    <form id="reset-form" class="stack" novalidate hidden>
+      <h1 data-t="newPassTitle">Set a new password</h1>
+      <div class="field"><label for="np" data-t="newPass">New password</label><input id="np" type="password" autocomplete="new-password"><span class="small muted" data-t="passHint">At least 8 characters.</span></div>
+      <p class="err" id="reset-err" role="alert"></p>
+      <button class="btn" type="submit" id="reset-btn" data-t="savePass">Save password</button>
+    </form>
+
+    <p class="demo" id="demo-note" hidden><span data-t="demoNote">Demo mode, no server connected. Test account:</span> <code>user1</code> / <code>1234</code></p>
+    <p class="demo" id="auth-msg" role="status" hidden></p>
+  </div>
 </div>
 
 <!-- APP -->
@@ -185,11 +289,15 @@ td.n, th.n { text-align: center; }
             <button type="button" data-lang="en" aria-pressed="true">EN</button>
             <button type="button" data-lang="sw" aria-pressed="false">SW</button>
           </div>
+          <span class="offline-chip" id="offline-chip" hidden data-t="offlineChip">Offline</span>
+          <span class="who" id="who"></span>
+          <a class="btn ghost sm" id="admin-link" href="../admin/" hidden data-t="adminL">Admin</a>
           <button class="btn ghost sm" id="logout" type="button" data-t="signOut">Sign out</button>
         </div>
       </div>
       <nav class="tabs" role="tablist" aria-label="Sections">
         <button role="tab" id="tab-class" data-view="class" aria-selected="true" data-t="tClass">My class</button>
+        <button role="tab" id="tab-sessions" data-view="sessions" aria-selected="false" data-t="tSessions">Sessions</button>
         <button role="tab" id="tab-modules" data-view="modules" aria-selected="false" data-t="tModules">Modules</button>
         <button role="tab" id="tab-grades" data-view="grades" aria-selected="false" data-t="tGrades">Gradebook</button>
         <button role="tab" id="tab-questions" data-view="questions" aria-selected="false" data-t="tQuestions">Questions</button>
@@ -212,18 +320,101 @@ td.n, th.n { text-align: center; }
         <div class="stat"><span class="muted small" data-t="sGirls">Aged 15 and over</span><b id="st-girls">0</b></div>
         <div class="stat"><span class="muted small" data-t="sAvg">Class average</span><b id="st-avg">0</b></div>
         <div class="stat"><span class="muted small" data-t="sSupport">Need support (below 50%)</span><b id="st-support">0</b></div>
+        <div class="stat"><span class="muted small" data-t="sAtt">Attendance, last 4 weeks</span><b id="st-att">0</b></div>
         <div class="stat"><span class="muted small" data-t="sWell">Attended all wellbeing modules</span><b id="st-well">0</b></div>
       </div>
       <div class="stack">
         <h2 data-t="learnersH">Learners</h2>
         <div class="tw">
           <table>
-            <thead><tr><th data-t="hName">Name</th><th class="n" data-t="hGender">Age</th><th class="n" data-t="hAvg">Average</th><th class="n" data-t="hLevel">Level</th><th class="n" data-t="hWellS">Wellbeing sessions</th></tr></thead>
+            <thead><tr><th data-t="hName">Name</th><th class="n" data-t="hGender">Age</th><th class="n" data-t="hAvg">Average</th><th class="n" data-t="hLevel">Level</th><th class="n" data-t="hAtt">Attendance</th><th class="n" data-t="hWellS">Wellbeing sessions</th></tr></thead>
             <tbody id="class-rows"></tbody>
           </table>
         </div>
         <p class="small muted" data-t="levelNote">Levels follow the CBC rubric: EE 80–100, ME 50–79, AE 30–49, BE below 30.</p>
       </div>
+    </section>
+
+    <!-- SESSIONS -->
+    <section class="view" id="view-sessions" hidden>
+      <div><h2 data-t="tSessions">Sessions</h2><p class="muted" data-t="sesSub">Plan club sessions, take the register, and see who is coming.</p></div>
+      <div class="ses-layout">
+        <div class="stack">
+          <h3 data-t="upcomingH">Coming up</h3>
+          <div class="stack" id="ses-upcoming"></div>
+        </div>
+        <form class="card" id="plan-form" novalidate>
+          <h3 data-t="planH">Plan a session</h3>
+          <div class="field"><label for="ps-date" data-t="fDate">Date</label><input id="ps-date" type="date"></div>
+          <div class="field"><label for="ps-time" data-t="fTime">Start time</label><input id="ps-time" type="time" value="15:30"></div>
+          <div class="field"><label for="ps-lesson" data-t="qLesson">Lesson</label><select id="ps-lesson"></select></div>
+          <div class="field"><label for="ps-place" data-t="fPlace">Where</label><input id="ps-place" value="Club room"></div>
+          <p class="err" id="ps-err" role="alert"></p>
+          <button class="btn" type="submit" style="align-self:flex-start" data-t="planBtn">Add to plan</button>
+        </form>
+      </div>
+      <div class="stack">
+        <h3 data-t="trendH">Attendance by session</h3>
+        <div class="card"><div class="chart" id="ses-chart"></div><p class="small muted" data-t="trendNote">Share of eligible girls present at each of the last 8 sessions. The dashed line is the 60% follow-up level.</p></div>
+      </div>
+      <div class="stack">
+        <h3 data-t="perGirlH">Attendance by girl</h3>
+        <div class="tw"><table><thead><tr><th data-t="hName">Name</th><th class="n" data-t="hAttended">Attended</th><th data-t="hRate">Rate</th><th data-t="hLast">Last seen</th></tr></thead><tbody id="ses-girls"></tbody></table></div>
+        <p class="small muted" data-t="followNote">Girls below 60% after three or more sessions are marked Follow up, so you can check on them or visit home.</p>
+      </div>
+      <div class="stack">
+        <h3 data-t="pastH">Past sessions</h3>
+        <div class="stack" id="ses-past"></div>
+      </div>
+    </section>
+
+    <!-- CLASS IN PROGRESS / REGISTER -->
+    <section class="view" id="view-register" hidden>
+      <button class="btn ghost sm" id="reg-back" type="button" style="align-self:flex-start" data-t="regBack">← Back to sessions</button>
+      <div class="reg-head" id="reg-head"></div>
+      <div class="live" id="live" hidden>
+        <span class="dot" aria-hidden="true"></span>
+        <span id="live-text"></span>
+        <b id="live-clock">00:00</b>
+      </div>
+      <div class="row">
+        <span class="label" id="reg-count"></span>
+        <div class="row">
+          <button class="btn ghost sm" id="reg-all" type="button" data-t="regAll">Mark all present</button>
+          <button class="btn ghost sm" id="reg-none" type="button" data-t="regNone">Clear</button>
+        </div>
+      </div>
+      <p class="small muted" data-t="regHint">Tap Present, Late or Absent for each girl. Late still counts as attending.</p>
+      <div class="reg-list" id="reg-list"></div>
+      <div class="row" style="justify-content:flex-start">
+        <button class="btn" id="reg-start" type="button" data-t="startClass">Start class</button>
+        <button class="btn sun" id="reg-present" type="button" data-t="regPresent">▶ Present this lesson</button>
+        <button class="btn" id="reg-save" type="button" data-t="regSave">Save register</button>
+        <button class="btn rose" id="reg-end" type="button" data-t="endClass">End class</button>
+      </div>
+    </section>
+
+    <!-- CLASS QUIZ -->
+    <section class="view" id="view-quiz" hidden>
+      <button class="btn ghost sm" id="quiz-back" type="button" style="align-self:flex-start" data-t="regBack">← Back to sessions</button>
+      <div class="reg-head" id="quiz-head"></div>
+      <p class="muted" data-t="quizSub">Pass the device to each girl in turn. She answers on her own and does not see her score. Results go to the gradebook.</p>
+      <div class="qz-controls">
+        <div class="field"><label for="quiz-n" data-t="perGirl">Questions per girl</label>
+          <select id="quiz-n"><option value="3">3</option><option value="5">5</option><option value="0" data-t="allQs">All</option></select></div>
+        <div class="field"><label for="quiz-mode" data-t="howAsk">How to ask</label>
+          <select id="quiz-mode"><option value="device" data-t="modeDevice">She taps her answer on the device</option><option value="aloud" data-t="modeAloud">I ask aloud and mark right or wrong</option></select></div>
+      </div>
+      <p class="small muted" data-t="randomNote">Each girl gets different questions, picked at random from the lesson's question bank, with the answer order mixed.</p>
+      <span class="label" id="quiz-count"></span>
+      <div class="reg-list" id="quiz-list"></div>
+      <div class="row" style="justify-content:flex-start"><button class="btn" id="quiz-finish" type="button" data-t="quizFinish">Finish and see the report</button></div>
+    </section>
+
+    <!-- SESSION REPORT -->
+    <section class="view" id="view-report" hidden>
+      <button class="btn ghost sm" id="rep-back" type="button" style="align-self:flex-start" data-t="regBack">← Back to sessions</button>
+      <article class="report" id="report"></article>
     </section>
 
     <!-- MODULES -->
@@ -293,8 +484,17 @@ td.n, th.n { text-align: center; }
     <button class="btn sun" id="sc-next" type="button" data-t="next">Next →</button>
   </div>
 </div>
+<!-- STUDENT QUIZ (full screen, no scores shown) -->
+<div class="screen quiz" id="qz" hidden role="dialog" aria-modal="true" aria-label="Class quiz">
+  <div class="screen-top"><span id="qz-who"></span><button class="btn ghost sm" id="qz-close" type="button" data-t="qzStop">Stop</button></div>
+  <div class="screen-stage" id="qz-stage"></div>
+  <div class="screen-bar"><span id="qz-step"></span><button class="btn sun" id="qz-next" type="button" disabled data-t="next">Next →</button></div>
+</div>
+<input type="file" id="video-file" accept="video/*" hidden>
 <div class="toast" id="toast" hidden></div>
 
+<script src="../supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script>
 // ---------- Sample content and class (placeholders for the pilot) ----------
 const MODULES = [
@@ -307,41 +507,164 @@ const MODULES = [
   { id: 'repro', name: { en: 'Reproductive health', sw: 'Afya ya uzazi' }, area: 'well', minAge: 15 },
 ];
 const LESSONS = [
-  { id: 'lit1', mod: 'lit', format: 'Audio', lang: 'Swahili', min: 10, title: 'Sauti za herufi: a, e, i, o, u',
-    body: ['Sikiliza na urudie kila sauti mara tatu: a, e, i, o, u.', 'Kila neno la Kiswahili lina irabu. Tafuta irabu katika maneno haya: maji, simba, kuku, embe.'] },
-  { id: 'lit2', mod: 'lit', format: 'Reading', lang: 'English', min: 15, title: 'The solar radio',
-    body: ['Akiru lives in Lodwar. Every evening her family turns on a small radio that runs on the sun.', 'One day the battery is low. Akiru moves the solar panel to face the sun, and the radio plays again.', 'Read the story aloud to a friend. Then find three words that describe the sun.'] },
-  { id: 'lit3', mod: 'lit', format: 'Video', lang: 'English', min: 8, title: 'Writing a sentence',
-    body: ['A sentence starts with a capital letter and ends with a full stop.', 'Write three sentences about your school.'] },
-  { id: 'num1', mod: 'num', format: 'Reading', lang: 'English', min: 12, title: 'Counting in groups of ten',
-    body: ['Ten sticks tied together make one bundle. Three bundles and four sticks make 34.', 'Use stones or bottle tops to make 27, 41 and 50.'] },
-  { id: 'num2', mod: 'num', format: 'Video', lang: 'Swahili', min: 10, title: 'Kujumlisha sokoni',
-    body: ['Mama Wanjiru anauza nyanya 12 asubuhi na 9 jioni. Ameuza ngapi kwa jumla?', 'Jaribu na matunda mengine sokoni.'] },
-  { id: 'sci1', mod: 'sci', format: 'Reading', lang: 'English', min: 14, title: 'How the sun makes electricity',
-    body: ['A solar panel turns sunlight into electricity. The electricity is stored in a battery so we can use it at night.', 'Look at the solar panel at your school. Which way does it face? Why?'] },
-  { id: 'men1', mod: 'men', format: 'Video', lang: 'English', min: 9, title: 'What is a period?',
-    body: ['A period is a normal part of growing up. Once a month, blood and tissue leave the body through the vagina. It usually lasts 3 to 7 days.', 'Most girls get their first period between ages 9 and 16. Every body is different, and early or late are both normal.', 'A period is healthy. It does not mean you are sick or unclean.'] },
-  { id: 'men2', mod: 'men', format: 'Audio', lang: 'Swahili', min: 10, title: 'Kujitunza wakati wa hedhi',
-    body: ['Badilisha pedi kila saa 4 hadi 8, au mapema ikijaa.', 'Osha mikono kabla na baada ya kubadilisha pedi. Oga kila siku kwa maji safi.', 'Pedi za kufua zioshwe kwa sabuni na zikaushwe juani.'] },
-  { id: 'mind1', mod: 'mind', format: 'Audio', lang: 'English', min: 6, title: 'Naming your feelings',
-    body: ['Everyone feels happy, sad, angry, worried or scared sometimes. All feelings are okay.', 'When a feeling is big, try this: breathe in slowly while you count to four, then breathe out while you count to four. Do it five times.', 'Talking to someone you trust can make a heavy feeling lighter.'] },
-  { id: 'safe1', mod: 'safe', format: 'Video', lang: 'English', min: 8, title: 'My body belongs to me',
-    body: ['Your body belongs to you. You can say no if someone touches you in a way that feels wrong or confusing.', 'Some secrets are not okay to keep, like a secret about touching. Tell a trusted adult.', 'If something bad happens, it is never your fault. You can call Childline Kenya on 116 for free.'] },
-  { id: 'rep1', mod: 'repro', format: 'Video', lang: 'English', min: 12, title: 'How pregnancy happens',
-    body: ['Pregnancy can happen when a girl has sex with a boy or man, even the first time and even before her first period.', 'You have the right to decide about your own body. No one may force or pressure you, and that includes a boyfriend or a husband.', 'Staying in school and planning when to have children helps girls stay healthy and reach their goals.'] },
-  { id: 'rep2', mod: 'repro', format: 'Audio', lang: 'Swahili', min: 8, title: 'Huduma za afya kwa vijana',
-    body: ['Vituo vingi vya afya vina huduma rafiki kwa vijana. Unaweza kuuliza maswali kuhusu mwili wako bila kuhukumiwa.', 'Huduma hizi ni za siri. Ukiwa na swali, muulize mhudumu wa afya au mwalimu unayemwamini.'] },
-  { id: 'safe2', mod: 'safe', format: 'Audio', lang: 'Swahili', min: 7, title: 'Watu ninaoweza kuwaamini',
-    body: ['Taja watu watatu unaoweza kuwaambia ukiwa na shida: mzazi, mwalimu, au mlezi.', 'Ukihitaji msaada, piga simu 116 bure.'] },
+  { id: 'lit1', mod: 'lit', format: 'Audio', lang: 'Swahili', min: 20, title: 'Sauti za herufi: a, e, i, o, u',
+    body: ['Karibu kwenye somo la sauti za herufi. Leo tutajifunza irabu tano za Kiswahili: a, e, i, o na u.',
+      'Sikiliza kila sauti kisha uirudie mara tatu kwa sauti kubwa: a, a, a. E, e, e. I, i, i. O, o, o. U, u, u.',
+      'Kila neno la Kiswahili lina angalau irabu moja. Kwa mfano, neno "maji" lina irabu a na i. Neno "kuku" lina irabu u mara mbili.',
+      'Silabi ni kipande cha neno tunachotamka kwa pumzi moja. Piga makofi mara moja kwa kila silabi: ma-ji, sim-ba, ku-ku, em-be.',
+      'Tafuta irabu katika maneno haya: simba, ndoo, mama, embe, shule. Mwambie mwenzako umepata irabu ngapi.',
+      'Sasa tuimbe: "a, e, i, o, u, hizi ni irabu zetu!" Imba mara mbili pamoja na wenzako.',
+      'Kazi ya nyumbani: andika maneno matano unayoyaona nyumbani, kisha upige mstari chini ya kila irabu.'] },
+  { id: 'lit2', mod: 'lit', format: 'Reading', lang: 'English', min: 25, title: 'The solar radio',
+    body: ['Akiru is twelve years old and lives in Lodwar with her mother, her grandmother and two younger brothers.',
+      'Every evening, when the sun goes down, the family sits outside and turns on a small radio. The radio runs on power from the sun.',
+      'On the roof there is a small solar panel. During the day it catches sunlight and fills a battery. At night, the battery powers the radio and one bright light.',
+      'One evening the radio is quiet. Akiru presses the button again and again, but nothing happens. Her brothers are sad because they miss the story programme.',
+      'In the morning Akiru climbs up to look at the panel. It is covered in red dust, and a branch is making a shadow over it.',
+      'She wipes the panel with a soft cloth and moves it so it faces the bright, hot sun. By evening the battery is full and the radio plays again.',
+      'Her grandmother smiles. "You fixed it because you looked carefully and asked why," she says. Akiru feels proud.',
+      'Read the story aloud to a friend. Then find three words that describe the sun, and one word that describes how Akiru felt.'] },
+  { id: 'lit3', mod: 'lit', format: 'Video', lang: 'English', min: 20, title: 'Writing a sentence',
+    body: ['A sentence is a group of words that tells a complete idea. "The goat is eating" is a sentence. "The goat" on its own is not.',
+      'Every sentence starts with a capital letter. The first word of the sentence always begins with a big letter: The, My, We.',
+      'Every sentence ends with a full stop, unless it is a question. A question ends with a question mark: "Where is the goat?"',
+      'Names of people and places also start with a capital letter, even in the middle of a sentence: "Akiru lives in Lodwar."',
+      'A good sentence says who or what, and what they do: "My sister carries water." Who? My sister. What does she do? Carries water.',
+      'Let us fix this sentence together: "the girls play football in kakuma". It needs a capital T, a capital K and a full stop.',
+      'Now write three sentences about your school. Check each one: capital letter at the start, full stop at the end.'] },
+  { id: 'num1', mod: 'num', format: 'Reading', lang: 'English', min: 25, title: 'Counting in groups of ten',
+    body: ['When we have many things to count, it is easier to put them in groups of ten.',
+      'Ten sticks tied together make one bundle. We call one bundle "one ten".',
+      'If we have three bundles and four loose sticks, we have 3 tens and 4 ones. That is 34.',
+      'In a two-digit number, the left digit tells us how many tens, and the right digit tells us how many ones. In 52, the 5 means 5 tens and the 2 means 2 ones.',
+      'Four bundles and no loose sticks make 40. There are 4 tens in 40.',
+      'Use stones, bottle tops or sticks to make these numbers: 27, 41, 50 and 63. Show your partner the tens and the ones.',
+      'Challenge: which is bigger, 3 tens and 8 ones, or 8 tens and 3 ones? Explain how you know.'] },
+  { id: 'num2', mod: 'num', format: 'Video', lang: 'Swahili', min: 20, title: 'Kujumlisha sokoni',
+    body: ['Leo tutakwenda sokoni na Mama Wanjiru. Anauza nyanya, embe na vitunguu.',
+      'Asubuhi aliuza nyanya 12. Jioni aliuza nyanya 9 zaidi. Ameuza nyanya ngapi kwa jumla? Tunajumlisha: 12 + 9 = 21.',
+      'Njia rahisi ni kujumlisha makumi kwanza, kisha mamoja. Kwa 25 + 14: makumi 20 + 10 = 30, mamoja 5 + 4 = 9. Jibu ni 39.',
+      'Mama ana embe 15 na ananunua embe 5 zaidi kutoka shamba. Sasa ana embe 20.',
+      'Tumia mawe au vifuniko vya chupa kuonyesha kila hesabu. Weka makumi upande mmoja na mamoja upande mwingine.',
+      'Mazoezi: 30 + 20, 16 + 3, 24 + 15. Mwambie mwenzako jinsi ulivyopata jibu.',
+      'Kazi ya nyumbani: muulize mzazi bei ya vitu viwili sokoni na ujumlishe bei hizo.'] },
+  { id: 'sci1', mod: 'sci', format: 'Reading', lang: 'English', min: 25, title: 'How the sun makes electricity',
+    body: ['The sun gives us light and heat every day. We can also use sunlight to make electricity.',
+      'A solar panel is a flat, dark board made of special cells. When sunlight shines on the cells, they make electricity.',
+      'The electricity travels through wires to a battery. The battery stores it, like a jerrican stores water.',
+      'At night there is no sunlight, so the panel makes no electricity. The lights, radio and TV use the power saved in the battery.',
+      'A panel works best when it faces the sun, has no shadow on it, and is clean. Dust and leaves block the light.',
+      'Our club TV and projector run on solar power. That is why we can watch lessons even where there is no electricity line.',
+      'Look at the solar panel at your school or home. Which way does it face? Is anything blocking the sun? Draw it and label the panel, wires and battery.'] },
+  { id: 'men1', mod: 'men', format: 'Video', lang: 'English', min: 20, title: 'What is a period?',
+    body: ['As girls grow up, their bodies change. This time of change is called puberty. One of the changes is starting to have periods.',
+      'A period is a normal part of growing up. About once a month, a small amount of blood and tissue leaves the body through the vagina.',
+      'A period usually lasts between 3 and 7 days. The time from the start of one period to the start of the next is often between 21 and 35 days.',
+      'Most girls get their first period between ages 9 and 16. Every body is different, so early or late are both normal.',
+      'Some girls feel cramps in the tummy, or feel tired or moody. Resting, drinking water, walking gently or holding a warm cloth on the tummy can help.',
+      'If the bleeding is very heavy, lasts more than 7 days, or the pain stops you from doing daily things, talk to a health worker.',
+      'A period is healthy. It does not mean you are sick or unclean. You can go to school, play and do your usual activities during your period.'] },
+  { id: 'men2', mod: 'men', format: 'Audio', lang: 'Swahili', min: 15, title: 'Kujitunza wakati wa hedhi',
+    body: ['Kujitunza vizuri wakati wa hedhi kunakusaidia kuwa na afya na kujiamini.',
+      'Badilisha pedi kila saa 4 hadi 8, au mapema ikijaa.',
+      'Osha mikono kwa sabuni kabla na baada ya kubadilisha pedi. Oga kila siku kwa maji safi.',
+      'Pedi za kufua zioshwe kwa sabuni na maji, kisha zikaushwe juani. Jua husaidia kuua vijidudu.',
+      'Pedi zilizotumika zifungwe kwa karatasi na kutupwa kwenye pipa au choo cha shimo, si kwenye choo cha kuvuta maji.',
+      'Beba pedi ya ziada shuleni kwenye mfuko safi. Unaweza kuweka alama kwenye kalenda siku hedhi inapoanza.',
+      'Kama una swali, muulize mwalimu, mama, shangazi au mhudumu wa afya unayemwamini.'] },
+  { id: 'mind1', mod: 'mind', format: 'Audio', lang: 'English', min: 15, title: 'Naming your feelings',
+    body: ['Everyone feels happy, sad, angry, worried or scared sometimes. All feelings are okay. They are messages from inside us.',
+      'Our bodies show feelings too. When we are worried, our heart may beat fast. When we are sad, we may feel heavy or tired.',
+      'Giving a feeling a name can make it smaller. Try saying: "I feel worried because of the exam," or "I feel angry because my brother took my book."',
+      'When a feeling is big, try this: breathe in slowly while you count to four, then breathe out while you count to four. Do it five times.',
+      'Other things that help: walking, drawing, singing, praying, or doing something kind for someone else.',
+      'Talking to someone you trust can make a heavy feeling lighter. That could be a parent, a teacher, an aunt or a friend.',
+      'You can also help a friend by listening without laughing at them. Sometimes the best thing to say is: "I am here with you."'] },
+  { id: 'safe1', mod: 'safe', format: 'Video', lang: 'English', min: 20, title: 'My body belongs to me',
+    body: ['Your body belongs to you. You have the right to feel safe with everyone, at home, at school and in the community.',
+      'Some touches are safe, like a hug from a parent when you want one. A touch is not okay if it hurts, scares you, or touches private parts of your body.',
+      'You can say no if someone touches you in a way that feels wrong or confusing, even if it is someone you know.',
+      'If you feel unsafe: say no, get away as quickly as you can, and tell a trusted adult.',
+      'Some secrets are not okay to keep, like a secret about touching. A safe adult will never ask you to keep that kind of secret.',
+      'Make a list of three trusted adults you could tell. If the first person does not listen, keep telling until someone helps.',
+      'If something bad happens, it is never your fault. You can call Childline Kenya on 116 for free, any time.'] },
+  { id: 'safe2', mod: 'safe', format: 'Audio', lang: 'Swahili', min: 15, title: 'Watu ninaoweza kuwaamini',
+    body: ['Mtu unayemwamini ni mtu mzima anayekusikiliza, anakuheshimu na anakusaidia ukiwa na shida.',
+      'Taja watu watatu unaoweza kuwaambia ukiwa na shida: kwa mfano mzazi, mwalimu, au mlezi.',
+      'Chora mkono wako kwenye karatasi. Kwenye kila kidole andika jina la mtu mmoja unayemwamini.',
+      'Ukimwambia mtu na hakusaidii, endelea kuwaambia wengine hadi mtu akusaidie.',
+      'Siri zinazokuumiza au kukuogopesha si siri za kuficha. Ni sawa kuzisema.',
+      'Ukihitaji msaada, piga simu 116 bure. Ni Childline Kenya, na wanapatikana wakati wowote.'] },
+  { id: 'rep1', mod: 'repro', format: 'Video', lang: 'English', min: 20, title: 'How pregnancy happens',
+    body: ['This lesson is for girls aged 15 and over. It gives facts so you can keep yourself healthy and make your own choices.',
+      'Pregnancy can happen when a girl has sex with a boy or man. It can happen the first time, and even before her first period.',
+      'You have the right to decide about your own body. No one may force or pressure you into sex, and that includes a boyfriend or a husband.',
+      'Pregnancy when the body is still young can be risky for the girl and the baby. It can also make it hard to stay in school.',
+      'Staying in school and planning when to have children helps girls stay healthy and reach their goals.',
+      'Health centres offer confidential advice for young people about relationships, pregnancy and protecting yourself from infections.',
+      'If anyone forces or pressures you, it is not your fault. Tell a trusted adult or call Childline Kenya on 116.'] },
+  { id: 'rep2', mod: 'repro', format: 'Audio', lang: 'Swahili', min: 15, title: 'Huduma za afya kwa vijana',
+    body: ['Vituo vingi vya afya vina huduma rafiki kwa vijana. Unaweza kuuliza maswali kuhusu mwili wako bila kuhukumiwa.',
+      'Huduma hizi ni za siri. Mhudumu wa afya hatakiwi kumwambia mtu mwingine bila ruhusa yako.',
+      'Unaweza kupata ushauri kuhusu hedhi, mahusiano, mimba na jinsi ya kujikinga na maambukizi.',
+      'Ukienda, unaweza kwenda na rafiki au mtu mzima unayemwamini.',
+      'Ukiwa na swali, muulize mhudumu wa afya au mwalimu unayemwamini. Hakuna swali la aibu kuhusu afya yako.'] },
 ];
 const SEED_Q = [
-  { id: 'q1', lesson: 'lit2', text: 'Why did the radio stop?', type: 'mc', opts: ['It was broken', 'The battery was low', 'It was raining'], a: 1 },
-  { id: 'q2', lesson: 'num1', text: 'How many is 5 bundles of ten and 2 sticks?', type: 'mc', opts: ['25', '52', '7'], a: 1 },
-  { id: 'q3', lesson: 'sci1', text: 'Where is the electricity kept for night time?', type: 'mc', opts: ['In the panel', 'In a battery', 'In the wires'], a: 1 },
-  { id: 'q4', lesson: 'men1', text: 'Is a period a normal part of growing up?', type: 'mc', opts: ['Yes', 'No'], a: 0 },
-  { id: 'q5', lesson: 'mind1', text: 'Who are two people you could talk to when you feel worried?', type: 'open', opts: [], a: null },
-  { id: 'q7', lesson: 'rep1', text: 'Can a girl get pregnant the first time she has sex?', type: 'mc', opts: ['Yes', 'No'], a: 0 },
-  { id: 'q6', lesson: 'safe1', text: 'If someone asks you to keep a secret about touching, what should you do?', type: 'mc', opts: ['Keep the secret', 'Tell a trusted adult'], a: 1 },
+  { id: 'q1', lesson: 'lit1', text: 'Ni herufi gani ni irabu?', type: 'mc', opts: ['b', 'o', 't'], a: 1 },
+  { id: 'q2', lesson: 'lit1', text: 'Neno "maji" lina irabu zipi?', type: 'mc', opts: ['a na i', 'm na j', 'a na u'], a: 0 },
+  { id: 'q3', lesson: 'lit1', text: 'Neno "simba" lina silabi ngapi?', type: 'mc', opts: ['Moja', 'Mbili', 'Tatu'], a: 1 },
+  { id: 'q4', lesson: 'lit1', text: 'Ni neno lipi lina irabu "u"?', type: 'mc', opts: ['kuku', 'mama', 'embe'], a: 0 },
+  { id: 'q5', lesson: 'lit2', text: 'Why did the radio stop?', type: 'mc', opts: ['It was broken', 'The battery was empty', 'It was raining'], a: 1 },
+  { id: 'q6', lesson: 'lit2', text: 'Where does Akiru live?', type: 'mc', opts: ['Lodwar', 'Kisumu', 'Mombasa'], a: 0 },
+  { id: 'q7', lesson: 'lit2', text: 'What was covering the solar panel?', type: 'mc', opts: ['Water', 'Red dust', 'A blanket'], a: 1 },
+  { id: 'q8', lesson: 'lit2', text: 'How did Akiru feel at the end of the story?', type: 'mc', opts: ['Proud', 'Angry', 'Scared'], a: 0 },
+  { id: 'q9', lesson: 'lit3', text: 'How does a sentence end?', type: 'mc', opts: ['With a full stop', 'With a comma', 'With a capital letter'], a: 0 },
+  { id: 'q10', lesson: 'lit3', text: 'Which sentence is written correctly?', type: 'mc', opts: ['the goat is eating.', 'The goat is eating.', 'The goat is eating'], a: 1 },
+  { id: 'q11', lesson: 'lit3', text: 'Which word should start with a capital letter?', type: 'mc', opts: ['lodwar', 'school', 'water'], a: 0 },
+  { id: 'q12', lesson: 'num1', text: 'How many is 5 bundles of ten and 2 sticks?', type: 'mc', opts: ['25', '52', '7'], a: 1 },
+  { id: 'q13', lesson: 'num1', text: 'How many tens are in 40?', type: 'mc', opts: ['4', '40', '10'], a: 0 },
+  { id: 'q14', lesson: 'num1', text: 'In the number 63, what does the 6 mean?', type: 'mc', opts: ['6 ones', '6 tens', '6 hundreds'], a: 1 },
+  { id: 'q15', lesson: 'num1', text: 'Which number is 3 tens and 8 ones?', type: 'mc', opts: ['83', '38', '11'], a: 1 },
+  { id: 'q16', lesson: 'num2', text: '12 + 9 = ?', type: 'mc', opts: ['19', '21', '22'], a: 1 },
+  { id: 'q17', lesson: 'num2', text: 'Mama ana embe 15 na ananunua 5 zaidi. Ana embe ngapi?', type: 'mc', opts: ['20', '10', '25'], a: 0 },
+  { id: 'q18', lesson: 'num2', text: '25 + 14 = ?', type: 'mc', opts: ['39', '49', '311'], a: 0 },
+  { id: 'q19', lesson: 'sci1', text: 'What does a solar panel turn into electricity?', type: 'mc', opts: ['Sunlight', 'Rain', 'Wind'], a: 0 },
+  { id: 'q20', lesson: 'sci1', text: 'Where is the electricity kept for night time?', type: 'mc', opts: ['In the panel', 'In a battery', 'In the wires'], a: 1 },
+  { id: 'q21', lesson: 'sci1', text: 'Why should we keep the panel clean?', type: 'mc', opts: ['So more sunlight reaches it', 'So it looks nice', 'So it stays cold'], a: 0 },
+  { id: 'q22', lesson: 'sci1', text: 'At night, the lights use power from:', type: 'mc', opts: ['The panel', 'The battery', 'The moon'], a: 1 },
+  { id: 'q23', lesson: 'lit1', text: 'Kuna irabu ngapi katika Kiswahili?', type: 'mc', opts: ['Tatu', 'Tano', 'Saba'], a: 1 },
+  { id: 'q24', lesson: 'lit1', text: 'Neno "embe" linaanza na irabu gani?', type: 'mc', opts: ['a', 'e', 'o'], a: 1 },
+  { id: 'q25', lesson: 'lit1', text: 'Silabi ni nini?', type: 'mc', opts: ['Kipande cha neno tunachotamka kwa pumzi moja', 'Herufi kubwa', 'Neno refu'], a: 0 },
+  { id: 'q26', lesson: 'lit1', text: 'Neno "ndoo" lina irabu gani?', type: 'mc', opts: ['i', 'a', 'o'], a: 2 },
+  { id: 'q27', lesson: 'lit2', text: 'What powers the radio at night?', type: 'mc', opts: ['A battery filled by the sun', 'A wire from town', 'A candle'], a: 0 },
+  { id: 'q28', lesson: 'lit2', text: 'What did Akiru use to clean the panel?', type: 'mc', opts: ['A soft cloth', 'Sand', 'A stick'], a: 0 },
+  { id: 'q29', lesson: 'lit2', text: 'What was making a shadow over the panel?', type: 'mc', opts: ['A goat', 'A branch', 'A cloud'], a: 1 },
+  { id: 'q30', lesson: 'lit2', text: 'Who said Akiru fixed it by looking carefully?', type: 'mc', opts: ['Her brother', 'Her teacher', 'Her grandmother'], a: 2 },
+  { id: 'q31', lesson: 'lit3', text: 'How does a question end?', type: 'mc', opts: ['With a full stop', 'With a question mark', 'With a comma'], a: 1 },
+  { id: 'q32', lesson: 'lit3', text: 'Which of these is a complete sentence?', type: 'mc', opts: ['The goat', 'My sister carries water.', 'carries water'], a: 1 },
+  { id: 'q33', lesson: 'lit3', text: 'In "Akiru lives in Lodwar.", which words need capital letters?', type: 'mc', opts: ['Akiru and Lodwar', 'lives and in', 'Only lives'], a: 0 },
+  { id: 'q34', lesson: 'lit3', text: 'What is missing: "the girls play football"', type: 'mc', opts: ['A capital letter and a full stop', 'A question mark', 'Nothing'], a: 0 },
+  { id: 'q35', lesson: 'lit3', text: 'A good sentence tells us who and…', type: 'mc', opts: ['what they do', 'what colour it is', 'how old they are'], a: 0 },
+  { id: 'q36', lesson: 'num1', text: 'Ten sticks tied together make one…', type: 'mc', opts: ['bundle', 'hundred', 'one'], a: 0 },
+  { id: 'q37', lesson: 'num1', text: 'In 52, how many ones are there?', type: 'mc', opts: ['5', '2', '52'], a: 1 },
+  { id: 'q38', lesson: 'num1', text: 'Which is bigger?', type: 'mc', opts: ['38', '83', 'They are the same'], a: 1 },
+  { id: 'q39', lesson: 'num1', text: '2 tens and 7 ones make:', type: 'mc', opts: ['27', '72', '9'], a: 0 },
+  { id: 'q40', lesson: 'num2', text: '30 + 20 = ?', type: 'mc', opts: ['50', '32', '5'], a: 0 },
+  { id: 'q41', lesson: 'num2', text: '16 + 3 = ?', type: 'mc', opts: ['19', '46', '13'], a: 0 },
+  { id: 'q42', lesson: 'num2', text: '24 + 15 = ?', type: 'mc', opts: ['39', '49', '29'], a: 0 },
+  { id: 'q43', lesson: 'num2', text: 'Unapojumlisha 25 + 14, unaanza na nini?', type: 'mc', opts: ['Makumi', 'Kutoa', 'Kuzidisha'], a: 0 },
+  { id: 'q44', lesson: 'num2', text: 'Mama aliuza nyanya 10 asubuhi na 10 jioni. Ameuza ngapi?', type: 'mc', opts: ['20', '100', '1010'], a: 0 },
+  { id: 'q45', lesson: 'sci1', text: 'What is a solar panel made of?', type: 'mc', opts: ['Special cells that make electricity', 'Wood', 'Water'], a: 0 },
+  { id: 'q46', lesson: 'sci1', text: 'The battery stores electricity like a jerrican stores…', type: 'mc', opts: ['water', 'sand', 'light'], a: 0 },
+  { id: 'q47', lesson: 'sci1', text: 'Which way should a panel face?', type: 'mc', opts: ['Towards the sun', 'Towards the ground', 'Into the shade'], a: 0 },
+  { id: 'q48', lesson: 'sci1', text: 'Why can our club watch lessons without an electricity line?', type: 'mc', opts: ['The TV runs on solar power', 'The TV needs no power', 'We use a generator only'], a: 0 },
+  { id: 'w1', lesson: 'men1', text: 'Is a period a normal part of growing up?', type: 'mc', opts: ['Yes', 'No'], a: 0 },
+  { id: 'w2', lesson: 'men2', text: 'Ubadilishe pedi kila baada ya saa ngapi?', type: 'mc', opts: ['Saa 4 hadi 8', 'Mara moja kwa siku', 'Siku mbili'], a: 0 },
+  { id: 'w3', lesson: 'mind1', text: 'Who are two people you could talk to when you feel worried?', type: 'open', opts: [], a: null },
+  { id: 'w4', lesson: 'safe1', text: 'If someone asks you to keep a secret about touching, what should you do?', type: 'mc', opts: ['Keep the secret', 'Tell a trusted adult'], a: 1 },
+  { id: 'w5', lesson: 'safe2', text: 'Namba ya msaada kwa watoto Kenya ni ipi?', type: 'mc', opts: ['116', '999', '100'], a: 0 },
+  { id: 'w6', lesson: 'rep1', text: 'Can a girl get pregnant the first time she has sex?', type: 'mc', opts: ['Yes', 'No'], a: 0 },
 ];
 const STUDENTS = [ // sample girls' club members
   ['s01', 'Akiru Lokol', 12], ['s02', 'Ekal Nakiru', 14], ['s03', 'Nanyang Ewoi', 16], ['s04', 'Achuka Ekiru', 11],
@@ -354,23 +677,31 @@ const SEED_GRADES = { // module -> student -> score (sample)
   sci: [75, 66, 72, 84, 51, 60, 79, null, 58, 44, 71, 67],
 };
 const SEED_ATT = { men: ['s01', 's02', 's03', 's04', 's05', 's07', 's09', 's10', 's11'], mind: ['s01', 's02', 's03', 's04', 's05', 's07', 's08', 's09', 's11', 's12'], safe: ['s01', 's02', 's04', 's05', 's06', 's07', 's09', 's11'], repro: ['s03', 's07', 's09'] };
-const USERS = { user1: { pass: '1234', name: 'Ms Nakiru', site: "Lodwar Girls' Club", ages: '10–17' } }; // basic login for the pilot only
+const DEMO_USERS = { user1: { pass: '1234', name: 'Ms Nakiru', site: "Lodwar Girls' Club", ages: '10–17' } }; // used only in demo mode (no Supabase configured)
 
 // ---------- Two languages for the interface ----------
 const T = {
-  en: { loginTitle: 'Teacher sign-in', loginSub: 'Run girls\' club sessions on the classroom screen, ask questions and track each girl\'s progress.', username: 'Username', password: 'Password', signIn: 'Sign in', demoNote: 'Test account for the pilot:', badLogin: 'That username or password is not right. Check and try again.', missing: 'Enter your username and password.', signOut: 'Sign out', tClass: 'My class', tModules: 'Modules', tGrades: 'Gradebook', tQuestions: 'Questions', hello: 'Hello', presentNext: 'Present next lesson', sLearners: 'Girls enrolled', sGirls: 'Aged 15 and over', sAvg: 'Class average', sSupport: 'Need support (below 50%)', sWell: 'Attended all wellbeing modules', learnersH: 'Club members', hName: 'Name', hGender: 'Age', age15: 'Ages 15+', ageNote: 'This module is for girls aged 15 and over, so only they are listed.', hAvg: 'Average', hLevel: 'Level', hWellS: 'Wellbeing sessions', levelNote: 'Levels follow the CBC rubric: EE 80–100, ME 50–79, AE 30–49, BE below 30.', modSub: 'Every lesson can be shown on the classroom TV or projector with narration. Reading lessons have a Listen button so they can be heard on the radio or a speaker.', girlsLabel: "Girls' wellbeing", girlsText: "LearnReach clubs serve adolescent girls in marginalised communities. Wellbeing modules are delivered as video and audio sessions. They are not graded; mark attendance only, and girls' answers are never recorded. Reproductive health is for ages 15 and over.", back: '← Back to modules', gradeSub: 'Enter a score out of 100 for each learner. Changes save on this device.', fModule: 'Module', qSub: 'Write questions for a lesson, then ask them on the classroom screen. The answer stays hidden until you reveal it.', newQ: 'New question', qLesson: 'Lesson', qText: 'Question', qType: 'Type', mc: 'Multiple choice', open: 'Open discussion', optsHint: 'Add up to four choices and select the correct one.', saveQ: 'Save question', fullscreen: 'Full screen', close: 'Close', prev: '← Previous', next: 'Next →', present: 'Present to class', listen: 'Listen', stop: 'Stop', ask: 'Ask class', del: 'Delete', reveal: 'Reveal answer', narrOn: 'Narration on', narrOff: 'Narration off', lessons: 'lessons', min: 'min', graded: 'Graded', attendance: 'Attendance only', questionsN: 'questions', score: 'Score', level: 'Level', attended: 'Attended', attNote: 'Wellbeing modules record attendance only. No scores are kept.', gradeNote: 'Scores save as you type.', saved: 'Saved', qSaved: 'Question saved', qDeleted: 'Question deleted', needText: 'Write the question first.', needOpts: 'Add at least two choices, and select one that has text.', noQ: 'No questions for this lesson yet. Add one in the Questions tab.', noBank: 'No questions yet.', mediaV: 'Video lesson · plays on the classroom TV or projector', mediaA: 'Audio lesson · plays on the radio or speaker', mediaR: 'Reading lesson · tap Listen to hear it read aloud', mediaFile: 'Sample: the media file is not attached yet. Narration reads the lesson aloud.', discuss: 'Discuss with a partner, then share.', question: 'Question', lessonQ: 'Questions for this lesson', noVoice: 'This device has no voice for reading aloud. Try another browser.', noSw: 'No Kiswahili voice on this device; using the default voice.', F: 'Girl', M: 'Boy', allDone: 'Every lesson has been presented. Well done!' , slideOf: 'of', avA: 'Audio + visual' },
+  en: { loginTitle: 'Teacher sign-in', loginSub: 'Run girls\' club sessions on the classroom screen, ask questions and track each girl\'s progress.', username: 'Username', password: 'Password', signIn: 'Sign in', demoNote: 'Test account for the pilot:', badLogin: 'That username or password is not right. Check and try again.', missing: 'Enter your username and password.', signOut: 'Sign out', tClass: 'My class', tModules: 'Modules', tGrades: 'Gradebook', tQuestions: 'Questions', hello: 'Hello', presentNext: 'Present next lesson', sLearners: 'Girls enrolled', sGirls: 'Aged 15 and over', sAvg: 'Class average', sSupport: 'Need support (below 50%)', sWell: 'Attended all wellbeing modules', learnersH: 'Club members', hName: 'Name', hGender: 'Age', age15: 'Ages 15+', ageNote: 'This module is for girls aged 15 and over, so only they are listed.', hAvg: 'Average', hLevel: 'Level', hWellS: 'Wellbeing sessions', levelNote: 'Levels follow the CBC rubric: EE 80–100, ME 50–79, AE 30–49, BE below 30.', modSub: 'Every lesson can be shown on the classroom TV or projector with narration. Reading lessons have a Listen button so they can be heard on the radio or a speaker.', girlsLabel: "Girls' wellbeing", girlsText: "LearnReach clubs serve adolescent girls in marginalised communities. Wellbeing modules are delivered as video and audio sessions. They are not graded; mark attendance only, and girls' answers are never recorded. Reproductive health is for ages 15 and over.", back: '← Back to modules', gradeSub: 'Enter a score out of 100 for each learner. Changes save on this device.', fModule: 'Module', qSub: 'Write questions for a lesson, then ask them on the classroom screen. The answer stays hidden until you reveal it.', newQ: 'New question', qLesson: 'Lesson', qText: 'Question', qType: 'Type', mc: 'Multiple choice', open: 'Open discussion', optsHint: 'Add up to four choices and select the correct one.', saveQ: 'Save question', fullscreen: 'Full screen', close: 'Close', prev: '← Previous', next: 'Next →', present: 'Present to class', listen: 'Listen', stop: 'Stop', ask: 'Ask class', del: 'Delete', reveal: 'Reveal answer', narrOn: 'Narration on', narrOff: 'Narration off', lessons: 'lessons', min: 'min', graded: 'Graded', attendance: 'Attendance only', questionsN: 'questions', score: 'Teacher score', level: 'Level', attended: 'Attended', attNote: 'Wellbeing modules record attendance only. No scores are kept.', gradeNote: 'Scores save as you type.', saved: 'Saved', qSaved: 'Question saved', qDeleted: 'Question deleted', needText: 'Write the question first.', needOpts: 'Add at least two choices, and select one that has text.', noQ: 'No questions for this lesson yet. Add one in the Questions tab.', noBank: 'No questions yet.', mediaV: 'Video lesson · plays on the classroom TV or projector', mediaA: 'Audio lesson · plays on the radio or speaker', mediaR: 'Reading lesson · tap Listen to hear it read aloud', mediaFile: 'Sample: the media file is not attached yet. Narration reads the lesson aloud.', discuss: 'Discuss with a partner, then share.', question: 'Question', lessonQ: 'Questions for this lesson', noVoice: 'This device has no voice for reading aloud. Try another browser.', noSw: 'No Kiswahili voice on this device; using the default voice.', F: 'Girl', M: 'Boy', allDone: 'Every lesson has been presented. Well done!' , slideOf: 'of', avA: 'Audio + visual' },
   sw: { loginTitle: 'Kuingia kwa mwalimu', loginSub: 'Panga masomo, yaonyeshe kwenye skrini ya darasa na uwape wanafunzi alama.', username: 'Jina la mtumiaji', password: 'Nenosiri', signIn: 'Ingia', demoNote: 'Akaunti ya majaribio:', badLogin: 'Jina au nenosiri si sahihi. Angalia na ujaribu tena.', missing: 'Weka jina na nenosiri.', signOut: 'Toka', tClass: 'Darasa langu', tModules: 'Moduli', tGrades: 'Daftari la alama', tQuestions: 'Maswali', hello: 'Habari', presentNext: 'Onyesha somo linalofuata', sLearners: 'Wasichana waliosajiliwa', sGirls: 'Umri 15 na zaidi', sAvg: 'Wastani wa darasa', sSupport: 'Wanahitaji msaada (chini ya 50%)', sWell: 'Wamehudhuria moduli zote za ustawi', learnersH: 'Wanachama', hName: 'Jina', hGender: 'Umri', age15: 'Umri 15+', ageNote: 'Moduli hii ni ya wasichana wenye umri wa miaka 15 na zaidi, kwa hiyo ni wao tu wanaoonyeshwa.', hAvg: 'Wastani', hLevel: 'Kiwango', hWellS: 'Vipindi vya ustawi', levelNote: 'Viwango vinafuata CBC: EE 80–100, ME 50–79, AE 30–49, BE chini ya 30.', modSub: 'Kila somo linaweza kuonyeshwa kwenye TV au projekta ya darasa pamoja na sauti. Masomo ya kusoma yana kitufe cha Sikiliza ili yasikike kwenye redio au spika.', girlsLabel: 'Ustawi wa wasichana', girlsText: 'Klabu za LearnReach zinahudumia wasichana balehe katika jamii zilizotengwa. Moduli za ustawi zinatolewa kwa video na sauti. Hazipewi alama; weka mahudhurio tu, na majibu ya wasichana hayahifadhiwi. Afya ya uzazi ni ya umri wa miaka 15 na zaidi.', back: '← Rudi kwenye moduli', gradeSub: 'Weka alama kati ya 100 kwa kila mwanafunzi. Mabadiliko yanahifadhiwa kwenye kifaa hiki.', fModule: 'Moduli', qSub: 'Andika maswali ya somo, kisha uyaulize kwenye skrini ya darasa. Jibu linafichwa hadi ulionyeshe.', newQ: 'Swali jipya', qLesson: 'Somo', qText: 'Swali', qType: 'Aina', mc: 'Chaguo nyingi', open: 'Majadiliano', optsHint: 'Ongeza hadi chaguo nne na uchague jibu sahihi.', saveQ: 'Hifadhi swali', fullscreen: 'Skrini nzima', close: 'Funga', prev: '← Iliyotangulia', next: 'Inayofuata →', present: 'Onyesha darasani', listen: 'Sikiliza', stop: 'Simamisha', ask: 'Uliza darasa', del: 'Futa', reveal: 'Onyesha jibu', narrOn: 'Sauti imewashwa', narrOff: 'Sauti imezimwa', lessons: 'masomo', min: 'dak', graded: 'Yanapewa alama', attendance: 'Mahudhurio tu', questionsN: 'maswali', score: 'Alama', level: 'Kiwango', attended: 'Alihudhuria', attNote: 'Moduli za ustawi zinarekodi mahudhurio tu. Hakuna alama zinazohifadhiwa.', gradeNote: 'Alama zinahifadhiwa unapoandika.', saved: 'Imehifadhiwa', qSaved: 'Swali limehifadhiwa', qDeleted: 'Swali limefutwa', needText: 'Andika swali kwanza.', needOpts: 'Ongeza angalau chaguo mbili, na uchague lenye maandishi.', noQ: 'Bado hakuna maswali ya somo hili. Ongeza kwenye kichupo cha Maswali.', noBank: 'Bado hakuna maswali.', mediaV: 'Somo la video · linacheza kwenye TV au projekta', mediaA: 'Somo la sauti · linacheza kwenye redio au spika', mediaR: 'Somo la kusoma · bonyeza Sikiliza kulisikia', mediaFile: 'Mfano: faili ya media bado haijawekwa. Sauti inasoma somo.', discuss: 'Jadili na mwenzako, kisha mshiriki.', question: 'Swali', lessonQ: 'Maswali ya somo hili', noVoice: 'Kifaa hiki hakina sauti ya kusoma. Jaribu kivinjari kingine.', noSw: 'Hakuna sauti ya Kiswahili kwenye kifaa hiki; tunatumia sauti ya kawaida.', F: 'Msichana', M: 'Mvulana', allDone: 'Masomo yote yameonyeshwa. Hongera!', slideOf: 'kati ya', avA: 'Sauti + picha' },
 };
+Object.assign(T.en, { tSessions: 'Sessions', sesSub: 'Plan club sessions, take the register, and see who is coming.', planH: 'Plan a session', fDate: 'Date', fTime: 'Start time', fPlace: 'Where', planBtn: 'Add to plan', upcomingH: 'Coming up', trendH: 'Attendance by session', trendNote: 'Share of eligible girls present at each of the last 8 sessions. The dashed line is the 60% follow-up level.', perGirlH: 'Attendance by girl', hAttended: 'Attended', hRate: 'Rate', hLast: 'Last seen', followNote: 'Girls below 60% after three or more sessions are marked Follow up, so you can check on them or visit home.', pastH: 'Past sessions', regBack: '← Back to sessions', regAll: 'Mark all present', regNone: 'Clear', regSave: 'Save register', regPresent: '▶ Present this lesson', sAtt: 'Attendance, last 4 weeks', hAtt: 'Attendance', nPresent: 'present', noRegister: 'Register not taken', takeRegister: 'Take register', editRegister: 'Edit register', confirmDel: 'Tap again to delete', sesDeleted: 'Session deleted', noUpcoming: 'No sessions planned. Add one with the form.', noPast: 'No past sessions yet.', followUp: 'Follow up', needDate: 'Choose a date for the session.', planned: 'Session added to the plan', regSaved: 'Register saved' });
+Object.assign(T.sw, { tSessions: 'Vipindi', sesSub: 'Panga vipindi vya klabu, chukua mahudhurio, na uone nani anahudhuria.', planH: 'Panga kipindi', fDate: 'Tarehe', fTime: 'Saa ya kuanza', fPlace: 'Mahali', planBtn: 'Ongeza kwenye mpango', upcomingH: 'Vijavyo', trendH: 'Mahudhurio kwa kipindi', trendNote: 'Asilimia ya wasichana wanaostahili waliohudhuria katika vipindi 8 vya mwisho. Mstari wa vitone ni kiwango cha ufuatiliaji cha 60%.', perGirlH: 'Mahudhurio kwa msichana', hAttended: 'Alihudhuria', hRate: 'Kiwango', hLast: 'Mara ya mwisho', followNote: 'Wasichana walio chini ya 60% baada ya vipindi vitatu au zaidi wanawekwa alama ya Fuatilia, ili uwaulize au utembelee nyumbani.', pastH: 'Vipindi vilivyopita', regBack: '← Rudi kwenye vipindi', regAll: 'Wote wapo', regNone: 'Futa', regSave: 'Hifadhi mahudhurio', regPresent: '▶ Onyesha somo hili', sAtt: 'Mahudhurio, wiki 4 zilizopita', hAtt: 'Mahudhurio', nPresent: 'wapo', noRegister: 'Mahudhurio hayajachukuliwa', takeRegister: 'Chukua mahudhurio', editRegister: 'Badilisha mahudhurio', confirmDel: 'Bonyeza tena kufuta', sesDeleted: 'Kipindi kimefutwa', noUpcoming: 'Hakuna vipindi vilivyopangwa. Ongeza kwa fomu.', noPast: 'Bado hakuna vipindi vilivyopita.', followUp: 'Fuatilia', needDate: 'Chagua tarehe ya kipindi.', planned: 'Kipindi kimeongezwa', regSaved: 'Mahudhurio yamehifadhiwa' });
+Object.assign(T.en, { nLate: 'late', inProgress: 'Class in progress', report: 'Report', classQuiz: 'Class quiz', resume: 'Resume class', startClass: 'Start class', endClass: 'End class', regHint: 'Tap Present, Late or Absent for each girl. Late still counts as attending.', classStarted: 'Class started at', classStartedToast: 'Class started. The timer is running.', classEnded: 'Class ended', onTime: 'on time', absent: 'absent', pPresent: 'Present', pLate: 'Late', pAbsent: 'Absent', quizSub: 'Pass the device to each girl in turn. She answers on her own and does not see her score. Results go to the gradebook.', quizFinish: 'Finish and see the report', answered: 'answered', notYet: 'Not yet', allDoneQ: 'All done', thanks: 'Thank you', savedNoScore: 'Your answers are saved. Please pass the device back to your teacher.', passBack: 'Done', noRightWrong: 'Choose one answer. There is no score shown.', submit: 'Submit answers', qzStop: 'Stop', sessionReport: 'Session report', duration: 'Time taken', attendedH: 'Attended', onTimeH: 'On time', lateH: 'Came late', absentH: 'Absent', quizDone: 'Answered the quiz', classAvg: 'Class quiz average', teacherOnly: 'Only teachers see this', perQuestion: 'How the class did on each question', correctH: 'Answered correctly', reteach: 'Reteach', continueQuiz: 'Continue the class quiz', wellReport: 'Wellbeing sessions are not graded. Only attendance is kept, and girls’ answers are never recorded.', notesH: 'Teacher notes', notesPh: 'What went well, what to repeat next time, anything to follow up', plannedAt: 'Planned', quizAvg: 'Quiz average', unitsDone: 'Units done', unit: 'Unit', notTaken: 'Quiz not taken', correctAns: 'correct', allCorrect: 'All answers correct.', quizNote: 'Quiz average comes from the class quizzes. Tap a name to see each unit and the questions she got wrong.', hasVideo: 'Video', addVideo: 'Add video', replaceVideo: 'Replace video', removeVideo: 'Remove video', videoAdded: 'Video added. It plays offline on this device.', videoRemoved: 'Video removed', videoFail: 'The video could not be saved on this device.', noVideoYet: 'No video yet. Add one below, or present the lesson as narrated slides.', videoNote: 'Videos are kept on this device, so they play in class without internet. MP4 works best.', videoNext: 'The lesson video plays next.' });
+Object.assign(T.sw, { nLate: 'wamechelewa', inProgress: 'Darasa linaendelea', report: 'Ripoti', classQuiz: 'Jaribio la darasa', resume: 'Endelea na darasa', startClass: 'Anza darasa', endClass: 'Maliza darasa', regHint: 'Bonyeza Yupo, Kachelewa au Hayupo kwa kila msichana. Aliyechelewa bado amehudhuria.', classStarted: 'Darasa lilianza saa', classStartedToast: 'Darasa limeanza. Saa inahesabu.', classEnded: 'Darasa limekwisha', onTime: 'kwa wakati', absent: 'hawapo', pPresent: 'Yupo', pLate: 'Kachelewa', pAbsent: 'Hayupo', quizSub: 'Mpe kila msichana kifaa kwa zamu. Anajibu peke yake na haoni alama zake. Matokeo yanaenda kwenye daftari la alama.', quizFinish: 'Maliza na uone ripoti', answered: 'wamejibu', notYet: 'Bado', allDoneQ: 'Umemaliza', thanks: 'Asante', savedNoScore: 'Majibu yako yamehifadhiwa. Tafadhali mrudishie mwalimu kifaa.', passBack: 'Nimemaliza', noRightWrong: 'Chagua jibu moja. Hakuna alama itakayoonyeshwa.', submit: 'Tuma majibu', qzStop: 'Simamisha', sessionReport: 'Ripoti ya kipindi', duration: 'Muda uliotumika', attendedH: 'Walihudhuria', onTimeH: 'Kwa wakati', lateH: 'Walichelewa', absentH: 'Hawakuwepo', quizDone: 'Walijibu jaribio', classAvg: 'Wastani wa jaribio', teacherOnly: 'Ni walimu tu wanaoona hii', perQuestion: 'Darasa lilivyojibu kila swali', correctH: 'Walijibu sahihi', reteach: 'Fundisha tena', continueQuiz: 'Endelea na jaribio la darasa', wellReport: 'Vipindi vya ustawi havipewi alama. Mahudhurio tu ndiyo yanahifadhiwa, na majibu ya wasichana hayahifadhiwi.', notesH: 'Maelezo ya mwalimu', notesPh: 'Kilichoenda vizuri, cha kurudia, na cha kufuatilia', plannedAt: 'Ilipangwa', quizAvg: 'Wastani wa jaribio', unitsDone: 'Mada zilizofanywa', unit: 'Mada', notTaken: 'Hajafanya jaribio', correctAns: 'jibu sahihi', allCorrect: 'Majibu yote sahihi.', quizNote: 'Wastani wa jaribio unatoka kwenye majaribio ya darasa. Bonyeza jina kuona kila mada na maswali aliyokosea.', hasVideo: 'Video', addVideo: 'Ongeza video', replaceVideo: 'Badilisha video', removeVideo: 'Ondoa video', videoAdded: 'Video imeongezwa. Inacheza bila intaneti kwenye kifaa hiki.', videoRemoved: 'Video imeondolewa', videoFail: 'Video haikuweza kuhifadhiwa kwenye kifaa hiki.', noVideoYet: 'Bado hakuna video. Ongeza hapa chini, au onyesha somo kama slaidi zenye sauti.', videoNote: 'Video zinahifadhiwa kwenye kifaa hiki, hivyo zinacheza darasani bila intaneti. MP4 ni bora zaidi.', videoNext: 'Video ya somo inafuata.' });
+Object.assign(T.en, { inBank: 'questions in the bank for this lesson', perGirl: 'Questions per girl', allQs: 'All', howAsk: 'How to ask', modeDevice: 'She taps her answer on the device', modeAloud: 'I ask aloud and mark right or wrong', randomNote: "Each girl gets different questions, picked at random from the lesson's question bank, with the answer order mixed.", answerIs: 'Answer (for the teacher)', markRight: 'Right', markWrong: 'Wrong', aloudHint: 'Ask the question aloud, then mark her answer.', rightWord: 'right', savedTeacher: 'Saved to the gradebook.', nextGirl: 'Back to the list', markedWrong: 'marked wrong' });
+Object.assign(T.sw, { inBank: 'maswali kwenye benki ya somo hili', perGirl: 'Maswali kwa kila msichana', allQs: 'Yote', howAsk: 'Jinsi ya kuuliza', modeDevice: 'Anabonyeza jibu lake kwenye kifaa', modeAloud: 'Ninauliza kwa sauti na kuweka sahihi au kosa', randomNote: 'Kila msichana anapata maswali tofauti, yanayochaguliwa bila mpangilio kutoka benki ya maswali ya somo, na majibu yamechanganywa.', answerIs: 'Jibu (kwa mwalimu)', markRight: 'Sahihi', markWrong: 'Kosa', aloudHint: 'Uliza swali kwa sauti, kisha weka jibu lake.', rightWord: 'sahihi', savedTeacher: 'Imehifadhiwa kwenye daftari la alama.', nextGirl: 'Rudi kwenye orodha', markedWrong: 'imewekwa kosa' });
+Object.assign(T.en, { loginTitle: 'Teacher sign-in', emailL: 'Email', register: 'Register', regTitle: 'Create a teacher account', regSub: 'Register once with internet. After that you can open the portal offline on this device.', fullName: 'Full name', phoneL: 'Phone (optional)', siteL: 'Club or school', countyL: 'County', passHint: 'At least 8 characters.', forgot: 'Forgot your password?', demoNote: 'Demo mode, no server connected. Test account:', missing: 'Enter your email and password.', badLogin: 'That email or password is not right. Check and try again.', badDemo: 'That username or password is not right.', needName: 'Enter your full name.', needEmail: 'Enter a valid email address.', needSite: 'Enter your club or school.', shortPass: 'Use at least 8 characters for the password.', notConfirmed: 'Confirm your email first. Open the link we sent you, then sign in.', checkEmail: 'Account created. Check your email and open the confirmation link, then sign in.', registered: 'Account created. You are signed in.', exists: 'An account with this email already exists. Sign in instead.', resetSent: 'If that email has an account, a reset link is on its way.', enterEmailFirst: 'Type your email above, then tap Forgot your password again.', needNet: 'You are offline. Signing in for the first time on this device needs internet.', offlineIn: 'You are offline. Opened with your saved sign-in; it will be recorded when you are back online.', offlineChip: 'Offline', wait: 'Please wait…', netErr: 'Could not reach the server. Check the internet connection and try again.', sessionEnded: 'Your saved sign-in has expired. Please sign in again with internet.', newPassTitle: 'Set a new password', newPass: 'New password', savePass: 'Save password', passSaved: 'Password changed. You are signed in.', adminL: 'Admin' });
+Object.assign(T.sw, { loginTitle: 'Kuingia kwa mwalimu', emailL: 'Barua pepe', register: 'Jisajili', regTitle: 'Fungua akaunti ya mwalimu', regSub: 'Jisajili mara moja ukiwa na intaneti. Baada ya hapo unaweza kufungua tovuti bila intaneti kwenye kifaa hiki.', fullName: 'Jina kamili', phoneL: 'Simu (si lazima)', siteL: 'Klabu au shule', countyL: 'Kaunti', passHint: 'Angalau herufi 8.', forgot: 'Umesahau nenosiri?', demoNote: 'Hali ya majaribio, hakuna seva iliyounganishwa. Akaunti ya majaribio:', missing: 'Weka barua pepe na nenosiri.', badLogin: 'Barua pepe au nenosiri si sahihi. Angalia na ujaribu tena.', badDemo: 'Jina au nenosiri si sahihi.', needName: 'Weka jina lako kamili.', needEmail: 'Weka barua pepe sahihi.', needSite: 'Weka klabu au shule yako.', shortPass: 'Tumia angalau herufi 8 kwa nenosiri.', notConfirmed: 'Thibitisha barua pepe yako kwanza. Fungua kiungo tulichokutumia, kisha uingie.', checkEmail: 'Akaunti imefunguliwa. Angalia barua pepe yako na ufungue kiungo cha uthibitisho, kisha uingie.', registered: 'Akaunti imefunguliwa. Umeingia.', exists: 'Tayari kuna akaunti yenye barua pepe hii. Ingia badala yake.', resetSent: 'Kama barua pepe hiyo ina akaunti, kiungo cha kubadilisha nenosiri kinatumwa.', enterEmailFirst: 'Andika barua pepe yako juu, kisha bonyeza Umesahau nenosiri tena.', needNet: 'Huna intaneti. Kuingia mara ya kwanza kwenye kifaa hiki kunahitaji intaneti.', offlineIn: 'Huna intaneti. Umeingia kwa akaunti iliyohifadhiwa; itarekodiwa ukirudi mtandaoni.', offlineChip: 'Nje ya mtandao', wait: 'Tafadhali subiri…', netErr: 'Imeshindwa kufikia seva. Angalia intaneti na ujaribu tena.', sessionEnded: 'Kuingia kwako kulikohifadhiwa kumeisha. Tafadhali ingia tena ukiwa na intaneti.', newPassTitle: 'Weka nenosiri jipya', newPass: 'Nenosiri jipya', savePass: 'Hifadhi nenosiri', passSaved: 'Nenosiri limebadilishwa. Umeingia.', adminL: 'Msimamizi' });
 const FORMAT = { en: { Video: 'Video', Audio: 'Audio', Reading: 'Reading' }, sw: { Video: 'Video', Audio: 'Sauti', Reading: 'Kusoma' } };
 const LANGS = { en: { English: 'English', Swahili: 'Kiswahili' }, sw: { English: 'Kiingereza', Swahili: 'Kiswahili' } };
 
 // ---------- State (kept in this browser only) ----------
 const store = {
-  get(k, d) { try { const v = localStorage.getItem('lrg_' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
-  set(k, v) { try { localStorage.setItem('lrg_' + k, JSON.stringify(v)); } catch {} },
+  get(k, d) { try { const v = localStorage.getItem('lrg3_' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('lrg3_' + k, JSON.stringify(v)); } catch {} },
 };
 let lang = store.get('lang', 'en');
-let user = null, grades, attendance, questions, presented;
+let user = null, grades, attendance, questions, presented, sessions, results;
 const $ = (s) => document.querySelector(s);
 const t = (k) => T[lang][k] ?? T.en[k] ?? k;
 const mod = (id) => MODULES.find((m) => m.id === id);
@@ -386,8 +717,11 @@ function loadState() {
   attendance = store.get('attendance', null) || JSON.parse(JSON.stringify(SEED_ATT));
   questions = store.get('questions', null) || SEED_Q.slice();
   presented = store.get('presented', []);
+  sessions = store.get('sessions', null) || seedSessions();
+  results = store.get('results', null) || seedResults();
+  loadVideos();
 }
-const save = () => { store.set('grades', grades); store.set('attendance', attendance); store.set('questions', questions); store.set('presented', presented); };
+const save = () => { store.set('grades', grades); store.set('attendance', attendance); store.set('questions', questions); store.set('presented', presented); store.set('sessions', sessions); store.set('results', results); };
 
 function applyLang() {
   document.documentElement.lang = lang;
@@ -397,35 +731,185 @@ function applyLang() {
 }
 document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('click', () => { lang = b.dataset.lang; store.set('lang', lang); applyLang(); }));
 
-// ---------- Login ----------
-$('#login-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const u = $('#u').value.trim().toLowerCase(), p = $('#p').value, err = $('#login-err');
-  if (!u || !p) { err.textContent = t('missing'); return; }
-  if (!USERS[u] || USERS[u].pass !== p) { err.textContent = t('badLogin'); $('#p').value = ''; $('#p').focus(); return; }
-  err.textContent = ''; signIn(u);
-});
-function signIn(u) {
-  user = { id: u, ...USERS[u] }; try { sessionStorage.setItem('lrt_session', u); } catch {}
-  loadState();
-  $('#login-screen').hidden = true; $('#app').hidden = false;
-  $('#teacher-name').textContent = user.name; $('#class-line').textContent = `${user.site} · ${lang === 'sw' ? 'Umri' : 'Ages'} ${user.ages}`;
-  show('class'); renderAll();
+// ---------- Sign-in and registration (Supabase; demo mode when no server is configured) ----------
+// Offline-first: the first sign-in on a device needs internet. After that the teacher's details are kept
+// on the device for OFFLINE_DAYS, so the portal opens without internet; the visit is queued and sent
+// to Supabase (sign_ins table) when the connection comes back.
+const CFG = window.LR_SUPABASE || {};
+const DEMO = window.LR_DEMO === true || !CFG.url || !CFG.anonKey || /YOUR-/.test(CFG.url + CFG.anonKey);
+const OFFLINE_DAYS = 30;
+let sb = null;
+if (!DEMO && window.supabase && window.supabase.createClient) {
+  try { sb = window.supabase.createClient(CFG.url, CFG.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'lrg3_auth' } }); } catch { sb = null; }
 }
-$('#logout').addEventListener('click', () => { stopSpeech(); user = null; try { sessionStorage.removeItem('lrt_session'); } catch {} $('#app').hidden = true; $('#login-screen').hidden = false; $('#u').value = ''; $('#p').value = ''; });
+const online = () => navigator.onLine !== false;
+const deviceLabel = () => { const ua = navigator.userAgent || ''; const b = (ua.match(/(Edg|Chrome|Firefox|Safari)\/[\d]+/) || [''])[0]; const os = /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : /Windows/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : ''; return [os, b.replace('/', ' ')].filter(Boolean).join(' · '); };
+const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+let recovering = false;
+
+function showAuth(mode) {
+  $('#login-form').hidden = mode !== 'in'; $('#reg-form').hidden = mode !== 'up'; $('#reset-form').hidden = mode !== 'reset';
+  $('.auth-tabs').hidden = DEMO || mode === 'reset';
+  $('#at-in').setAttribute('aria-selected', String(mode === 'in')); $('#at-up').setAttribute('aria-selected', String(mode === 'up'));
+  $('#forgot').hidden = DEMO;
+  ['#login-err', '#reg-err', '#reset-err'].forEach((s) => { $(s).textContent = ''; });
+}
+function authMsg(text) { const m = $('#auth-msg'); m.textContent = text || ''; m.hidden = !text; }
+function busy(b, on) { b.disabled = on; b.textContent = on ? t('wait') : t(b.dataset.t); }
+$('#at-in').addEventListener('click', () => { authMsg(''); showAuth('in'); });
+$('#at-up').addEventListener('click', () => { authMsg(''); showAuth('up'); });
+
+// Sign-ins are queued per teacher, then sent with record_sign_in(); one per browser session, not per page reload.
+function queueSignIn(uid, offline) {
+  try { if (sessionStorage.getItem('lrt_counted') === uid) return; sessionStorage.setItem('lrt_counted', uid); } catch {}
+  const q = store.get('pendingSignIns', []); q.push({ uid, at: new Date().toISOString(), offline: !!offline, device: deviceLabel() }); store.set('pendingSignIns', q.slice(-50));
+}
+let flushing = false;
+async function flushSignIns() {
+  if (!sb || !online() || flushing) return; flushing = true;
+  try {
+    const { data } = await sb.auth.getSession(); const uid = data && data.session && data.session.user.id; if (!uid) return;
+    const keep = [];
+    for (const r of store.get('pendingSignIns', [])) {
+      if (r.uid !== uid) { keep.push(r); continue; }
+      const { error } = await sb.rpc('record_sign_in', { p_app: 'teacher-portal', p_device: r.device, p_at: r.at, p_offline: r.offline });
+      if (error) keep.push(r);
+    }
+    store.set('pendingSignIns', keep);
+  } catch { /* try again when online */ } finally { flushing = false; }
+}
+window.addEventListener('online', () => { $('#offline-chip').hidden = true; flushSignIns(); });
+window.addEventListener('offline', () => { if (user) $('#offline-chip').hidden = false; });
+
+async function fetchProfile(uid) {
+  const { data, error } = await sb.from('profiles').select('id, full_name, email, site, county, role').eq('id', uid).maybeSingle();
+  if (error) throw error; return data;
+}
+async function afterSignIn(au) {
+  let prof = null; try { prof = await fetchProfile(au.id); } catch {}
+  const md = au.user_metadata || {};
+  const me = { id: au.id, email: au.email, name: (prof && prof.full_name) || md.full_name || au.email, site: (prof && prof.site) || md.site || '', ages: '10–17', role: (prof && prof.role) || 'teacher', until: Date.now() + OFFLINE_DAYS * 864e5 };
+  store.set('me', me);
+  queueSignIn(me.id, false); flushSignIns();
+  enterApp(me, false);
+}
+function enterApp(u, offline) {
+  user = u; loadState(); authMsg('');
+  $('#login-screen').hidden = true; $('#app').hidden = false;
+  $('#teacher-name').textContent = user.name;
+  $('#class-line').textContent = [user.site, `${lang === 'sw' ? 'Umri' : 'Ages'} ${user.ages}`].filter(Boolean).join(' · ');
+  $('#who').textContent = user.email || '';
+  $('#offline-chip').hidden = !offline;
+  $('#admin-link').hidden = user.role !== 'admin';
+  show('class'); renderAll();
+  if (offline) toast(t('offlineIn'));
+}
+
+$('#login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const u = $('#u').value.trim(), p = $('#p').value, err = $('#login-err');
+  if (!u || !p) { err.textContent = t('missing'); return; }
+  if (DEMO) {
+    const d = DEMO_USERS[u.toLowerCase()];
+    if (!d || d.pass !== p) { err.textContent = t('badDemo'); $('#p').value = ''; $('#p').focus(); return; }
+    err.textContent = ''; try { sessionStorage.setItem('lrt_session', u.toLowerCase()); } catch {}
+    enterApp({ id: u.toLowerCase(), ...d }, false); return;
+  }
+  if (!online()) { err.textContent = t('needNet'); return; }
+  if (!sb) { err.textContent = t('netErr'); return; }
+  if (!validEmail(u)) { err.textContent = t('needEmail'); return; }
+  const b = $('#login-btn'); busy(b, true); err.textContent = '';
+  let res; try { res = await sb.auth.signInWithPassword({ email: u, password: p }); } catch { res = { error: { message: 'network' } }; }
+  busy(b, false);
+  if (res.error) {
+    const m = String(res.error.message || '');
+    err.textContent = /not confirmed/i.test(m) ? t('notConfirmed') : /invalid/i.test(m) ? t('badLogin') : t('netErr');
+    $('#p').value = ''; $('#p').focus(); return;
+  }
+  $('#p').value = '';
+  await afterSignIn(res.data.user);
+});
+
+$('#reg-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = $('#reg-err'), name = $('#r-name').value.trim(), email = $('#r-email').value.trim(), pass = $('#r-pass').value;
+  const site = $('#r-site').value.trim(), county = $('#r-county').value.trim(), phone = $('#r-phone').value.trim();
+  if (!name) { err.textContent = t('needName'); $('#r-name').focus(); return; }
+  if (!validEmail(email)) { err.textContent = t('needEmail'); $('#r-email').focus(); return; }
+  if (!site) { err.textContent = t('needSite'); $('#r-site').focus(); return; }
+  if (pass.length < 8) { err.textContent = t('shortPass'); $('#r-pass').focus(); return; }
+  if (!online()) { err.textContent = t('needNet'); return; }
+  if (!sb) { err.textContent = t('netErr'); return; }
+  const b = $('#reg-btn'); busy(b, true); err.textContent = '';
+  let res; try { res = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name, phone, site, county }, emailRedirectTo: location.href.split('#')[0].split('?')[0] } }); } catch { res = { error: { message: 'network' } }; }
+  busy(b, false);
+  if (res.error) { err.textContent = /already|registered|exists/i.test(res.error.message || '') ? t('exists') : /password/i.test(res.error.message || '') ? t('shortPass') : t('netErr'); return; }
+  const { user: au, session } = res.data || {};
+  if (au && Array.isArray(au.identities) && au.identities.length === 0) { err.textContent = t('exists'); return; }
+  $('#r-pass').value = '';
+  if (session) { toast(t('registered')); await afterSignIn(au); return; }
+  showAuth('in'); $('#u').value = email; authMsg(t('checkEmail'));
+});
+
+$('#forgot').addEventListener('click', async () => {
+  const email = $('#u').value.trim(), err = $('#login-err');
+  if (!validEmail(email)) { err.textContent = t('enterEmailFirst'); $('#u').focus(); return; }
+  if (!online() || !sb) { err.textContent = t('needNet'); return; }
+  try { await sb.auth.resetPasswordForEmail(email, { redirectTo: location.href.split('#')[0].split('?')[0] }); } catch {}
+  err.textContent = ''; authMsg(t('resetSent'));
+});
+$('#reset-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pass = $('#np').value, err = $('#reset-err');
+  if (pass.length < 8) { err.textContent = t('shortPass'); return; }
+  const b = $('#reset-btn'); busy(b, true);
+  let res; try { res = await sb.auth.updateUser({ password: pass }); } catch { res = { error: { message: 'network' } }; }
+  busy(b, false);
+  if (res.error) { err.textContent = t('netErr'); return; }
+  recovering = false; $('#np').value = ''; toast(t('passSaved'));
+  await afterSignIn(res.data.user);
+});
+
+$('#logout').addEventListener('click', async () => {
+  stopSpeech(); user = null;
+  try { sessionStorage.removeItem('lrt_session'); sessionStorage.removeItem('lrt_counted'); } catch {}
+  try { localStorage.removeItem('lrg3_me'); } catch {}
+  if (sb) { try { await sb.auth.signOut({ scope: online() ? 'global' : 'local' }); } catch {} }
+  $('#app').hidden = true; $('#login-screen').hidden = false; $('#u').value = ''; $('#p').value = ''; showAuth('in');
+});
+
+async function boot() {
+  $('#demo-note').hidden = !DEMO; showAuth('in');
+  if (DEMO) { try { const s = sessionStorage.getItem('lrt_session'); if (s && DEMO_USERS[s]) enterApp({ id: s, ...DEMO_USERS[s] }, false); } catch {} return; }
+  if (sb) sb.auth.onAuthStateChange((ev) => { if (ev === 'PASSWORD_RECOVERY') { recovering = true; $('#app').hidden = true; $('#login-screen').hidden = false; showAuth('reset'); } });
+  const me = store.get('me', null);
+  if (!online() || !sb) { // no internet (or the sign-in library could not load): use the saved sign-in
+    if (me && me.until > Date.now()) { queueSignIn(me.id, true); enterApp(me, true); }
+    else if (me) authMsg(t('sessionEnded'));
+    return;
+  }
+  let session = null; try { ({ data: { session } } = await sb.auth.getSession()); } catch {}
+  if (recovering) return;
+  if (session) { await afterSignIn(session.user); return; }
+  if (me && me.until > Date.now()) { // online but the server could not confirm; keep working and retry later
+    try { const { error } = await sb.auth.getUser(); if (error && !/network|fetch/i.test(error.message || '')) { localStorage.removeItem('lrg3_me'); return; } } catch {}
+    queueSignIn(me.id, true); enterApp(me, true);
+  }
+}
+
 
 // ---------- Navigation ----------
 function show(view) {
   stopSpeech();
-  ['class', 'modules', 'lesson', 'grades', 'questions'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
-  const tab = view === 'lesson' ? 'modules' : view;
+  ['class', 'sessions', 'register', 'quiz', 'report', 'modules', 'lesson', 'grades', 'questions'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
+  const tab = view === 'lesson' ? 'modules' : ['register', 'quiz', 'report'].includes(view) ? 'sessions' : view;
   document.querySelectorAll('.tabs [data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === tab)));
   window.scrollTo({ top: 0 });
 }
 document.querySelectorAll('.tabs [data-view]').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
 $('#back').addEventListener('click', () => show('modules'));
 
-function renderAll() { renderClass(); renderModules(); renderGradeSelect(); renderGrades(); renderQForm(); renderBank(); if (!$('#view-lesson').hidden && currentLesson) renderLesson(currentLesson); }
+function renderAll() { renderClass(); renderPlanForm(); renderSessions(); if (!$('#view-register').hidden && regId) renderRegister(); if (!$('#view-quiz').hidden && regId) renderQuizList(); if (!$('#view-report').hidden && repId) renderReport(); renderModules(); renderGradeSelect(); renderGrades(); renderQForm(); renderBank(); if (!$('#view-lesson').hidden && currentLesson) renderLesson(currentLesson); }
 
 // ---------- Class ----------
 function avgFor(sid) { const v = ['lit', 'num', 'sci'].map((m) => grades[m]?.[sid]).filter((x) => x != null); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null; }
@@ -439,17 +923,357 @@ function renderClass() {
   $('#st-support').textContent = avgs.filter((a) => a < 50).length;
   const full = STUDENTS.filter((s) => wellMods.every((m) => !eligible(s, m) || (attendance[m.id] || []).includes(s.id)));
   $('#st-well').textContent = `${full.length} / ${STUDENTS.length}`;
+  const r4 = classRate(28); $('#st-att').textContent = r4 == null ? '–' : pct(r4);
   const tb = $('#class-rows'); tb.replaceChildren();
   STUDENTS.forEach((s) => {
     const a = avgFor(s.id), lv = levelOf(a), tr = el('tr');
     const lvTd = el('td', 'n'); if (lv) lvTd.append(el('span', 'lvl ' + lv, lv)); else lvTd.textContent = '–';
     const mine = wellMods.filter((m) => eligible(s, m));
     const wn = mine.filter((m) => (attendance[m.id] || []).includes(s.id)).length;
-    tr.append(el('td', null, s.name), el('td', 'n', String(s.age)), el('td', 'n', a == null ? '–' : a + '%'), lvTd, el('td', 'n', `${wn} / ${mine.length}`));
+    const ar = attStats(s).rate;
+    tr.append(el('td', null, s.name), el('td', 'n', String(s.age)), el('td', 'n', a == null ? '–' : a + '%'), lvTd, el('td', 'n', ar == null ? '–' : pct(ar)), el('td', 'n', `${wn} / ${mine.length}`));
     tb.append(tr);
   });
 }
-$('#next-lesson').addEventListener('click', () => { const n = LESSONS.find((l) => !presented.includes(l.id)); if (n) present(n.id); else toast(t('allDone')); });
+$('#next-lesson').addEventListener('click', () => { const up = upcoming()[0]; if (up) { present(up.lesson); return; } const n = LESSONS.find((l) => !presented.includes(l.id)); if (n) present(n.id); else toast(t('allDone')); });
+
+// ---------- Sessions and attendance ----------
+const pad = (n) => String(n).padStart(2, '0');
+const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const todayIso = () => iso(new Date());
+const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); };
+const pct = (r) => Math.round(r * 100) + '%';
+const loc = () => (lang === 'sw' ? 'sw-KE' : 'en-GB');
+const fmtDate = (d, o) => new Date(d + 'T12:00:00').toLocaleDateString(loc(), o);
+const eligibleFor = (lessonId) => { const m = mod(lesson(lessonId).mod); return STUDENTS.filter((s) => !m.minAge || s.age >= m.minAge); };
+const isDone = (x) => x.status === 'done';
+const upcoming = () => sessions.filter((x) => !isDone(x) && x.date >= todayIso()).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+const pastList = () => sessions.filter((x) => isDone(x) || x.date < todayIso()).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+
+const roll = (a, b) => { const x = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return x - Math.floor(x); };
+const hm = (iso) => new Date(iso).toLocaleTimeString(loc(), { hour: '2-digit', minute: '2-digit' });
+function seedSessions() { // sample history so the planner opens in a working state
+  const plan = [['lit1', -28], ['men1', -24], ['num1', -21], ['mind1', -17], ['lit2', -14], ['safe1', -10], ['rep1', -7], ['sci1', -3]];
+  const likely = [0.95, 0.9, 0.7, 0.85, 0.5, 0.8, 0.95, 0.45, 0.9, 0.55, 0.85, 0.75]; // per girl, sample only
+  const past = plan.map(([l, d], i) => {
+    const went = eligibleFor(l).filter((g) => roll(i + 1, STUDENTS.indexOf(g) + 1) < likely[STUDENTS.indexOf(g)]).map((g) => g.id);
+    const late = went.filter((id, k) => roll(i + 7, k + 3) < 0.15);
+    const start = new Date(addDays(d) + 'T15:3' + (2 + (i % 6)) + ':00'), end = new Date(start.getTime() + (lesson(l).min + 18 + (i * 7) % 20) * 60000);
+    return { id: 'ss' + i, date: addDays(d), time: '15:30', lesson: l, place: 'Club room', status: 'done', attendance: went, late, startedAt: start.toISOString(), endedAt: end.toISOString(), notes: '' };
+  });
+  const next = [['num2', 1], ['men2', 4], ['safe2', 8]].map(([l, d], i) => ({ id: 'su' + i, date: addDays(d), time: '15:30', lesson: l, place: 'Club room', status: 'planned', attendance: [], late: [] }));
+  return [...past, ...next];
+}
+function seedResults() { // sample answers for past learning sessions
+  const out = {};
+  sessions.filter((x) => isDone(x) && mod(lesson(x.lesson).mod).area === 'learn').forEach((x, si) => {
+    const qs = quizQs(x.lesson); out[x.lesson] = {};
+    x.attendance.forEach((sid) => {
+      const k = STUDENTS.findIndex((g) => g.id === sid), skill = (SEED_GRADES.lit[k] + SEED_GRADES.num[k]) / 200 - 0.05, answers = {};
+      const rng = ((n) => () => roll(n++, k + 11))(si * 31 + k); shuffle(qs, rng).slice(0, 3).forEach((q, qi) => { answers[q.id] = roll(si + qi + 2, k + 5) < skill ? q.a : (q.a + 1 + Math.floor(roll(qi, k) * (q.opts.length - 1))) % q.opts.length; });
+      out[x.lesson][sid] = { answers, at: x.endedAt, session: x.id };
+    });
+  });
+  return out;
+}
+const quizQs = (lessonId) => questions.filter((q) => q.lesson === lessonId && q.type === 'mc');
+const shuffle = (arr, rnd = Math.random) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const quizN = () => +(store.get('quizN', 3));
+function scoreOf(lessonId, sid) {
+  const r = results[lessonId]?.[sid]; if (!r) return null;
+  const qs = quizQs(lessonId).filter((q) => q.id in r.answers); if (!qs.length) return null;
+  const right = qs.filter((q) => r.answers[q.id] === q.a).length;
+  return { right, total: qs.length, rate: right / qs.length, wrong: qs.filter((q) => r.answers[q.id] !== q.a).map((q) => ({ q, given: r.answers[q.id] })) };
+}
+function moduleQuizAvg(mid, sid) {
+  const sc = LESSONS.filter((l) => l.mod === mid).map((l) => scoreOf(l.id, sid)).filter(Boolean);
+  if (!sc.length) return null;
+  return sc.reduce((a, b) => a + b.right, 0) / sc.reduce((a, b) => a + b.total, 0);
+}
+const durationMin = (x) => x.startedAt && x.endedAt ? Math.max(1, Math.round((new Date(x.endedAt) - new Date(x.startedAt)) / 60000)) : null;
+function attStats(s) {
+  const mine = sessions.filter((x) => isDone(x) && eligibleFor(x.lesson).some((g) => g.id === s.id));
+  const went = mine.filter((x) => x.attendance.includes(s.id));
+  const last = went.map((x) => x.date).sort().at(-1) || null;
+  return { eligible: mine.length, attended: went.length, late: went.filter((x) => (x.late || []).includes(s.id)).length, rate: mine.length ? went.length / mine.length : null, last };
+}
+function classRate(days) {
+  const from = addDays(-days); let p = 0, e = 0;
+  sessions.filter((x) => isDone(x) && x.date >= from).forEach((x) => { p += x.attendance.length; e += eligibleFor(x.lesson).length; });
+  return e ? p / e : null;
+}
+
+function renderPlanForm() {
+  const sel = $('#ps-lesson'), v = sel.value;
+  sel.replaceChildren(...MODULES.map((m) => { const g = document.createElement('optgroup'); g.label = m.name[lang] + (m.minAge ? ` (${t('age15')})` : ''); LESSONS.filter((l) => l.mod === m.id).forEach((l) => g.append(new Option(l.title, l.id))); return g; }));
+  if (v) sel.value = v;
+  if (!$('#ps-date').value) $('#ps-date').value = addDays(1);
+}
+$('#plan-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const date = $('#ps-date').value, time = $('#ps-time').value || '15:30', l = $('#ps-lesson').value, place = $('#ps-place').value.trim();
+  if (!date) { $('#ps-err').textContent = t('needDate'); return; }
+  $('#ps-err').textContent = '';
+  sessions.push({ id: 's' + Date.now(), date, time, lesson: l, place, status: 'planned', attendance: [] });
+  save(); renderSessions(); renderClass(); toast(t('planned'));
+});
+
+function sessionCard(x) {
+  const l = lesson(x.lesson), m = mod(l.mod), n = eligibleFor(x.lesson).length;
+  const c = el('div', 'ses ' + (m.area === 'well' ? 'well' : 'learn'));
+  const when = el('div', 'when'); when.append(el('span', null, fmtDate(x.date, { weekday: 'short' })), el('b', null, fmtDate(x.date, { day: 'numeric' })), el('span', null, fmtDate(x.date, { month: 'short' })));
+  const what = el('div', 'what'); what.append(el('strong', null, l.title));
+  const chips = el('div', 'chips');
+  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang]), el('span', 'chip line', [x.time, x.place].filter(Boolean).join(' · ')));
+  if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
+  if (isDone(x)) {
+    const r = x.attendance.length / n; chips.append(el('span', 'chip ' + (r >= 0.6 ? 'ok' : 'warn'), `${x.attendance.length} / ${n} ${t('nPresent')}`));
+    if ((x.late || []).length) chips.append(el('span', 'chip warn', `${x.late.length} ${t('nLate')}`));
+    const d = durationMin(x); if (d) chips.append(el('span', 'chip line', `${d} ${t('min')}`));
+  } else if (x.startedAt) chips.append(el('span', 'chip bad', t('inProgress')));
+  else if (x.date < todayIso()) chips.append(el('span', 'chip warn', t('noRegister')));
+  what.append(chips);
+  const acts = el('div', 'acts');
+  if (isDone(x)) {
+    acts.append(btn(t('report'), 'sm', () => openReport(x.id)), btn(t('editRegister'), 'ghost sm', () => openRegister(x.id)));
+    if (m.area === 'learn' && quizQs(x.lesson).length) acts.append(btn(t('classQuiz'), 'ghost sm', () => openQuiz(x.id)));
+  } else {
+    acts.append(btn(x.startedAt ? t('resume') : t('startClass'), 'sm', () => openRegister(x.id)), btn('▶ ' + t('present'), 'ghost sm', () => present(x.lesson)));
+  }
+  const del = btn(t('del'), 'ghost sm');
+  del.addEventListener('click', () => {
+    if (del.dataset.armed) { sessions = sessions.filter((y) => y.id !== x.id); save(); renderSessions(); renderClass(); toast(t('sesDeleted')); return; }
+    del.dataset.armed = '1'; del.textContent = t('confirmDel'); setTimeout(() => { if (del.isConnected) { delete del.dataset.armed; del.textContent = t('del'); } }, 3000);
+  });
+  acts.append(del);
+  c.append(when, what, acts);
+  return c;
+}
+
+function renderSessions() {
+  const up = $('#ses-upcoming'); up.replaceChildren();
+  const ups = upcoming();
+  if (!ups.length) up.append(el('p', 'empty muted', t('noUpcoming')));
+  ups.forEach((x) => up.append(sessionCard(x)));
+  const past = $('#ses-past'); past.replaceChildren();
+  const ps = pastList();
+  if (!ps.length) past.append(el('p', 'empty muted', t('noPast')));
+  ps.forEach((x) => past.append(sessionCard(x)));
+  drawChart();
+  const tb = $('#ses-girls'); tb.replaceChildren();
+  STUDENTS.map((s) => ({ s, a: attStats(s) })).sort((p, q) => (p.a.rate ?? 2) - (q.a.rate ?? 2)).forEach(({ s, a }) => {
+    const tr = el('tr'), rateTd = el('td'), box = el('div', 'rate');
+    const bar = el('span', 'bar'), i = el('i', a.rate != null && a.rate < 0.6 ? 'low' : ''); i.style.width = ((a.rate || 0) * 100) + '%'; bar.append(i);
+    box.append(bar, el('span', null, a.rate == null ? '–' : pct(a.rate)));
+    if (a.rate != null && a.rate < 0.6 && a.eligible >= 3) box.append(el('span', 'chip warn', t('followUp')));
+    rateTd.append(box);
+    tr.append(el('td', null, s.name), el('td', 'n', `${a.attended} / ${a.eligible}`), rateTd, el('td', null, a.last ? fmtDate(a.last, { day: 'numeric', month: 'short' }) : '–'));
+    tb.append(tr);
+  });
+}
+
+function drawChart() {
+  const box = $('#ses-chart'); box.replaceChildren();
+  const data = sessions.filter(isDone).sort((a, b) => a.date.localeCompare(b.date)).slice(-8)
+    .map((x) => ({ x, r: x.attendance.length / eligibleFor(x.lesson).length, well: mod(lesson(x.lesson).mod).area === 'well' }));
+  if (!data.length) { box.append(el('p', 'empty muted', t('noPast'))); return; }
+  const css = getComputedStyle(document.documentElement), col = (v) => css.getPropertyValue(v).trim();
+  const W = Math.max(300, box.clientWidth || 600), H = 200, ml = 36, mb = 30, mt = 10, mr = 8;
+  const NS = 'http://www.w3.org/2000/svg', mk = (tag, at) => { const e = document.createElementNS(NS, tag); Object.entries(at).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
+  const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', role: 'img', 'aria-label': t('trendH') });
+  const y = (r) => mt + (1 - r) * (H - mt - mb), bw = (W - ml - mr) / data.length;
+  [0, 0.5, 1].forEach((r) => { svg.append(mk('line', { x1: ml, x2: W - mr, y1: y(r), y2: y(r), stroke: col('--line') })); const tx = mk('text', { x: ml - 6, y: y(r) + 4, 'text-anchor': 'end', 'font-size': 11, fill: col('--muted') }); tx.textContent = pct(r); svg.append(tx); });
+  svg.append(mk('line', { x1: ml, x2: W - mr, y1: y(0.6), y2: y(0.6), stroke: col('--sun'), 'stroke-dasharray': '5 4' }));
+  data.forEach((d, i) => {
+    const w = Math.min(34, bw * 0.6), x = ml + i * bw + (bw - w) / 2;
+    const r = mk('rect', { x, y: y(d.r), width: w, height: y(0) - y(d.r), rx: 4, fill: col(d.well ? '--rose' : '--teal') });
+    const tip = mk('title', {}); tip.textContent = `${fmtDate(d.x.date, { day: 'numeric', month: 'short' })} · ${lesson(d.x.lesson).title} · ${pct(d.r)}`; r.append(tip); svg.append(r);
+    const v = mk('text', { x: x + w / 2, y: y(d.r) - 4, 'text-anchor': 'middle', 'font-size': 11, fill: col('--ink') }); v.textContent = pct(d.r); svg.append(v);
+    const lb = mk('text', { x: x + w / 2, y: H - 10, 'text-anchor': 'middle', 'font-size': 11, fill: col('--muted') }); lb.textContent = fmtDate(d.x.date, { day: 'numeric', month: 'short' }); svg.append(lb);
+  });
+  box.append(svg);
+}
+window.addEventListener('resize', () => { if (user && !$('#view-sessions').hidden) drawChart(); });
+
+// ---------- Class in progress and register (present / late / absent) ----------
+let regId = null, regState = {}, clockTimer = null;
+const regSession = () => sessions.find((y) => y.id === regId);
+function openRegister(id) {
+  regId = id; const x = regSession(); regState = {};
+  eligibleFor(x.lesson).forEach((g) => { regState[g.id] = (x.late || []).includes(g.id) ? 'l' : x.attendance.includes(g.id) ? 'p' : 'a'; });
+  renderRegister(); show('register'); tick();
+}
+function tick() {
+  clearInterval(clockTimer);
+  const x = regSession(), live = $('#live');
+  if (!x || !x.startedAt || x.endedAt) { live.hidden = true; return; }
+  live.hidden = false; $('#live-text').textContent = `${t('classStarted')} ${hm(x.startedAt)}`;
+  const upd = () => { const s = Math.floor((Date.now() - new Date(x.startedAt)) / 1000); $('#live-clock').textContent = `${pad(Math.floor(s / 3600))}:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}`; };
+  upd(); clockTimer = setInterval(() => { if ($('#view-register').hidden) { clearInterval(clockTimer); return; } upd(); }, 1000);
+}
+function renderRegister() {
+  const x = regSession(); if (!x) return;
+  const l = lesson(x.lesson), m = mod(l.mod), girls = eligibleFor(x.lesson);
+  const head = $('#reg-head'); head.replaceChildren();
+  head.append(el('span', 'label', fmtDate(x.date, { weekday: 'long', day: 'numeric', month: 'long' }) + (x.time ? ' · ' + x.time : '')), el('h2', null, l.title));
+  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang])); if (m.minAge) chips.append(el('span', 'chip line', t('age15'))); head.append(chips);
+  if (m.minAge) head.append(el('p', 'small muted', t('ageNote')));
+  const list = $('#reg-list'); list.replaceChildren();
+  const count = () => { const v = Object.values(regState); $('#reg-count').textContent = `${v.filter((s) => s === 'p').length} ${t('onTime')} · ${v.filter((s) => s === 'l').length} ${t('nLate')} · ${v.filter((s) => s === 'a').length} ${t('absent')}`; };
+  girls.forEach((g) => {
+    const card = el('div', 'reg-card ' + regState[g.id]), nm = el('strong', null, g.name); nm.append(el('small', null, `${t('hGender')} ${g.age}`));
+    const seg = el('div', 'seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', g.name);
+    [['p', t('pPresent')], ['l', t('pLate')], ['a', t('pAbsent')]].forEach(([k, label]) => {
+      const b = el('button', k, label); b.type = 'button'; b.id = `reg-${g.id}-${k}`; b.setAttribute('aria-pressed', String(regState[g.id] === k));
+      b.addEventListener('click', () => { regState[g.id] = k; card.className = 'reg-card ' + k; seg.querySelectorAll('button').forEach((o) => o.setAttribute('aria-pressed', String(o === b))); count(); });
+      seg.append(b);
+    });
+    card.append(nm, seg); list.append(card);
+  });
+  count();
+  $('#reg-start').hidden = !!(x.startedAt || isDone(x));
+  $('#reg-end').hidden = !(x.startedAt && !x.endedAt);
+  $('#reg-save').hidden = !!(x.startedAt && !x.endedAt);
+  $('#reg-all').onclick = () => { girls.forEach((g) => { if (regState[g.id] === 'a') regState[g.id] = 'p'; }); renderRegister(); };
+  $('#reg-none').onclick = () => { girls.forEach((g) => { regState[g.id] = 'a'; }); renderRegister(); };
+  $('#reg-present').onclick = () => present(x.lesson);
+}
+function writeRegister(x) {
+  x.attendance = Object.keys(regState).filter((k) => regState[k] !== 'a'); x.late = Object.keys(regState).filter((k) => regState[k] === 'l');
+  const m = mod(lesson(x.lesson).mod);
+  if (m.area === 'well') attendance[m.id] = [...new Set([...(attendance[m.id] || []), ...x.attendance])]; // feeds the wellbeing attendance view
+}
+$('#reg-start').addEventListener('click', () => { const x = regSession(); x.startedAt = new Date().toISOString(); writeRegister(x); save(); renderRegister(); tick(); renderSessions(); toast(t('classStartedToast')); });
+$('#reg-save').addEventListener('click', () => {
+  const x = regSession(); if (!x) return;
+  writeRegister(x); x.status = 'done'; save();
+  toast(`${t('regSaved')}: ${x.attendance.length} / ${eligibleFor(x.lesson).length} ${t('nPresent')}`);
+  regId = null; renderAll(); show('sessions');
+});
+$('#reg-end').addEventListener('click', () => {
+  const x = regSession(); if (!x) return;
+  writeRegister(x); x.endedAt = new Date().toISOString(); x.status = 'done'; save(); clearInterval(clockTimer);
+  toast(`${t('classEnded')}: ${durationMin(x)} ${t('min')}`);
+  if (mod(lesson(x.lesson).mod).area === 'learn' && quizQs(x.lesson).length && x.attendance.length) openQuiz(x.id); else openReport(x.id);
+  renderSessions(); renderClass();
+});
+$('#reg-back').addEventListener('click', () => { regId = null; clearInterval(clockTimer); show('sessions'); });
+
+// ---------- Class quiz: each girl answers privately; scores go only to the gradebook ----------
+function openQuiz(id) { regId = id; $('#quiz-n').value = String(quizN()); renderQuizList(); show('quiz'); }
+$('#quiz-n').addEventListener('change', (e) => store.set('quizN', +e.target.value));
+function renderQuizList() {
+  const x = regSession(); if (!x) return;
+  const l = lesson(x.lesson), head = $('#quiz-head'); head.replaceChildren();
+  head.append(el('span', 'label', t('classQuiz') + ' · ' + fmtDate(x.date, { day: 'numeric', month: 'long' })), el('h2', null, l.title), el('p', 'small muted', `${quizQs(x.lesson).length} ${t('inBank')}`));
+  const list = $('#quiz-list'); list.replaceChildren();
+  const girls = STUDENTS.filter((g) => x.attendance.includes(g.id));
+  girls.forEach((g) => {
+    const done = !!results[x.lesson]?.[g.id];
+    const b = el('button', 'qz-girl' + (done ? ' done' : '')); b.type = 'button'; b.id = 'qz-' + g.id;
+    b.append(el('span', null, g.name), el('span', 'chip ' + (done ? 'ok' : 'line'), done ? '✓ ' + t('answered') : t('notYet')));
+    b.addEventListener('click', () => startQuiz(x, g));
+    list.append(b);
+  });
+  $('#quiz-count').textContent = `${girls.filter((g) => results[x.lesson]?.[g.id]).length} / ${girls.length} ${t('answered')}`;
+}
+let qz = null;
+function startQuiz(x, g) {
+  const pool = quizQs(x.lesson), n = quizN() || pool.length;
+  const qs = shuffle(pool).slice(0, Math.min(n, pool.length)).map((q) => ({ q, order: shuffle(q.opts.map((_, i) => i)) }));
+  qz = { x, g, qs, i: 0, answers: {}, mode: $('#quiz-mode').value };
+  $('#qz').hidden = false; drawQuiz();
+}
+function drawQuiz() {
+  const { g, qs, i, mode } = qz, st = $('#qz-stage'); st.replaceChildren();
+  $('#qz-who').textContent = `${g.name} · ${lesson(qz.x.lesson).title}`;
+  const next = $('#qz-next');
+  if (i >= qs.length) {
+    if (mode === 'aloud') { const right = qs.filter(({ q }) => qz.answers[q.id] === q.a).length; st.append(el('span', 'eyebrow', t('allDoneQ')), el('h2', null, `${g.name}: ${right} / ${qs.length} ${t('rightWord')}`), el('p', 'big', t('savedTeacher'))); }
+    else st.append(el('span', 'eyebrow', t('allDoneQ')), el('h2', null, `${t('thanks')}, ${g.name.split(' ')[0]}!`), el('p', 'big', t('savedNoScore')));
+    $('#qz-step').textContent = ''; next.disabled = false; next.textContent = mode === 'aloud' ? t('nextGirl') : t('passBack'); return;
+  }
+  const { q, order } = qs[i];
+  st.append(el('span', 'eyebrow', `${t('question')} ${i + 1} / ${qs.length}`), el('h2', null, q.text));
+  if (mode === 'aloud') {
+    const list = el('div', 'qz-opts'); order.forEach((k, pos) => list.append(el('div', 'opt', `${String.fromCharCode(65 + pos)}. ${q.opts[k]}`))); st.append(list);
+    const key = el('p', 'teacher-key'); key.append(document.createTextNode(t('answerIs') + ': '), el('b', null, q.opts[q.a])); st.append(key);
+    const mark = el('div', 'mark');
+    [['r', '✓ ' + t('markRight'), q.a], ['w', '✗ ' + t('markWrong'), -1]].forEach(([c, label, val]) => {
+      const b = el('button', c, label); b.type = 'button'; b.setAttribute('aria-pressed', String(qz.answers[q.id] === val));
+      b.addEventListener('click', () => { qz.answers[q.id] = val; mark.querySelectorAll('button').forEach((o) => o.setAttribute('aria-pressed', String(o === b))); next.disabled = false; });
+      mark.append(b);
+    });
+    st.append(mark); $('#qz-step').textContent = t('aloudHint');
+  } else {
+    const opts = el('div', 'qz-opts');
+    order.forEach((k, pos) => {
+      const b = el('button', null, `${String.fromCharCode(65 + pos)}. ${q.opts[k]}`); b.type = 'button'; b.setAttribute('aria-pressed', String(qz.answers[q.id] === k));
+      b.addEventListener('click', () => { qz.answers[q.id] = k; opts.querySelectorAll('button').forEach((o2) => o2.setAttribute('aria-pressed', String(o2 === b))); next.disabled = false; });
+      opts.append(b);
+    });
+    st.append(opts); $('#qz-step').textContent = t('noRightWrong');
+  }
+  next.disabled = !(q.id in qz.answers); next.textContent = i === qs.length - 1 ? t('submit') : t('next');
+}
+$('#qz-next').addEventListener('click', () => {
+  if (!qz) return;
+  if (qz.i >= qz.qs.length) { $('#qz').hidden = true; qz = null; renderQuizList(); return; }
+  qz.i++;
+  if (qz.i === qz.qs.length) { results[qz.x.lesson] = results[qz.x.lesson] || {}; results[qz.x.lesson][qz.g.id] = { answers: { ...qz.answers }, at: new Date().toISOString(), session: qz.x.id, mode: qz.mode }; save(); }
+  drawQuiz();
+});
+$('#qz-close').addEventListener('click', () => { $('#qz').hidden = true; qz = null; renderQuizList(); });
+$('#quiz-finish').addEventListener('click', () => openReport(regId));
+$('#quiz-back').addEventListener('click', () => { regId = null; show('sessions'); });
+
+// ---------- Session report ----------
+let repId = null;
+function openReport(id) { repId = id; renderReport(); show('report'); }
+function renderReport() {
+  const x = sessions.find((y) => y.id === repId); if (!x) return;
+  const l = lesson(x.lesson), m = mod(l.mod), girls = eligibleFor(x.lesson), box = $('#report'); box.replaceChildren();
+  const late = x.late || [], onTime = x.attendance.filter((id) => !late.includes(id)), absent = girls.filter((g) => !x.attendance.includes(g.id));
+  const head = el('div', 'reg-head');
+  head.append(el('span', 'label', `${t('sessionReport')} · ${fmtDate(x.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`), el('h1', null, l.title));
+  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang]), el('span', 'chip line', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', x.place || '')); head.append(chips);
+  box.append(head);
+  const kv = el('div', 'kv'), add = (label, value, sub) => { const d = el('div'); d.append(el('span', 'small muted', label), el('b', null, value)); if (sub) d.append(el('span', 'small muted', sub)); kv.append(d); };
+  const d = durationMin(x);
+  add(t('duration'), d ? `${d} ${t('min')}` : '–', x.startedAt ? `${hm(x.startedAt)} – ${x.endedAt ? hm(x.endedAt) : '…'}` : `${t('plannedAt')}: ${x.time || '–'}`);
+  add(t('attendedH'), `${x.attendance.length} / ${girls.length}`, pct(x.attendance.length / girls.length));
+  add(t('onTimeH'), String(onTime.length));
+  add(t('lateH'), String(late.length));
+  add(t('absentH'), String(absent.length));
+  const mc = quizQs(x.lesson), res = results[x.lesson] || {}, took = x.attendance.filter((id) => res[id]);
+  if (m.area === 'learn' && mc.length) {
+    const sc = took.map((id) => scoreOf(x.lesson, id)).filter(Boolean);
+    add(t('quizDone'), `${took.length} / ${x.attendance.length}`);
+    add(t('classAvg'), sc.length ? pct(sc.reduce((a, b) => a + b.rate, 0) / sc.length) : '–', t('teacherOnly'));
+  }
+  box.append(kv);
+  const names = (title, ids, cls) => { if (!ids.length) return; const s2 = el('div', 'stack'); s2.append(el('h3', null, title)); const n = el('div', 'names'); ids.forEach((id) => n.append(el('span', 'chip ' + cls, STUDENTS.find((g) => g.id === id).name))); s2.append(n); box.append(s2); };
+  names(t('lateH'), late, 'warn'); names(t('absentH'), absent.map((g) => g.id), 'bad');
+  if (m.area === 'learn' && mc.length) {
+    const sec = el('div', 'stack'); sec.append(el('h3', null, t('perQuestion')));
+    const tw = el('div', 'tw'), tb = el('table'), th = el('thead'), hr = el('tr'); hr.append(el('th', null, t('question')), el('th', null, t('correctH'))); th.append(hr); tb.append(th);
+    const body = el('tbody');
+    mc.forEach((q) => {
+      const answered = took.filter((id) => q.id in res[id].answers), ok = answered.filter((id) => res[id].answers[q.id] === q.a).length, r = answered.length ? ok / answered.length : null;
+      const tr = el('tr'), td = el('td'), box2 = el('div', 'rate'), bar = el('span', 'bar'), i = el('i', r != null && r < 0.6 ? 'low' : ''); i.style.width = ((r || 0) * 100) + '%'; bar.append(i);
+      box2.append(bar, el('span', null, r == null ? '–' : `${pct(r)} (${ok}/${answered.length})`)); if (r != null && r < 0.6) box2.append(el('span', 'chip warn', t('reteach')));
+      td.append(box2); const qtd = el('td', null, q.text); qtd.style.whiteSpace = 'normal'; tr.append(qtd, td); body.append(tr);
+    });
+    tb.append(body); tw.append(tb); sec.append(tw);
+    if (took.length < x.attendance.length) sec.append(btn(t('continueQuiz'), 'ghost sm', () => openQuiz(x.id)));
+    box.append(sec);
+  } else if (m.area === 'well') box.append(el('p', 'banner', t('wellReport')));
+  const nt = el('div', 'field'), lab = el('label', null, t('notesH')); lab.htmlFor = 'rep-notes';
+  const ta = el('textarea'); ta.id = 'rep-notes'; ta.rows = 3; ta.value = x.notes || ''; ta.placeholder = t('notesPh');
+  ta.addEventListener('change', () => { x.notes = ta.value; save(); toast(t('saved')); });
+  nt.append(lab, ta); box.append(nt);
+}
+$('#rep-back').addEventListener('click', () => { repId = null; show('sessions'); });
 
 // ---------- Modules ----------
 function renderModules() {
@@ -467,7 +1291,7 @@ function renderModules() {
       const r = el('div', 'lesson-row'); const ttl = el('div', 'ttl');
       const open = el('button', null, l.title); open.type = 'button'; open.style.cssText = 'all:unset;cursor:pointer;font-weight:700;color:var(--ink)';
       open.addEventListener('click', () => openLesson(l.id));
-      ttl.append(open, el('span', 'small muted', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}`));
+      ttl.append(open, el('span', 'small muted', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${videoUrls[l.id] ? ' · ▶ ' + t('hasVideo') : ''}`));
       const acts = el('div', 'acts');
       acts.append(btn('▶ ' + t('present'), 'sm' + (m.area === 'well' ? ' rose' : ''), () => present(l.id)));
       if (l.format === 'Reading') acts.append(btn('♪ ' + t('listen'), 'ghost sm', (e) => toggleListen(l, e.currentTarget)));
@@ -477,6 +1301,28 @@ function renderModules() {
   });
 }
 
+// ---------- Lesson videos (kept on this device in IndexedDB, so they play offline) ----------
+const videoUrls = {};
+function idb() { return new Promise((res, rej) => { const r = indexedDB.open('learnreach-media', 1); r.onupgradeneeded = () => r.result.createObjectStore('videos'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function idbDo(mode, fn) { const db = await idb(); return new Promise((res, rej) => { const tx = db.transaction('videos', mode), st = tx.objectStore('videos'), q = fn(st); tx.oncomplete = () => res(q && q.result); tx.onerror = () => rej(tx.error); }); }
+async function loadVideos() {
+  try { const db = await idb(); const tx = db.transaction('videos'), st = tx.objectStore('videos');
+    st.openCursor().onsuccess = (e) => { const c = e.target.result; if (c) { if (!videoUrls[c.key]) videoUrls[c.key] = URL.createObjectURL(c.value); c.continue(); } else if (user) { renderModules(); if (!$('#view-lesson').hidden && currentLesson) renderLesson(currentLesson); } };
+  } catch { /* storage unavailable: lessons still work without video */ }
+}
+let videoFor = null;
+$('#video-file').addEventListener('change', async (e) => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f || !videoFor) return;
+  try { await idbDo('readwrite', (st) => st.put(f, videoFor)); if (videoUrls[videoFor]) URL.revokeObjectURL(videoUrls[videoFor]); videoUrls[videoFor] = URL.createObjectURL(f); toast(t('videoAdded')); }
+  catch { toast(t('videoFail')); }
+  renderModules(); renderLesson(videoFor);
+});
+async function removeVideo(id) {
+  try { await idbDo('readwrite', (st) => st.delete(id)); } catch {}
+  if (videoUrls[id]) { URL.revokeObjectURL(videoUrls[id]); delete videoUrls[id]; }
+  toast(t('videoRemoved')); renderModules(); renderLesson(id);
+}
+
 // ---------- Lesson detail ----------
 let currentLesson = null;
 function openLesson(id) { currentLesson = id; renderLesson(id); show('lesson'); }
@@ -484,17 +1330,21 @@ function renderLesson(id) {
   const l = lesson(id), m = mod(l.mod), box = $('#lesson-detail'); box.replaceChildren();
   const chips = el('div', 'chips');
   chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang]), el('span', 'chip', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', `${l.min} ${t('min')}`));
-  const media = el('div', 'media' + (m.area === 'well' ? ' well' : ''));
-  media.append(el('b', null, l.title), el('span', null, t(l.format === 'Video' ? 'mediaV' : l.format === 'Audio' ? 'mediaA' : 'mediaR')), el('span', null, t('mediaFile')));
+  if (videoUrls[id]) chips.append(el('span', 'chip av', '▶ ' + t('hasVideo')));
+  let media;
+  if (videoUrls[id]) { media = el('video', 'lesson-video'); media.controls = true; media.preload = 'metadata'; media.src = videoUrls[id]; media.setAttribute('playsinline', ''); }
+  else { media = el('div', 'media' + (m.area === 'well' ? ' well' : '')); media.append(el('b', null, l.title), el('span', null, t(l.format === 'Video' ? 'mediaV' : l.format === 'Audio' ? 'mediaA' : 'mediaR')), el('span', null, t('noVideoYet'))); }
   const acts = el('div', 'row'); acts.style.justifyContent = 'flex-start';
   acts.append(btn('▶ ' + t('present'), m.area === 'well' ? 'rose' : '', () => present(l.id)));
   acts.append(btn('♪ ' + t('listen'), 'ghost', (e) => toggleListen(l, e.currentTarget)));
+  acts.append(btn(videoUrls[id] ? t('replaceVideo') : '+ ' + t('addVideo'), 'ghost', () => { videoFor = id; $('#video-file').click(); }));
+  if (videoUrls[id]) acts.append(btn(t('removeVideo'), 'ghost', () => removeVideo(id)));
   const body = el('div', 'body-text'); body.id = 'lesson-body'; l.body.forEach((p) => body.append(el('p', null, p)));
   const qs = el('div', 'stack'); qs.append(el('h3', null, t('lessonQ')));
   const list = questions.filter((q) => q.lesson === id);
   if (!list.length) qs.append(el('p', 'muted small', t('noQ')));
   list.forEach((q) => qs.append(qItem(q)));
-  box.append(chips, el('h1', null, l.title), media, acts, body, qs);
+  box.append(chips, el('h1', null, l.title), media, acts, el('p', 'small muted', t('videoNote')), body, qs);
 }
 
 // ---------- Narration (text to speech) ----------
@@ -533,7 +1383,7 @@ let slides = [], si = 0, narrate = true, scLesson = null;
 function present(id) {
   stopSpeech();
   const l = lesson(id); scLesson = l; const m = mod(l.mod);
-  slides = [{ kind: 'title' }, ...l.body.map((p) => ({ kind: 'text', p })), ...questions.filter((q) => q.lesson === id).map((q) => ({ kind: 'q', q, shown: false }))];
+  slides = [{ kind: 'title' }, ...(videoUrls[id] ? [{ kind: 'video' }] : []), ...l.body.map((p) => ({ kind: 'text', p })), ...questions.filter((q) => q.lesson === id).map((q) => ({ kind: 'q', q, shown: false }))];
   si = 0; $('#screen').classList.toggle('well', m.area === 'well'); $('#screen').hidden = false;
   if (!presented.includes(id)) { presented.push(id); save(); }
   drawSlide();
@@ -541,6 +1391,7 @@ function present(id) {
 function askOne(q) { const l = lesson(q.lesson); scLesson = l; slides = [{ kind: 'q', q, shown: false }]; si = 0; $('#screen').classList.toggle('well', mod(l.mod).area === 'well'); $('#screen').hidden = false; drawSlide(); }
 function slideText(s) {
   if (s.kind === 'title') return [scLesson.title];
+  if (s.kind === 'video') return [];
   if (s.kind === 'text') return [s.p];
   return [s.q.text, ...s.q.opts.map((o, i) => `${String.fromCharCode(65 + i)}. ${o}`)];
 }
@@ -549,7 +1400,9 @@ function drawSlide() {
   $('#sc-title').textContent = `${m.name[lang]} · ${l.title}`;
   $('#sc-voice').textContent = t(narrate ? 'narrOn' : 'narrOff');
   if (s.kind === 'title') {
-    st.append(el('span', 'eyebrow', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`), el('h2', null, l.title), el('p', 'big', t('mediaFile')));
+    st.append(el('span', 'eyebrow', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`), el('h2', null, l.title), el('p', 'big', videoUrls[l.id] ? t('videoNext') : t('mediaFile')));
+  } else if (s.kind === 'video') {
+    const v = el('video'); v.controls = true; v.src = videoUrls[l.id]; v.setAttribute('playsinline', ''); st.append(v);
   } else if (s.kind === 'text') {
     st.append(el('span', 'eyebrow', m.name[lang]), el('p', 'big', s.p));
   } else {
@@ -563,17 +1416,35 @@ function drawSlide() {
   }
   const dots = $('#sc-dots'); dots.replaceChildren(); slides.forEach((_, i) => dots.append(el('i', i === si ? 'on' : '')));
   $('#sc-prev').disabled = si === 0; $('#sc-next').textContent = si === slides.length - 1 ? t('close') : t('next');
-  if (narrate) speak(slideText(s), l.lang); else stopSpeech();
+  if (narrate && s.kind !== 'video') speak(slideText(s), l.lang); else stopSpeech();
 }
 $('#sc-prev').addEventListener('click', () => { if (si > 0) { si--; drawSlide(); } });
-$('#sc-next').addEventListener('click', () => { if (si < slides.length - 1) { si++; drawSlide(); } else closeScreen(); });
+$('#sc-next').addEventListener('click', () => { $('#sc-stage').querySelectorAll('video').forEach((v) => v.pause()); if (si < slides.length - 1) { si++; drawSlide(); } else closeScreen(); });
 $('#sc-voice').addEventListener('click', () => { narrate = !narrate; drawSlide(); });
 $('#sc-full').addEventListener('click', () => { const s = $('#screen'); try { document.fullscreenElement ? document.exitFullscreen() : s.requestFullscreen?.().catch(() => {}); } catch {} });
-function closeScreen() { stopSpeech(); try { if (document.fullscreenElement) document.exitFullscreen(); } catch {} $('#screen').hidden = true; renderClass(); }
+function closeScreen() { stopSpeech(); $('#sc-stage').querySelectorAll('video').forEach((v) => v.pause()); try { if (document.fullscreenElement) document.exitFullscreen(); } catch {} $('#screen').hidden = true; renderClass(); }
 $('#sc-close').addEventListener('click', closeScreen);
 document.addEventListener('keydown', (e) => { if ($('#screen').hidden) return; if (e.key === 'ArrowRight') $('#sc-next').click(); if (e.key === 'ArrowLeft') $('#sc-prev').click(); if (e.key === 'Escape') closeScreen(); });
 
 // ---------- Gradebook ----------
+function studentDetail(mid, s) {
+  const wrap = el('div', 'stack');
+  LESSONS.filter((l) => l.mod === mid && quizQs(l.id).length).forEach((l) => {
+    const u = el('div', 'unit'), sc = scoreOf(l.id, s.id), head = el('div', 'row');
+    head.append(el('strong', null, `${t('unit')}: ${l.title}`));
+    if (!sc) head.append(el('span', 'chip line', t('notTaken')));
+    else { const lv = levelOf(sc.rate * 100); const c = el('div', 'chips'); c.append(el('span', 'chip ' + (sc.rate >= 0.6 ? 'ok' : 'warn'), `${sc.right} / ${sc.total} · ${pct(sc.rate)}`), el('span', 'lvl ' + lv, lv)); head.append(c); }
+    u.append(head);
+    if (sc && sc.wrong.length) sc.wrong.forEach(({ q, given }) => {
+      const m = el('div', 'miss'); m.append(el('div', null, q.text));
+      const line = el('div'); line.append(el('span', 'no', '✗ ' + (given === -1 ? t('markedWrong') : (q.opts[given] ?? '–'))), document.createTextNode('  ·  ' + t('correctAns') + ': '), el('span', 'ok', q.opts[q.a]));
+      m.append(line); u.append(m);
+    });
+    else if (sc) u.append(el('p', 'small muted', t('allCorrect')));
+    wrap.append(u);
+  });
+  return wrap;
+}
 function renderGradeSelect() { const s = $('#g-module'), v = s.value || 'lit'; s.replaceChildren(...MODULES.map((m) => new Option(m.name[lang], m.id))); s.value = v; }
 $('#g-module').addEventListener('change', renderGrades);
 function renderGrades() {
@@ -590,7 +1461,8 @@ function renderGrades() {
     });
     $('#grade-note').textContent = t('attNote') + (m.minAge ? ' ' + t('ageNote') : '');
   } else {
-    hr.append(el('th', 'n', t('score')), el('th', 'n', t('level'))); head.append(hr);
+    hr.append(el('th', 'n', t('score')), el('th', 'n', t('level')), el('th', 'n', t('quizAvg')), el('th', 'n', t('unitsDone'))); head.append(hr);
+    const units = LESSONS.filter((l) => l.mod === mid && quizQs(l.id).length);
     STUDENTS.forEach((s) => {
       const tr = el('tr'), td = el('td', 'n'), inp = el('input', 'score'); inp.type = 'number'; inp.min = 0; inp.max = 100; inp.inputMode = 'numeric';
       inp.id = `g-${mid}-${s.id}`; inp.setAttribute('aria-label', `${s.name} ${t('score')}`); inp.value = grades[mid]?.[s.id] ?? '';
@@ -603,9 +1475,20 @@ function renderGrades() {
         save(); paint(); renderClass();
       });
       inp.addEventListener('blur', () => { if (inp.value !== '' && grades[mid]?.[s.id] != null) inp.value = grades[mid][s.id]; });
-      paint(); td.append(inp); tr.append(el('td', null, s.name), td, lvTd); tb.append(tr);
+      paint(); td.append(inp);
+      const qa = moduleQuizAvg(mid, s.id), qaTd = el('td', 'n');
+      if (qa == null) qaTd.textContent = '–'; else { const lv = levelOf(qa * 100); qaTd.append(el('span', null, pct(qa) + ' '), el('span', 'lvl ' + lv, lv)); }
+      const done = units.filter((l) => results[l.id]?.[s.id]).length;
+      const nameTd = el('td'), nb = el('button', 'linkbtn', '▸ ' + s.name); nb.type = 'button'; nb.setAttribute('aria-expanded', 'false'); nb.id = `gd-${mid}-${s.id}`;
+      nameTd.append(nb);
+      tr.append(nameTd, td, lvTd, qaTd, el('td', 'n', `${done} / ${units.length}`)); tb.append(tr);
+      const dr = el('tr', 'detail-row'); dr.hidden = true; const dtd = el('td'); dtd.colSpan = 5; dr.append(dtd); tb.append(dr);
+      nb.addEventListener('click', () => {
+        const open = dr.hidden; dr.hidden = !open; nb.setAttribute('aria-expanded', String(open)); nb.textContent = (open ? '▾ ' : '▸ ') + s.name;
+        if (open) { dtd.replaceChildren(studentDetail(mid, s)); }
+      });
     });
-    $('#grade-note').textContent = t('gradeNote') + ' ' + t('levelNote');
+    $('#grade-note').textContent = t('gradeNote') + ' ' + t('quizNote') + ' ' + t('levelNote');
   }
 }
 
@@ -656,7 +1539,7 @@ function renderBank() {
 // ---------- Start ----------
 if (synth) { try { synth.getVoices(); synth.onvoiceschanged = () => {}; } catch {} }
 applyLang();
-try { const s = sessionStorage.getItem('lrt_session'); if (s && USERS[s]) signIn(s); } catch {}
+boot();
 </script>
-</body>
-</html>
+
+</body></html>

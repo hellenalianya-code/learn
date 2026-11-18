@@ -220,6 +220,68 @@ td.n, th.n { text-align: center; }
 .linkbtn:focus-visible { outline: 3px solid var(--sun); }
 video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); background: #000; }
 .screen-stage video { width: 100%; max-height: 62vh; border-radius: 12px; background: #000; }
+/* Step-by-step activity (light full-screen, big picture choices) */
+.screen.act { background: var(--bg); color: var(--ink); }
+.screen.act .screen-top { color: var(--muted); font-weight: 700; }
+.screen.act .btn.ghost { color: var(--teal); border-color: var(--line); }
+.screen.act .dots i { background: var(--line); }
+.screen.act .dots i.on { background: var(--rose); }
+.screen.act .dots i.done { background: var(--ok); }
+.screen.act .eyebrow { color: var(--rose); }
+.screen.act .eyebrow.ok { color: var(--ok); font-size: 1.1rem; }
+.act-stage { justify-content: flex-start; gap: 18px; }
+.act-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 22px; align-items: center; }
+@media (max-width: 760px) { .act-main { grid-template-columns: 1fr; } }
+.act-head { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.act-head h2 { font-size: clamp(1.4rem, 3.4vw, 2.4rem); }
+.act-head p.big { font-size: clamp(1.1rem, 2.4vw, 1.6rem); max-width: 34ch; }
+.act-art { background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px; padding: 10px; }
+.act-art svg { display: block; width: 100%; height: auto; max-height: 52vh; }
+.act-art video { display: block; width: 100%; max-height: 52vh; border-radius: 12px; background: #000; }
+.act-opts { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.act-opt { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; border: 2.5px solid var(--line); background: var(--surface); border-radius: 16px; padding: 10px 12px 14px; font-weight: 700; font-size: clamp(.95rem, 1.8vw, 1.15rem); cursor: pointer; line-height: 1.3; }
+.act-opt:hover:not([disabled]) { border-color: var(--teal); }
+.act-ico { width: 100%; max-width: 150px; background: #fff; border-radius: 10px; }
+.act-ico svg { display: block; width: 100%; height: auto; }
+.act-opt.no { border-color: var(--bad); background: var(--rose-soft); opacity: .7; cursor: default; }
+.act-opt.no::before { content: "✗"; color: var(--bad); font-size: 1.4rem; line-height: 1; }
+.act-fb { font-size: 1.1rem; min-height: 1.6em; color: var(--muted); }
+.act-fb.no { color: var(--bad); font-weight: 600; }
+.act-card details { border-top: 1px solid var(--line); padding-top: 8px; }
+.act-card summary { cursor: pointer; }
+.act-scene .act-hide, .act-ico .act-hide { display: none; }
+.act-scene .k { transform-box: fill-box; transform-origin: center; }
+.act-scene .k-wing-t, .act-scene .k-wing-b { transform: scaleY(0); }
+.act-scene .k-wing-t { transform-origin: center bottom; }
+.act-scene .k-wing-b { transform-origin: center top; }
+.act-scene .k-flap { transform-origin: center bottom; }
+@media (prefers-reduced-motion: no-preference) {
+  .act-opt.shake { animation: actShake .4s; }
+  @keyframes actShake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+  .act-scene.a .k-rub { animation: actRub .45s ease-in-out 6 alternate; }
+  .act-scene.a .k-bub { animation: actBub 2.2s ease-out both; }
+  .act-scene.a .k-drop { animation: actDrop .9s linear 3 both; }
+  .act-scene.a .k-out { animation: actOut 1.4s .8s ease both; }
+  .act-scene.a .k-flap { animation: actFlap 1s ease both; }
+  .act-scene.a .k-peel { animation: actPeel 1.6s .4s ease both; }
+  .act-scene.a .k-place { animation: actPlace 1.6s .3s ease both; }
+  .act-scene.a .k-wing-t, .act-scene.a .k-wing-b { animation: actWing 1.4s .5s ease both; }
+  .act-scene.a .k-tab { animation: actFade 1s 1.4s ease both; }
+  .act-scene.a .k-toss { animation: actToss 1.8s .2s ease both; }
+  .act-scene.a .k-late { animation: actLate 3s ease both; }
+  @keyframes actRub { from { transform: translateX(-7px); } to { transform: translateX(7px); } }
+  @keyframes actBub { from { opacity: 0; transform: translateY(24px) scale(.3); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
+  @keyframes actDrop { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(46px); } }
+  @keyframes actOut { from { opacity: 0; transform: translateY(70px) scale(.8); } 30% { opacity: 1; } to { opacity: 1; transform: none; } }
+  @keyframes actFlap { from { transform: scaleY(-1); } to { transform: none; } }
+  @keyframes actPeel { from { transform: translate(0, -86px) rotate(-6deg); } 40% { transform: translate(-30px, -70px) rotate(-14deg); } to { transform: none; } }
+  @keyframes actPlace { from { opacity: 0; transform: translateY(-130px) rotate(-90deg) scale(1.4); } 25% { opacity: 1; } to { opacity: 1; transform: none; } }
+  @keyframes actWing { from { transform: none; } to { transform: scaleY(0); } }
+  @keyframes actFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes actToss { from { transform: translate(-130px, 30px) scale(1.4) rotate(0); } 55% { transform: translate(-50px, -60px) scale(1.1) rotate(160deg); } to { transform: none; } }
+  @keyframes actLate { from { opacity: 0; } 65% { opacity: 0; } to { opacity: 1; } }
+}
+
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; z-index: 40; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
 @media (prefers-reduced-motion: no-preference) { .screen-stage > * { animation: rise .35s ease-out both; } @keyframes rise { from { opacity: .001; transform: translateY(8px); } } }
 </style>
@@ -389,6 +451,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
       <div class="row" style="justify-content:flex-start">
         <button class="btn" id="reg-start" type="button" data-t="startClass">Start class</button>
         <button class="btn sun" id="reg-present" type="button" data-t="regPresent">▶ Present this lesson</button>
+        <button class="btn rose" id="reg-act" type="button" hidden>★ <span data-t="actBtn">Step-by-step activity</span></button>
         <button class="btn" id="reg-save" type="button" data-t="regSave">Save register</button>
         <button class="btn rose" id="reg-end" type="button" data-t="endClass">End class</button>
       </div>
@@ -489,6 +552,19 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
   <div class="screen-top"><span id="qz-who"></span><button class="btn ghost sm" id="qz-close" type="button" data-t="qzStop">Stop</button></div>
   <div class="screen-stage" id="qz-stage"></div>
   <div class="screen-bar"><span id="qz-step"></span><button class="btn sun" id="qz-next" type="button" disabled data-t="next">Next →</button></div>
+</div>
+<!-- STEP-BY-STEP ACTIVITY (light full screen) -->
+<div class="screen act" id="act" hidden role="dialog" aria-modal="true" aria-label="Step-by-step activity">
+  <div class="screen-top"><span id="act-who"></span>
+    <div class="top-actions">
+      <div class="lang-switch" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="sw" aria-pressed="false">SW</button></div>
+      <button class="btn ghost sm" id="act-voice" type="button"></button>
+      <button class="btn ghost sm" id="act-full" type="button" data-t="fullscreen">Full screen</button>
+      <button class="btn ghost sm" id="act-close" type="button" data-t="close">Close</button>
+    </div>
+  </div>
+  <div class="screen-stage act-stage" id="act-stage"></div>
+  <div class="screen-bar"><div class="dots" id="act-dots"></div><span id="act-step"></span></div>
 </div>
 <input type="file" id="video-file" accept="video/*" hidden>
 <div class="toast" id="toast" hidden></div>
@@ -1137,6 +1213,8 @@ function renderRegister() {
   $('#reg-all').onclick = () => { girls.forEach((g) => { if (regState[g.id] === 'a') regState[g.id] = 'p'; }); renderRegister(); };
   $('#reg-none').onclick = () => { girls.forEach((g) => { regState[g.id] = 'a'; }); renderRegister(); };
   $('#reg-present').onclick = () => present(x.lesson);
+  $('#reg-act').hidden = !actFor(x.lesson);
+  $('#reg-act').onclick = () => openActivity(actFor(x.lesson).id, x.lesson, x.id, girls.filter((g) => regState[g.id] !== 'a'));
 }
 function writeRegister(x) {
   x.attendance = Object.keys(regState).filter((k) => regState[k] !== 'a'); x.late = Object.keys(regState).filter((k) => regState[k] === 'l');
@@ -1268,6 +1346,7 @@ function renderReport() {
     if (took.length < x.attendance.length) sec.append(btn(t('continueQuiz'), 'ghost sm', () => openQuiz(x.id)));
     box.append(sec);
   } else if (m.area === 'well') box.append(el('p', 'banner', t('wellReport')));
+  const arT = actRunsTable(actRuns.filter((r) => r.session === x.id)); if (arT) { const s3 = el('div', 'stack'); s3.append(el('h3', null, t('actResultsH')), arT); box.append(s3); }
   const nt = el('div', 'field'), lab = el('label', null, t('notesH')); lab.htmlFor = 'rep-notes';
   const ta = el('textarea'); ta.id = 'rep-notes'; ta.rows = 3; ta.value = x.notes || ''; ta.placeholder = t('notesPh');
   ta.addEventListener('change', () => { x.notes = ta.value; save(); toast(t('saved')); });
@@ -1295,6 +1374,7 @@ function renderModules() {
       const acts = el('div', 'acts');
       acts.append(btn('▶ ' + t('present'), 'sm' + (m.area === 'well' ? ' rose' : ''), () => present(l.id)));
       if (l.format === 'Reading') acts.append(btn('♪ ' + t('listen'), 'ghost sm', (e) => toggleListen(l, e.currentTarget)));
+      if (actFor(l.id)) acts.append(btn('★ ' + t('actShort'), 'ghost sm', () => openActivity(actFor(l.id).id, l.id, null, null)));
       r.append(ttl, acts); list.append(r);
     });
     c.append(list); box.append(c);
@@ -1315,12 +1395,12 @@ $('#video-file').addEventListener('change', async (e) => {
   const f = e.target.files[0]; e.target.value = ''; if (!f || !videoFor) return;
   try { await idbDo('readwrite', (st) => st.put(f, videoFor)); if (videoUrls[videoFor]) URL.revokeObjectURL(videoUrls[videoFor]); videoUrls[videoFor] = URL.createObjectURL(f); toast(t('videoAdded')); }
   catch { toast(t('videoFail')); }
-  renderModules(); renderLesson(videoFor);
+  renderModules(); renderLesson(videoFor.startsWith('act-') ? currentLesson : videoFor);
 });
 async function removeVideo(id) {
   try { await idbDo('readwrite', (st) => st.delete(id)); } catch {}
   if (videoUrls[id]) { URL.revokeObjectURL(videoUrls[id]); delete videoUrls[id]; }
-  toast(t('videoRemoved')); renderModules(); renderLesson(id);
+  toast(t('videoRemoved')); renderModules(); renderLesson(id.startsWith('act-') ? currentLesson : id);
 }
 
 // ---------- Lesson detail ----------
@@ -1344,7 +1424,7 @@ function renderLesson(id) {
   const list = questions.filter((q) => q.lesson === id);
   if (!list.length) qs.append(el('p', 'muted small', t('noQ')));
   list.forEach((q) => qs.append(qItem(q)));
-  box.append(chips, el('h1', null, l.title), media, acts, el('p', 'small muted', t('videoNote')), body, qs);
+  box.append(chips, el('h1', null, l.title), media, acts, el('p', 'small muted', t('videoNote')), ...(actFor(id) ? [actCard(id)] : []), body, qs);
 }
 
 // ---------- Narration (text to speech) ----------
@@ -1383,7 +1463,7 @@ let slides = [], si = 0, narrate = true, scLesson = null;
 function present(id) {
   stopSpeech();
   const l = lesson(id); scLesson = l; const m = mod(l.mod);
-  slides = [{ kind: 'title' }, ...(videoUrls[id] ? [{ kind: 'video' }] : []), ...l.body.map((p) => ({ kind: 'text', p })), ...questions.filter((q) => q.lesson === id).map((q) => ({ kind: 'q', q, shown: false }))];
+  slides = [{ kind: 'title' }, ...(videoUrls[id] ? [{ kind: 'video' }] : []), ...l.body.map((p) => ({ kind: 'text', p })), ...questions.filter((q) => q.lesson === id).map((q) => ({ kind: 'q', q, shown: false })), ...(actFor(id) ? [{ kind: 'act' }] : [])];
   si = 0; $('#screen').classList.toggle('well', m.area === 'well'); $('#screen').hidden = false;
   if (!presented.includes(id)) { presented.push(id); save(); }
   drawSlide();
@@ -1392,6 +1472,7 @@ function askOne(q) { const l = lesson(q.lesson); scLesson = l; slides = [{ kind:
 function slideText(s) {
   if (s.kind === 'title') return [scLesson.title];
   if (s.kind === 'video') return [];
+  if (s.kind === 'act') return [tx(actFor(scLesson.id).title), t('actStartSlide')];
   if (s.kind === 'text') return [s.p];
   return [s.q.text, ...s.q.opts.map((o, i) => `${String.fromCharCode(65 + i)}. ${o}`)];
 }
@@ -1403,6 +1484,9 @@ function drawSlide() {
     st.append(el('span', 'eyebrow', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`), el('h2', null, l.title), el('p', 'big', videoUrls[l.id] ? t('videoNext') : t('mediaFile')));
   } else if (s.kind === 'video') {
     const v = el('video'); v.controls = true; v.src = videoUrls[l.id]; v.setAttribute('playsinline', ''); st.append(v);
+  } else if (s.kind === 'act') {
+    const a = actFor(l.id), sid = regId && regSession() && regSession().lesson === l.id ? regId : null;
+    st.append(el('span', 'eyebrow', '★ ' + t('actBtn')), el('h2', null, tx(a.title)), el('p', 'big', t('actStartSlide')), btn(t('actStart'), 'sun', () => openActivity(a.id, l.id, sid, sid ? eligibleFor(l.id).filter((g) => regState[g.id] && regState[g.id] !== 'a') : null)));
   } else if (s.kind === 'text') {
     st.append(el('span', 'eyebrow', m.name[lang]), el('p', 'big', s.p));
   } else {
@@ -1535,6 +1619,260 @@ function renderBank() {
     box.append(c);
   });
 }
+
+// ---------- Step-by-step activities ----------
+// Each step asks "what do you do next?" with picture choices. A wrong choice says so and gives a hint;
+// the right choice plays the step (a drawn animation, or the teacher's own video for that step), then moves on.
+// The teacher runs it for the whole class or for one girl. Results are saved on this device (actRuns).
+const svgG = (tr, s) => `<g transform="${tr}">${s}</g>`;
+const PAD = (wt = '', wb = '') => `<path class="${wt}" d="M-24,-15 L-15,-33 H15 L24,-15Z" fill="#fff" stroke="#c9708f" stroke-width="2.5" stroke-linejoin="round"/><path class="${wb}" d="M-24,15 L-15,33 H15 L24,15Z" fill="#fff" stroke="#c9708f" stroke-width="2.5" stroke-linejoin="round"/><path d="M-70,-17 H70 A17,17 0 0 1 70,17 H-70 A17,17 0 0 1 -70,-17Z" fill="#fff" stroke="#c9708f" stroke-width="2.5"/><path d="M-56,0 H56" stroke="#f0bfd0" stroke-width="3" stroke-dasharray="5 6" stroke-linecap="round"/>`;
+const PAD_TABS = (cls = '') => `<g class="${cls}" fill="#f6dbe4" stroke="#c9708f" stroke-width="2" stroke-dasharray="4 3"><path d="M-22,-17 L-14,-31 H14 L22,-17Z"/><path d="M-22,17 L-14,31 H14 L22,17Z"/></g>`;
+const STRIP = `<rect x="-62" y="-7" width="124" height="14" rx="4" fill="#f6d28b" stroke="#c9963b" stroke-width="2"/>`;
+const WRAP_BODY = `<rect x="-58" y="-26" width="116" height="52" rx="8" fill="#f3b6c9" stroke="#b5476b" stroke-width="2.5"/>`;
+const WRAP_CLOSED = WRAP_BODY + `<path d="M-58,-26 L0,6 L58,-26" fill="none" stroke="#b5476b" stroke-width="2.5" stroke-linejoin="round"/>`;
+const WRAP_FLAP_UP = (cls = '') => `<path class="${cls}" d="M-58,-26 L0,-58 L58,-26Z" fill="#f7cad8" stroke="#b5476b" stroke-width="2.5" stroke-linejoin="round"/>`;
+const HANDS = (dirty = false) => `<g stroke="#6e4426" stroke-width="2" fill="#a86e47"><ellipse cx="-22" cy="0" rx="22" ry="30" transform="rotate(-12 -22 0)"/><ellipse cx="22" cy="0" rx="22" ry="30" transform="rotate(12 22 0)"/><ellipse cx="-44" cy="8" rx="7" ry="13" transform="rotate(-30 -44 8)"/><ellipse cx="44" cy="8" rx="7" ry="13" transform="rotate(30 44 8)"/></g>` + (dirty ? `<g fill="#4a2e14"><circle cx="-26" cy="-8" r="4"/><circle cx="-14" cy="10" r="3"/><circle cx="20" cy="-12" r="4"/><circle cx="28" cy="8" r="3"/><circle cx="-30" cy="14" r="2.5"/></g>` : '');
+const BUB = (x, y, r, cls = '', d = 0) => `<circle class="${cls}" style="animation-delay:${d}s" cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#4aa3df" stroke-width="2"/>`;
+const DROP = (x, y, cls = '', d = 0) => `<path class="${cls}" style="animation-delay:${d}s" d="M${x},${y} q7,11 0,16 q-7,-5 0,-16z" fill="#4aa3df"/>`;
+const TAP = `<path d="M-30,-6 H8 V10 H-4 V22 H-18 V10 H-30Z" fill="#9bb1ad" stroke="#566b68" stroke-width="2" stroke-linejoin="round"/>`;
+const BIN = `<rect x="-28" y="-32" width="56" height="9" rx="3" fill="#3d4f4c"/><path d="M-23,-22 H23 L18,32 H-18Z" fill="#566b68"/><path d="M-9,-14 V24 M0,-14 V24 M9,-14 V24" stroke="#7f9490" stroke-width="3" stroke-linecap="round"/>`;
+const TOILET = `<g fill="#fff" stroke="#566b68" stroke-width="2.5" stroke-linejoin="round"><rect x="-30" y="-36" width="30" height="26" rx="4"/><path d="M-34,-10 H34 Q32,16 6,22 V34 H-16 V22 Q-34,16 -34,-10Z"/></g><path d="M-26,-4 H26" stroke="#4aa3df" stroke-width="3" stroke-linecap="round"/>`;
+const SCISSORS = `<g stroke="#566b68" stroke-width="3.5" fill="none" stroke-linecap="round"><circle cx="-12" cy="16" r="8"/><circle cx="12" cy="16" r="8"/><path d="M-7,10 L16,-22 M7,10 L-16,-22"/></g>`;
+const CLOCK = `<circle r="26" fill="#fff" stroke="#566b68" stroke-width="3"/><path d="M0,-15 V0 H11" stroke="#566b68" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M-20,-34 A40,40 0 0 1 30,-26" fill="none" stroke="#e9a23b" stroke-width="3"/><path d="M30,-26 l-9,-1 l5,-7z" fill="#e9a23b"/>`;
+const ROLL = `<rect x="-24" y="-11" width="48" height="22" rx="11" fill="#f3b6c9" stroke="#b5476b" stroke-width="2.5"/><path d="M-8,-11 V11 M8,-11 V11" stroke="#b5476b" stroke-width="2"/>`;
+const UNDIES = `<path d="M60,40 H260 L250,120 Q205,128 185,200 H135 Q115,128 70,120 Z" fill="#8ccfc6" stroke="#136f63" stroke-width="3" stroke-linejoin="round"/><rect x="60" y="40" width="200" height="13" rx="3" fill="#6bb8ae" stroke="#136f63" stroke-width="3"/>`;
+const PAD_ON = (inner) => svgG('translate(160,148) rotate(90) scale(.6)', inner);
+const ARROW_UP = (x, y) => `<path d="M${x},${y} v-16 m-6,7 l6,-7 l6,7" stroke="#b3261e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+// Small pictures for the answer choices (viewBox 0 0 120 90)
+const ACT_ICONS = {
+  wash: svgG('translate(60,56) scale(.6)', HANDS()) + BUB(34, 22, 6) + BUB(86, 18, 5) + BUB(94, 38, 4) + svgG('translate(64,8) scale(.6)', TAP) + DROP(58, 16),
+  dirty: svgG('translate(46,50) scale(.55)', HANDS(true)) + svgG('translate(98,64) scale(.3)', WRAP_CLOSED),
+  wet: svgG('translate(60,36) scale(.42)', PAD()) + `<path d="M20,46 H100 Q96,82 60,82 Q24,82 20,46Z" fill="#4aa3df" opacity=".85"/>`,
+  unwrap: svgG('translate(60,34) scale(.4)', PAD()) + svgG('translate(60,66) scale(.48)', WRAP_BODY + WRAP_FLAP_UP()),
+  throwaway: svgG('translate(60,58) scale(.6)', BIN) + svgG('translate(60,14) scale(.3)', PAD()),
+  peel: svgG('translate(60,48) scale(.6)', PAD() + svgG('rotate(-16 -62 0)', STRIP)),
+  keeppaper: svgG('translate(60,45) scale(.6)', PAD() + STRIP),
+  fold: svgG('translate(60,45) scale(.6)', `<path d="M-38,-17 H38 A17,17 0 0 1 38,17 H-38 A17,17 0 0 1 -38,-17Z" fill="#fbe3ea" stroke="#c9708f" stroke-width="2.5"/><path d="M-30,-25 H30 A17,17 0 0 1 30,9 H-30 A17,17 0 0 1 -30,-25Z" fill="#fff" stroke="#c9708f" stroke-width="2.5"/>`),
+  center: svgG('translate(4,-4) scale(.35)', UNDIES + PAD_ON(PAD())),
+  outside: svgG('translate(4,-10) scale(.35)', UNDIES) + svgG('translate(60,80) scale(.34)', PAD()),
+  front: svgG('translate(4,-4) scale(.35)', UNDIES + svgG('translate(160,72) scale(.62)', PAD())),
+  wingsfold: svgG('translate(4,-4) scale(.35)', UNDIES + PAD_ON(PAD_TABS() + PAD('act-hide', 'act-hide'))),
+  cut: svgG('translate(40,46) scale(.4)', PAD()) + svgG('translate(92,44) scale(.75)', SCISSORS),
+  wingsup: svgG('translate(4,-4) scale(.35)', UNDIES + PAD_ON(PAD())) + ARROW_UP(48, 54) + ARROW_UP(72, 54),
+  dispose: svgG('translate(42,40) scale(.7)', ROLL) + svgG('translate(88,56) scale(.6)', BIN),
+  toilet: svgG('translate(64,52) scale(.75)', TOILET) + svgG('translate(30,20) scale(.28)', PAD()),
+  clock: svgG('translate(84,48) scale(.75)', CLOCK) + svgG('translate(34,48) scale(.32)', PAD()),
+};
+const actIcon = (k) => `<svg viewBox="0 0 120 90" aria-hidden="true">${ACT_ICONS[k] || ''}</svg>`;
+
+// Big pictures (viewBox 0 0 320 220). padScene(i) is the picture after step i; with animate=true it plays that step.
+const PAD_SCENES = [
+  () => svgG('translate(160,24)', TAP) + DROP(148, 50, 'k k-drop', 0) + DROP(148, 50, 'k k-drop', .35) + DROP(148, 50, 'k k-drop', .7)
+    + `<g class="k k-rub">${svgG('translate(160,132) scale(1.15)', HANDS())}</g>`
+    + BUB(112, 104, 9, 'k k-bub', .2) + BUB(206, 96, 7, 'k k-bub', .6) + BUB(196, 150, 6, 'k k-bub', 1) + BUB(124, 156, 7, 'k k-bub', 1.3) + BUB(160, 88, 5, 'k k-bub', 1.6)
+    + svgG('translate(276,186) scale(.45)', WRAP_CLOSED),
+  () => `<g class="k k-out">${svgG('translate(160,58)', PAD())}</g>` + svgG('translate(160,170) scale(1.3)', WRAP_BODY + WRAP_FLAP_UP('k k-flap')),
+  () => svgG('translate(160,92)', PAD()) + `<g class="k k-peel">${svgG('translate(160,178) rotate(6)', STRIP)}</g>`,
+  () => UNDIES + `<g class="k k-place">${PAD_ON(PAD())}</g>`,
+  () => UNDIES + PAD_ON(PAD_TABS('k k-tab') + PAD('k k-wing-t', 'k k-wing-b')),
+  () => svgG('translate(228,150) scale(1.3)', BIN) + `<g class="k k-toss">${svgG('translate(228,108)', ROLL)}</g>`
+    + `<g class="k k-late">${svgG('translate(84,128) scale(.8)', HANDS())}${BUB(52, 92, 6)}${BUB(118, 88, 5)}${BUB(84, 80, 4)}</g>`,
+];
+const PAD_START = () => svgG('translate(132,110) scale(1.35)', PAD()) + svgG('translate(276,78) scale(.42)', WRAP_CLOSED) + svgG('translate(276,140) scale(.42)', WRAP_CLOSED);
+
+const ACTIVITIES = [{
+  id: 'pad', lessons: ['men1', 'men2'],
+  title: { en: 'How to wear a pad', sw: 'Jinsi ya kuvaa pedi' },
+  intro: { en: 'This is a pad. Let us learn, step by step, how to wear it.', sw: 'Hii ni pedi. Tujifunze hatua kwa hatua jinsi ya kuivaa.' },
+  done: { en: 'Well done! You know how to wear a pad.', sw: 'Hongera! Unajua jinsi ya kuvaa pedi.' },
+  start: PAD_START, scenes: PAD_SCENES,
+  steps: [
+    { q: { en: 'This is a pad. What do you do first?', sw: 'Hii ni pedi. Unafanya nini kwanza?' },
+      opts: [{ k: 'wash', ok: true, en: 'Wash your hands with soap and water', sw: 'Nawa mikono kwa sabuni na maji' }, { k: 'dirty', en: 'Open it without washing your hands', sw: 'Ifungue bila kunawa mikono' }, { k: 'wet', en: 'Wet the pad with water', sw: 'Lowanisha pedi kwa maji' }],
+      hint: { en: 'Clean hands keep germs away from the pad.', sw: 'Mikono safi huzuia vijidudu kufika kwenye pedi.' },
+      cap: { en: 'Wash your hands with soap and clean water.', sw: 'Nawa mikono kwa sabuni na maji safi.' } },
+    { q: { en: 'Your hands are clean. What next?', sw: 'Mikono yako ni safi. Nini kinafuata?' },
+      opts: [{ k: 'unwrap', ok: true, en: 'Open the wrapper and take out the pad', sw: 'Fungua kifuniko na utoe pedi' }, { k: 'throwaway', en: 'Throw the pad away', sw: 'Tupa pedi' }, { k: 'wet', en: 'Put the pad in water', sw: 'Weka pedi kwenye maji' }],
+      hint: { en: 'The pad comes in a small wrapper. Keep the wrapper for later.', sw: 'Pedi iko ndani ya kifuniko kidogo. Hifadhi kifuniko kwa baadaye.' },
+      cap: { en: 'Open the wrapper. Keep it to wrap the used pad later.', sw: 'Fungua kifuniko. Kihifadhi ili ufunge pedi iliyotumika baadaye.' } },
+    { q: { en: 'There is a paper strip on the back of the pad. What do you do?', sw: 'Kuna karatasi nyuma ya pedi. Unafanya nini?' },
+      opts: [{ k: 'peel', ok: true, en: 'Peel off the paper strip', sw: 'Bandua karatasi hiyo' }, { k: 'keeppaper', en: 'Leave the paper on', sw: 'Acha karatasi hiyo' }, { k: 'fold', en: 'Fold the pad in half', sw: 'Kunja pedi katikati' }],
+      hint: { en: 'Under the paper is the sticky part that holds the pad in place.', sw: 'Chini ya karatasi kuna gundi inayoshikilia pedi.' },
+      cap: { en: 'Peel off the strip to show the sticky side.', sw: 'Bandua karatasi ili gundi ionekane.' } },
+    { q: { en: 'Where do you stick the pad?', sw: 'Unabandika pedi wapi?' },
+      opts: [{ k: 'center', ok: true, en: 'In the middle of your underwear, sticky side down', sw: 'Katikati ya chupi yako, upande wenye gundi chini' }, { k: 'outside', en: 'On the outside of your underwear', sw: 'Nje ya chupi yako' }, { k: 'front', en: 'At the very front, by the waistband', sw: 'Mbele kabisa, karibu na mpira wa kiuno' }],
+      hint: { en: 'The pad goes inside the underwear, in the middle, where it can catch the blood.', sw: 'Pedi inakaa ndani ya chupi, katikati, mahali inapoweza kudaka damu.' },
+      cap: { en: 'Press the pad into the middle of the underwear.', sw: 'Bonyeza pedi katikati ya chupi.' } },
+    { q: { en: 'Your pad has wings. What do you do with them?', sw: 'Pedi yako ina mabawa. Unafanya nini nayo?' },
+      opts: [{ k: 'wingsfold', ok: true, en: 'Fold the wings around the sides of the underwear', sw: 'Kunja mabawa kuzunguka pande za chupi' }, { k: 'cut', en: 'Cut the wings off', sw: 'Kata mabawa' }, { k: 'wingsup', en: 'Leave the wings sticking up', sw: 'Acha mabawa yasimame juu' }],
+      hint: { en: 'Wings stop the pad from moving and keep your underwear clean.', sw: 'Mabawa huzuia pedi kusogea na husaidia chupi kubaki safi.' },
+      cap: { en: 'Fold each wing under the underwear and press.', sw: 'Kunja kila bawa chini ya chupi na ubonyeze.' } },
+    { q: { en: 'After 4 to 8 hours, or when the pad is full, what do you do?', sw: 'Baada ya saa 4 hadi 8, au pedi ikijaa, unafanya nini?' },
+      opts: [{ k: 'dispose', ok: true, en: 'Wrap the used pad, put it in the bin, then wash your hands', sw: 'Funga pedi iliyotumika, itupe kwenye pipa, kisha nawa mikono' }, { k: 'toilet', en: 'Flush it down the toilet', sw: 'Itupe chooni na uvute maji' }, { k: 'clock', en: 'Keep wearing it the whole day', sw: 'Endelea kuivaa siku nzima' }],
+      hint: { en: 'Pads block toilets. A pad worn too long can cause infection and smell.', sw: 'Pedi huziba choo. Pedi ikivaliwa muda mrefu inaweza kuleta maambukizi na harufu.' },
+      cap: { en: 'Wrap it, put it in the bin, and wash your hands again.', sw: 'Ifunge, itupe kwenye pipa, na unawe mikono tena.' } },
+  ],
+}];
+Object.assign(T.en, { actBtn: 'Step-by-step activity', actShort: 'Activity', actWho: 'Who is doing this activity?', wholeClass: 'Whole class', orGirl: 'Or choose one girl', step: 'Step', actRight: 'Correct!', actWrong: 'Wrong, try again.', actNext: 'Next step →', actFinish: 'Finish', actAgain: '↻ Watch again', actRestart: 'Do it again', actStepsDone: 'Steps done', actFirstTry: 'Right first time', actWrongTries: 'Wrong tries', actWhen: 'When', actWhoH: 'Who', actResultsH: 'Step-by-step activity results', actNone: 'No one has done this activity yet.', actStepVideos: 'Step videos (optional)', actVideoNote: 'Each step plays a drawing of the step being done. Add your own short video for a step to play it instead. Videos stay on this device.', actSaved: 'Activity results saved', actStartSlide: 'Now let us practise, step by step.', actStart: '★ Start the activity', actPartial: 'not finished', actPick: 'Choose the right answer.', girlsText: "LearnReach clubs serve adolescent girls in marginalised communities. Wellbeing modules are delivered as video and audio sessions, with step-by-step activities. They are not graded. Quiz answers are never recorded; attendance and step-by-step activity results are saved on this device. Reproductive health is for ages 15 and over.", wellReport: 'Wellbeing sessions are not graded. Quiz answers are never recorded; attendance and step-by-step activity results are kept.' });
+Object.assign(T.sw, { actBtn: 'Shughuli ya hatua kwa hatua', actShort: 'Shughuli', actWho: 'Nani anafanya shughuli hii?', wholeClass: 'Darasa zima', orGirl: 'Au chagua msichana mmoja', step: 'Hatua', actRight: 'Sahihi!', actWrong: 'Si sahihi, jaribu tena.', actNext: 'Hatua inayofuata →', actFinish: 'Maliza', actAgain: '↻ Tazama tena', actRestart: 'Fanya tena', actStepsDone: 'Hatua zilizofanywa', actFirstTry: 'Sahihi mara ya kwanza', actWrongTries: 'Majaribio yasiyo sahihi', actWhen: 'Lini', actWhoH: 'Nani', actResultsH: 'Matokeo ya shughuli ya hatua kwa hatua', actNone: 'Bado hakuna aliyefanya shughuli hii.', actStepVideos: 'Video za hatua (si lazima)', actVideoNote: 'Kila hatua inaonyesha mchoro wa hatua ikifanywa. Ongeza video yako fupi ya hatua ili ionyeshwe badala yake. Video zinabaki kwenye kifaa hiki.', actSaved: 'Matokeo ya shughuli yamehifadhiwa', actStartSlide: 'Sasa tufanye mazoezi, hatua kwa hatua.', actStart: '★ Anza shughuli', actPartial: 'haijakamilika', actPick: 'Chagua jibu sahihi.', girlsText: 'Klabu za LearnReach zinahudumia wasichana balehe katika jamii zilizotengwa. Moduli za ustawi zinatolewa kwa video na sauti, pamoja na shughuli za hatua kwa hatua. Hazipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa kwenye kifaa hiki. Afya ya uzazi ni ya umri wa miaka 15 na zaidi.', wellReport: 'Vipindi vya ustawi havipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa.' });
+
+const actFor = (lessonId) => ACTIVITIES.find((a) => a.lessons.includes(lessonId)) || null;
+const tx = (o) => (o && (o[lang] || o.en)) || '';
+const actVideoKey = (a, i) => `act-${a.id}-${i}`;
+let actRuns = store.get('actRuns', []);
+let act = null;
+const saveRuns = () => store.set('actRuns', actRuns.slice(-500));
+const actSay = (texts) => { if (narrate) speak(texts.filter(Boolean), lang === 'sw' ? 'Swahili' : 'English'); };
+const artBox = (svg, animate) => { const d = el('div', 'act-art'); d.innerHTML = `<svg class="act-scene${animate ? ' a' : ''}" viewBox="0 0 320 220" role="img">${svg}</svg>`; return d; };
+
+function openActivity(actId, lessonId, sessionId, girls) {
+  stopSpeech();
+  if (!$('#screen').hidden) closeScreen();
+  const a = ACTIVITIES.find((x) => x.id === actId); if (!a) return;
+  act = { a, lessonId, sessionId: sessionId || null, girls: (girls && girls.length ? girls : eligibleFor(lessonId)), phase: 'who', i: 0, run: null, saved: false };
+  $('#act').hidden = false; drawAct();
+}
+function startRun(who) {
+  const a = act.a;
+  act.run = { id: 'ar' + Date.now(), act: a.id, lesson: act.lessonId, session: act.sessionId, mode: who === 'class' ? 'class' : 'girl', girl: who === 'class' ? null : who, at: new Date().toISOString(), end: null, steps: a.steps.map(() => ({ wrong: [], ok: false })), completed: false };
+  act.saved = false; act.i = 0; enterStep();
+}
+function enterStep() { act.phase = 'ask'; act.fb = ''; act.order = shuffle(act.a.steps[act.i].opts); drawAct(); actSay([tx(act.a.steps[act.i].q)]); }
+function finishRun(completed) {
+  if (!act || !act.run || act.saved) return;
+  const r = act.run; if (!completed && !r.steps.some((s) => s.ok || s.wrong.length)) return;
+  r.completed = completed; r.end = new Date().toISOString(); actRuns.push(r); saveRuns(); act.saved = true; toast(t('actSaved'));
+}
+function closeActivity() {
+  finishRun(false); stopSpeech();
+  $('#act-stage').querySelectorAll('video').forEach((v) => v.pause());
+  try { if (document.fullscreenElement) document.exitFullscreen(); } catch {}
+  $('#act').hidden = true; act = null;
+  if (!$('#view-lesson').hidden && currentLesson) renderLesson(currentLesson);
+  if (!$('#view-report').hidden && repId) renderReport();
+}
+const whoName = (r) => r.mode === 'class' ? t('wholeClass') : (STUDENTS.find((g) => g.id === r.girl) || {}).name || '–';
+
+function drawAct() {
+  if (!act) return;
+  const { a } = act, n = a.steps.length, st = $('#act-stage'); st.replaceChildren();
+  $('#act-voice').textContent = t(narrate ? 'narrOn' : 'narrOff');
+  $('#act-who').textContent = tx(a.title) + (act.run ? ' · ' + whoName(act.run) : '');
+  const dots = $('#act-dots'); dots.replaceChildren();
+  a.steps.forEach((_, k) => dots.append(el('i', act.run && act.run.steps[k].ok ? 'done' : (k === act.i && act.phase !== 'who' && act.phase !== 'done' ? 'on' : ''))));
+  dots.hidden = act.phase === 'who';
+  $('#act-step').textContent = act.phase === 'ask' || act.phase === 'watch' ? `${t('step')} ${act.i + 1} ${t('slideOf')} ${n}` : '';
+
+  if (act.phase === 'who') {
+    const head = el('div', 'act-head'); head.append(el('span', 'eyebrow', t('actBtn')), el('h2', null, tx(a.title)), el('p', 'big', tx(a.intro)));
+    const main = el('div', 'act-main'); main.append(artBox(a.start(), false), head);
+    const pick = el('div', 'stack'); pick.append(el('h3', null, t('actWho')));
+    const row = el('div', 'row'); row.style.justifyContent = 'flex-start';
+    const whole = btn('👥 ' + t('wholeClass'), 'sun', () => startRun('class')); whole.id = 'act-class'; row.append(whole); pick.append(row);
+    if (act.girls.length) {
+      pick.append(el('span', 'label', t('orGirl')));
+      const list = el('div', 'reg-list');
+      act.girls.forEach((g) => { const b = el('button', 'qz-girl'); b.type = 'button'; b.id = 'act-g-' + g.id; b.append(el('span', null, g.name)); const runs = actRuns.filter((r) => r.girl === g.id && r.act === a.id && r.completed); if (runs.length) b.append(el('span', 'chip ok', '✓')); b.addEventListener('click', () => startRun(g.id)); list.append(b); });
+      pick.append(list);
+    }
+    st.append(main, pick); return;
+  }
+
+  if (act.phase === 'done') {
+    const r = act.run, first = r.steps.filter((s) => s.ok && !s.wrong.length).length, wrong = r.steps.reduce((s, x) => s + x.wrong.length, 0);
+    const head = el('div', 'act-head'); head.append(el('span', 'eyebrow', '★ ★ ★'), el('h2', null, tx(a.done)));
+    const kv = el('div', 'kv'); [[t('actStepsDone'), `${r.steps.filter((s) => s.ok).length} / ${n}`], [t('actFirstTry'), `${first} / ${n}`], [t('actWrongTries'), String(wrong)]].forEach(([k, v]) => { const d = el('div'); d.append(el('span', 'small muted', k), el('b', null, v)); kv.append(d); });
+    head.append(kv);
+    const acts = el('div', 'row'); acts.style.justifyContent = 'flex-start';
+    acts.append(btn(t('actRestart'), 'ghost', () => { act.phase = 'who'; act.run = null; act.i = 0; drawAct(); }), btn(t('close'), '', closeActivity));
+    head.append(acts);
+    const main = el('div', 'act-main'); main.append(artBox(a.scenes[n - 1](), false), head); st.append(main); return;
+  }
+
+  const step = a.steps[act.i];
+  if (act.phase === 'ask') {
+    const main = el('div', 'act-main'); const q = el('div', 'act-head');
+    q.append(el('span', 'eyebrow', `${t('step')} ${act.i + 1} / ${n}`), el('h2', null, tx(step.q)));
+    const opts = el('div', 'act-opts');
+    act.order.forEach((o) => {
+      const tried = act.run.steps[act.i].wrong.includes(o.k);
+      const b = el('button', 'act-opt' + (tried ? ' no' : '')); b.type = 'button'; b.id = 'act-o-' + o.k; b.disabled = tried; b.dataset.ok = o.ok ? '1' : '';
+      const ico = el('span', 'act-ico'); ico.innerHTML = actIcon(o.k); b.append(ico, el('span', null, tx(o)));
+      b.addEventListener('click', () => pickOption(o, b)); opts.append(b);
+    });
+    const fb = el('p', 'act-fb'); fb.id = 'act-fb'; fb.setAttribute('role', 'status');
+    if (act.fb) { fb.className = 'act-fb no'; fb.append(el('b', null, '✗ ' + t('actWrong') + ' '), document.createTextNode(tx(step.hint))); } else fb.textContent = t('actPick');
+    q.append(opts, fb);
+    main.append(artBox(act.i === 0 ? a.start() : a.scenes[act.i - 1](), false), q); st.append(main); return;
+  }
+
+  // watch: the right answer plays the step
+  const main = el('div', 'act-main'), head = el('div', 'act-head');
+  head.append(el('span', 'eyebrow ok', '✓ ' + t('actRight')), el('h2', null, tx(step.opts.find((o) => o.ok))), el('p', 'big', tx(step.cap)));
+  const acts = el('div', 'row'); acts.style.justifyContent = 'flex-start';
+  const vurl = videoUrls[actVideoKey(a, act.i)];
+  let media;
+  if (vurl) { media = el('div', 'act-art'); const v = el('video'); v.src = vurl; v.controls = true; v.autoplay = true; v.setAttribute('playsinline', ''); media.append(v); }
+  else media = artBox(a.scenes[act.i](), true);
+  const again = btn(t('actAgain'), 'ghost', () => { const fresh = vurl ? null : artBox(a.scenes[act.i](), true); if (fresh) media.replaceWith(fresh), media = fresh; else { const v = media.querySelector('video'); v.currentTime = 0; v.play().catch(() => {}); } });
+  const last = act.i === n - 1;
+  const next = btn(last ? t('actFinish') : t('actNext'), 'sun', () => {
+    $('#act-stage').querySelectorAll('video').forEach((v) => v.pause()); stopSpeech();
+    if (last) { act.phase = 'done'; finishRun(true); drawAct(); actSay([tx(a.done)]); } else { act.i++; enterStep(); }
+  });
+  next.id = 'act-next';
+  acts.append(again, next); head.append(acts);
+  main.append(media, head); st.append(main);
+}
+function pickOption(o, b) {
+  const s = act.run.steps[act.i], step = act.a.steps[act.i];
+  if (o.ok) { s.ok = true; act.phase = 'watch'; drawAct(); actSay([t('actRight'), tx(step.cap)]); return; }
+  if (!s.wrong.includes(o.k)) s.wrong.push(o.k);
+  act.fb = 'no'; drawAct();
+  const nb = $('#act-o-' + o.k); if (nb) { nb.classList.add('shake'); }
+  actSay([t('actWrong'), tx(step.hint)]);
+}
+
+function actRunsTable(runs) {
+  if (!runs.length) return null;
+  const tw = el('div', 'tw'), tb = el('table'), th = el('thead'), hr = el('tr');
+  [t('actWhen'), t('actWhoH'), t('actStepsDone'), t('actFirstTry'), t('actWrongTries')].forEach((h, i) => hr.append(el('th', i > 1 ? 'n' : null, h)));
+  th.append(hr); tb.append(th); const body = el('tbody');
+  runs.slice().reverse().forEach((r) => {
+    const n = r.steps.length, tr = el('tr'), when = new Date(r.at);
+    const done = el('td', 'n', `${r.steps.filter((s) => s.ok).length} / ${n}`); if (!r.completed) done.append(el('span', 'chip warn', t('actPartial')));
+    tr.append(el('td', null, when.toLocaleDateString(loc(), { day: 'numeric', month: 'short' }) + ' ' + hm(r.at)), el('td', null, whoName(r)), done,
+      el('td', 'n', `${r.steps.filter((s) => s.ok && !s.wrong.length).length} / ${n}`), el('td', 'n', String(r.steps.reduce((s, x) => s + x.wrong.length, 0))));
+    body.append(tr);
+  });
+  tb.append(body); tw.append(tb); return tw;
+}
+function actCard(lessonId) {
+  const a = actFor(lessonId), c = el('div', 'card well act-card');
+  c.append(el('h3', null, '★ ' + t('actBtn')), el('p', null, tx(a.title) + ' · ' + a.steps.length + ' ' + t('step').toLowerCase()));
+  const start = btn(t('actStart'), 'rose', () => openActivity(a.id, lessonId, null, null)); start.id = 'act-open'; start.style.alignSelf = 'flex-start'; c.append(start);
+  const vids = el('details'); vids.append(el('summary', 'label', t('actStepVideos')), el('p', 'small muted', t('actVideoNote')));
+  a.steps.forEach((s, i) => {
+    const key = actVideoKey(a, i), row = el('div', 'lesson-row'), ttl = el('div', 'ttl');
+    ttl.append(el('strong', null, `${t('step')} ${i + 1}`), el('span', 'small muted', tx(s.cap)));
+    const acts = el('div', 'acts');
+    acts.append(btn(videoUrls[key] ? t('replaceVideo') : '+ ' + t('addVideo'), 'ghost sm', () => { videoFor = key; $('#video-file').click(); }));
+    if (videoUrls[key]) acts.append(btn(t('removeVideo'), 'ghost sm', () => removeVideo(key)));
+    row.append(ttl, acts); vids.append(row);
+  });
+  c.append(vids);
+  const runs = actRuns.filter((r) => r.act === a.id && r.lesson === lessonId).slice(-10);
+  c.append(el('span', 'label', t('actResultsH')));
+  c.append(actRunsTable(runs) || el('p', 'small muted', t('actNone')));
+  return c;
+}
+
+$('#act-close').addEventListener('click', closeActivity);
+$('#act-voice').addEventListener('click', () => { narrate = !narrate; if (!narrate) stopSpeech(); drawAct(); });
+$('#act-full').addEventListener('click', () => { const s = $('#act'); try { document.fullscreenElement ? document.exitFullscreen() : s.requestFullscreen?.().catch(() => {}); } catch {} });
+document.querySelectorAll('#act [data-lang]').forEach((b) => b.addEventListener('click', () => { if (act) drawAct(); }));
+document.addEventListener('keydown', (e) => { if (!$('#act').hidden && e.key === 'Escape') closeActivity(); });
 
 // ---------- Start ----------
 if (synth) { try { synth.getVoices(); synth.onvoiceschanged = () => {}; } catch {} }

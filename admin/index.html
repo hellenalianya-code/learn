@@ -77,7 +77,7 @@ td.n, th.n { text-align: right; }
   <form class="card" id="login-form" novalidate>
     <div class="brand"><span class="sunmark" aria-hidden="true"></span>LearnReach <small>Admin</small></div>
     <div><h1>Admin sign-in</h1><p class="muted">See who has registered and who is signing in to the teacher portal.</p></div>
-    <div class="field"><label for="u">Email</label><input id="u" type="email" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
+    <div class="field"><label for="u">Email or username</label><input id="u" type="text" autocomplete="username" autocapitalize="none" spellcheck="false"></div>
     <div class="field"><label for="p">Password</label><input id="p" type="password" autocomplete="current-password"></div>
     <p class="err" id="login-err" role="alert"></p>
     <button class="btn" type="submit" id="login-btn">Sign in</button>
@@ -150,6 +150,7 @@ const DEMO = window.LR_DEMO === true || !CFG.url || !CFG.anonKey || /YOUR-/.test
 let sb = null;
 if (!DEMO && window.supabase && window.supabase.createClient) { try { sb = window.supabase.createClient(CFG.url, CFG.anonKey, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'lr_admin_auth' } }); } catch {} }
 const DAY = 864e5;
+const USERNAMES = { admin: 'hellenalianya@gmail.com' }; // sign-in names that stand for an admin's email
 const deviceLabel = () => { const ua = navigator.userAgent || ''; const b = (ua.match(/(Edg|Chrome|Firefox|Safari)\/[\d]+/) || [''])[0]; const os = /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : /Windows/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : ''; return [os, b.replace('/', ' ')].filter(Boolean).join(' · '); };
 let users = [], signins = [], sortKey = 'registered_at', sortDir = -1;
 
@@ -169,8 +170,8 @@ const dayKey = (d) => { const x = new Date(d); return `${x.getFullYear()}-${Stri
 $('#demo-note').hidden = !DEMO;
 $('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const email = $('#u').value.trim(), pass = $('#p').value, err = $('#login-err');
-  if (!email || !pass) { err.textContent = 'Enter your email and password.'; return; }
+  const raw = $('#u').value.trim(), email = USERNAMES[raw.toLowerCase()] || raw, pass = $('#p').value, err = $('#login-err');
+  if (!raw || !pass) { err.textContent = 'Enter your email or username and your password.'; return; }
   if (DEMO) { err.textContent = ''; enter({ email }); return; }
   if (!sb) { err.textContent = 'Could not load the sign-in service. Check the internet connection and reload.'; return; }
   const b = $('#login-btn'); b.disabled = true; b.textContent = 'Please wait…';

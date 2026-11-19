@@ -464,7 +464,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
         <div class="row"><h2 data-t="learnersH">Learners</h2><div class="row"><span class="pp-sync" id="class-sync"></span><button class="btn sm" id="add-pupil" type="button" data-t="addPupil">＋ Add pupil</button></div></div>
         <div class="tw">
           <table>
-            <thead><tr><th data-t="hName">Name</th><th class="n" data-t="hGender">Age</th><th data-t="hGradesCol">Grades</th><th class="n" data-t="hAvg">Average</th><th class="n" data-t="hLevel">Level</th><th class="n" data-t="hAtt">Attendance</th><th class="n" data-t="hWellS">Wellbeing sessions</th></tr></thead>
+            <thead><tr><th data-t="hName">Name</th><th class="n" data-t="hGender">Age</th><th data-t="hGradesCol">Grades</th><th class="n" data-t="hLevel">Level</th></tr></thead>
             <tbody id="class-rows"></tbody>
           </table>
         </div>
@@ -1250,11 +1250,8 @@ function renderClass() {
   STUDENTS.forEach((s) => {
     const a = avgFor(s.id), lv = levelOf(a), tr = el('tr');
     const lvTd = el('td', 'n'); if (lv) lvTd.append(el('span', 'lvl ' + lv, lv)); else lvTd.textContent = '–';
-    const mine = wellMods.filter((m) => eligible(s, m));
-    const wn = mine.filter((m) => (attendance[m.id] || []).includes(s.id)).length;
-    const ar = attStats(s).rate;
     const nameTd = el('td'); const nb = el('button', 'namebtn', s.name); nb.type = 'button'; nb.dataset.pupil = s.id; nb.addEventListener('click', () => openPupil(s.id)); nameTd.append(nb);
-    tr.append(nameTd, el('td', 'n', s.age == null ? '–' : String(s.age)), el('td', null, gradesText(s.id)), el('td', 'n', a == null ? '–' : a + '%'), lvTd, el('td', 'n', ar == null ? '–' : pct(ar)), el('td', 'n', `${wn} / ${mine.length}`));
+    tr.append(nameTd, el('td', 'n', s.age == null ? '–' : String(s.age)), el('td', null, gradesText(s.id)), lvTd);
     tb.append(tr);
   });
 }
@@ -2647,7 +2644,7 @@ function renderPupil() {
   grid.append(card(t('ppSchoolWay'), [[t('ppDistance'), r.distance_km != null ? r.distance_km + ' km' : null], [t('ppMinutes'), r.travel_minutes != null ? r.travel_minutes + ' ' + t('min') : null], [t('ppTravel'), optLabel('tr', r.travel_mode)]]));
   grid.append(card(t('ppHome'), [[t('ppLivesWith'), optLabel('lw', r.lives_with)], [t('ppHasChildren'), r.has_children ? t('yes') + (r.children_count ? ' (' + r.children_count + ')' : '') : yesNo(r.has_children)], [t('ppPastoral'), yesNo(r.pastoralist)], [t('ppAway'), (r.away_months || []).length ? r.away_months.map(monthName).join(', ') : null]]));
   const a = attStats(p), avg = avgFor(p.id);
-  grid.append(card(t('ppLearning'), [...GRADED.map((g) => [SUBJECTS.find((s) => s.id === g).name[lang], levelIn(p.id, g) ? t('grade') + ' ' + levelIn(p.id, g) : null]), [t('hAvg'), avg != null ? avg + '%' : null], [t('hAtt'), a.rate != null ? pct(a.rate) + ' (' + a.attended + ' / ' + a.eligible + ')' : null], [t('hToCatch'), String(toCatchFor(p.id))]]));
+  grid.append(card(t('ppLearning'), [...GRADED.map((g) => [SUBJECTS.find((s) => s.id === g).name[lang], levelIn(p.id, g) ? t('grade') + ' ' + levelIn(p.id, g) : null]), [t('hAvg'), avg != null ? avg + '%' : null], [t('hLevel'), levelOf(avg) || null], [t('hAtt'), a.rate != null ? pct(a.rate) + ' (' + a.attended + ' / ' + a.eligible + ')' : null], [t('hWellS'), (() => { const ms = MODULES.filter((m) => m.area === 'well' && (!m.minAge || (p.age != null && p.age >= m.minAge))); return ms.filter((m) => (attendance[m.id] || []).includes(p.id)).length + ' / ' + ms.length; })()], [t('hToCatch'), String(toCatchFor(p.id))]]));
   const sc = el('div', 'pp-card sens'); sc.append(el('h3', null, t('ppChallenges')));
   if (!r.consent) sc.append(el('p', 'muted', t('ppConsentFirst')));
   else {

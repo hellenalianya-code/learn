@@ -211,6 +211,30 @@ td.n, th.n { text-align: center; }
 .kv div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
 .kv b { display: block; font-family: var(--display); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
 .names { display: flex; flex-wrap: wrap; gap: 6px; }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: .95rem; }
+.crumbs button { all: unset; cursor: pointer; color: var(--teal); font-weight: 700; }
+.crumbs button:focus-visible { outline: 3px solid var(--sun); }
+.crumbs .sep { color: var(--muted); }
+.grade-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 12px; }
+.tile { all: unset; box-sizing: border-box; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--teal); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.tile.well { border-left-color: var(--rose); }
+.tile:hover { border-color: var(--teal); }
+.tile.well:hover { border-color: var(--rose); }
+.tile:focus-visible { outline: 3px solid var(--sun); }
+.tile h3 { margin: 0; }
+.tile .big { font-family: var(--display); font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+.catch { display: flex; flex-direction: column; gap: 10px; }
+.catch-row { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--sun); border-radius: var(--r); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.catch-row .names button { all: unset; cursor: pointer; font-size: .8rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--rose-soft); color: var(--bad); }
+.catch-row .names button:hover { background: var(--teal-soft); color: var(--ok); }
+.catch-row .names button:focus-visible { outline: 3px solid var(--sun); }
+.hist-filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.hist-filters .field { min-width: 150px; flex: 0 1 190px; }
+.week-h { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 800; margin-top: 8px; }
+.ses .who { font-size: .85rem; color: var(--muted); }
+.ses .who b { color: var(--ink); font-weight: 700; }
+.lvl-sel { padding: 3px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
+
 .detail-row td { background: var(--bg); white-space: normal; }
 .unit { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line); }
 .unit:first-child { border-top: 0; }
@@ -386,15 +410,21 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
         <div class="stat"><span class="muted small" data-t="sAtt">Attendance, last 4 weeks</span><b id="st-att">0</b></div>
         <div class="stat"><span class="muted small" data-t="sWell">Attended all Life Skills topics</span><b id="st-well">0</b></div>
       </div>
+      <div class="stack" id="catch-wrap">
+        <div class="row"><h2 data-t="catchH">Catch-up</h2><span class="label" id="catch-count"></span></div>
+        <p class="small muted" data-t="catchSub">Girls who missed a lesson.</p>
+        <div class="catch" id="catch-list"></div>
+      </div>
       <div class="stack">
         <h2 data-t="learnersH">Learners</h2>
         <div class="tw">
           <table>
-            <thead><tr><th data-t="hName">Name</th><th class="n" data-t="hGender">Age</th><th class="n" data-t="hAvg">Average</th><th class="n" data-t="hLevel">Level</th><th class="n" data-t="hAtt">Attendance</th><th class="n" data-t="hWellS">Wellbeing sessions</th></tr></thead>
+            <thead><tr><th data-t="hName">Name</th><th class="n" data-t="hGender">Age</th><th data-t="hGradesCol">Grades</th><th class="n" data-t="hAvg">Average</th><th class="n" data-t="hLevel">Level</th><th class="n" data-t="hAtt">Attendance</th><th class="n" data-t="hWellS">Wellbeing sessions</th></tr></thead>
             <tbody id="class-rows"></tbody>
           </table>
         </div>
         <p class="small muted" data-t="levelNote">Levels follow the CBC rubric: EE 80–100, ME 50–79, AE 30–49, BE below 30.</p>
+        <p class="small muted" data-t="gradesKey"></p>
       </div>
     </section>
 
@@ -411,6 +441,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
           <div class="field"><label for="ps-date" data-t="fDate">Date</label><input id="ps-date" type="date"></div>
           <div class="field"><label for="ps-time" data-t="fTime">Start time</label><input id="ps-time" type="time" value="15:30"></div>
           <div class="field"><label for="ps-lesson" data-t="qLesson">Lesson</label><select id="ps-lesson"></select></div>
+          <p class="small muted" id="ps-who"></p>
           <div class="field"><label for="ps-place" data-t="fPlace">Where</label><input id="ps-place" value="Club room"></div>
           <p class="err" id="ps-err" role="alert"></p>
           <button class="btn" type="submit" style="align-self:flex-start" data-t="planBtn">Add to plan</button>
@@ -422,11 +453,21 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
       </div>
       <div class="stack">
         <h3 data-t="perGirlH">Attendance by girl</h3>
-        <div class="tw"><table><thead><tr><th data-t="hName">Name</th><th class="n" data-t="hAttended">Attended</th><th data-t="hRate">Rate</th><th data-t="hLast">Last seen</th></tr></thead><tbody id="ses-girls"></tbody></table></div>
+        <div class="tw"><table><thead><tr><th data-t="hName">Name</th><th class="n" data-t="hAttended">Attended</th><th data-t="hRate">Rate</th><th data-t="hLast">Last seen</th><th class="n" data-t="hToCatch">To catch up</th></tr></thead><tbody id="ses-girls"></tbody></table></div>
         <p class="small muted" data-t="followNote">Girls below 60% after three or more sessions are marked Follow up, so you can check on them or visit home.</p>
       </div>
       <div class="stack">
-        <h3 data-t="pastH">Past sessions</h3>
+        <h3 data-t="histH">Session history</h3>
+        <p class="small muted" data-t="histSub">What was taught, when, and to which girls.</p>
+        <div class="hist-filters">
+          <div class="field"><label for="h-range" data-t="hRange">When</label><select id="h-range"><option value="week" data-t="rWeek">This week</option><option value="last" data-t="rLast">Last week</option><option value="month" data-t="rMonth">This month</option><option value="all" data-t="rAll" selected>All</option><option value="custom" data-t="rCustom">Choose dates</option></select></div>
+          <div class="field" id="h-from-f" hidden><label for="h-from" data-t="hFrom">From</label><input id="h-from" type="date"></div>
+          <div class="field" id="h-to-f" hidden><label for="h-to" data-t="hTo">To</label><input id="h-to" type="date"></div>
+          <div class="field"><label for="h-subj" data-t="hSubj">Subject</label><select id="h-subj"></select></div>
+          <div class="field"><label for="h-girl" data-t="hGirl">Girl</label><select id="h-girl"></select></div>
+          <button class="btn ghost sm" id="h-csv" type="button" data-t="dlCsv">Download CSV</button>
+        </div>
+        <p class="label" id="h-count"></p>
         <div class="stack" id="ses-past"></div>
       </div>
     </section>
@@ -484,11 +525,12 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
     <!-- MODULES -->
     <section class="view" id="view-modules" hidden>
       <div><h2 data-t="tModules">Modules</h2><p class="muted" data-t="modSub">Every lesson can be shown on the classroom TV or projector with narration. Reading lessons have a Listen button so they can be heard on the radio or a speaker.</p></div>
-      <div class="banner">
+      <div class="crumbs" id="mod-crumbs"></div>
+      <div class="banner" id="life-banner">
         <span class="label" style="color: var(--rose)" data-t="girlsLabel">Life Skills</span>
         <p data-t="girlsText">LearnReach clubs serve adolescent girls in marginalised communities.</p>
       </div>
-      <div class="cards" id="module-cards"></div>
+      <div class="stack" id="module-cards"></div>
     </section>
 
     <!-- LESSON DETAIL -->
@@ -501,7 +543,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
     <section class="view" id="view-grades" hidden>
       <div class="row">
         <div><h2 data-t="tGrades">Gradebook</h2><p class="muted" data-t="gradeSub">Enter a score out of 100 for each learner. Changes save on this device.</p></div>
-        <div class="field" style="max-width: 280px"><label for="g-module" data-t="fModule">Module</label><select id="g-module"></select></div>
+        <div class="row" style="gap:10px;align-items:flex-end"><div class="field" style="max-width: 280px"><label for="g-module" data-t="fModule">Module</label><select id="g-module"></select></div><div class="field" style="max-width: 170px" id="g-grade-f"><label for="g-grade" data-t="fGrade">Grade</label><select id="g-grade"></select></div></div>
       </div>
       <div class="tw"><table><thead id="grade-head"></thead><tbody id="grade-rows"></tbody></table></div>
       <p class="small muted" id="grade-note"></p>
@@ -596,12 +638,12 @@ const MODULES = [
 const subjectOf = (m) => SUBJECTS.find((x) => x.id === m.subject);
 const modLabel = (m) => (m.subject === 'life' ? subjectOf(m).name[lang] + ' · ' : '') + (m.name)[lang];
 const LESSONS = [
-  {"id":"lit1","mod":"kis","format":"Audio","min":20,"title":{"en":"Letter sounds: a, e, i, o, u","sw":"Sauti za herufi: a, e, i, o, u"},"lang":"Swahili","body":["Karibu kwenye somo la sauti za herufi. Leo tutajifunza irabu tano za Kiswahili: a, e, i, o na u.","Sikiliza kila sauti kisha uirudie mara tatu kwa sauti kubwa: a, a, a. E, e, e. I, i, i. O, o, o. U, u, u.","Kila neno la Kiswahili lina angalau irabu moja. Kwa mfano, neno \"maji\" lina irabu a na i. Neno \"kuku\" lina irabu u mara mbili.","Silabi ni kipande cha neno tunachotamka kwa pumzi moja. Piga makofi mara moja kwa kila silabi: ma-ji, sim-ba, ku-ku, em-be.","Tafuta irabu katika maneno haya: simba, ndoo, mama, embe, shule. Mwambie mwenzako umepata irabu ngapi.","Sasa tuimbe: \"a, e, i, o, u, hizi ni irabu zetu!\" Imba mara mbili pamoja na wenzako.","Kazi ya nyumbani: andika maneno matano unayoyaona nyumbani, kisha upige mstari chini ya kila irabu."]},
-  {"id":"lit2","mod":"lit","format":"Reading","min":25,"title":{"en":"The solar radio","sw":"Redio ya jua (The solar radio)"},"lang":"English","body":["Akiru is twelve years old and lives in Lodwar with her mother, her grandmother and two younger brothers.","Every evening, when the sun goes down, the family sits outside and turns on a small radio. The radio runs on power from the sun.","On the roof there is a small solar panel. During the day it catches sunlight and fills a battery. At night, the battery powers the radio and one bright light.","One evening the radio is quiet. Akiru presses the button again and again, but nothing happens. Her brothers are sad because they miss the story programme.","In the morning Akiru climbs up to look at the panel. It is covered in red dust, and a branch is making a shadow over it.","She wipes the panel with a soft cloth and moves it so it faces the bright, hot sun. By evening the battery is full and the radio plays again.","Her grandmother smiles. \"You fixed it because you looked carefully and asked why,\" she says. Akiru feels proud.","Read the story aloud to a friend. Then find three words that describe the sun, and one word that describes how Akiru felt."]},
-  {"id":"lit3","mod":"lit","format":"Video","min":20,"title":{"en":"Writing a sentence","sw":"Kuandika sentensi (Writing a sentence)"},"lang":"English","body":["A sentence is a group of words that tells a complete idea. \"The goat is eating\" is a sentence. \"The goat\" on its own is not.","Every sentence starts with a capital letter. The first word of the sentence always begins with a big letter: The, My, We.","Every sentence ends with a full stop, unless it is a question. A question ends with a question mark: \"Where is the goat?\"","Names of people and places also start with a capital letter, even in the middle of a sentence: \"Akiru lives in Lodwar.\"","A good sentence says who or what, and what they do: \"My sister carries water.\" Who? My sister. What does she do? Carries water.","Let us fix this sentence together: \"the girls play football in kakuma\". It needs a capital T, a capital K and a full stop.","Now write three sentences about your school. Check each one: capital letter at the start, full stop at the end."]},
-  {"id":"num1","mod":"num","format":"Reading","min":25,"title":{"en":"Counting in groups of ten","sw":"Kuhesabu kwa makundi ya kumi"},"body":{"en":["When we have many things to count, it is easier to put them in groups of ten.","Ten sticks tied together make one bundle. We call one bundle \"one ten\".","If we have three bundles and four loose sticks, we have 3 tens and 4 ones. That is 34.","In a two-digit number, the left digit tells us how many tens, and the right digit tells us how many ones. In 52, the 5 means 5 tens and the 2 means 2 ones.","Four bundles and no loose sticks make 40. There are 4 tens in 40.","Use stones, bottle tops or sticks to make these numbers: 27, 41, 50 and 63. Show your partner the tens and the ones.","Challenge: which is bigger, 3 tens and 8 ones, or 8 tens and 3 ones? Explain how you know."],"sw":["Tunapokuwa na vitu vingi vya kuhesabu, ni rahisi zaidi kuviweka katika makundi ya kumi.","Vijiti kumi vilivyofungwa pamoja ni kifurushi kimoja. Tunakiita kifurushi kimoja \"kumi moja\".","Tukiwa na vifurushi vitatu na vijiti vinne vilivyolegea, tuna makumi 3 na mamoja 4. Hiyo ni 34.","Katika namba ya tarakimu mbili, tarakimu ya kushoto inaonyesha makumi, na ya kulia inaonyesha mamoja. Katika 52, 5 ni makumi 5 na 2 ni mamoja 2.","Vifurushi vinne bila vijiti vilivyolegea ni 40. Kuna makumi 4 katika 40.","Tumia mawe, vifuniko vya chupa au vijiti kuunda namba hizi: 27, 41, 50 na 63. Mwonyeshe mwenzako makumi na mamoja.","Changamoto: ipi ni kubwa zaidi, makumi 3 na mamoja 8, au makumi 8 na mamoja 3? Eleza jinsi unavyojua."]}},
-  {"id":"num2","mod":"num","format":"Video","min":20,"title":{"en":"Adding at the market","sw":"Kujumlisha sokoni"},"body":{"sw":["Leo tutakwenda sokoni na Mama Wanjiru. Anauza nyanya, embe na vitunguu.","Asubuhi aliuza nyanya 12. Jioni aliuza nyanya 9 zaidi. Ameuza nyanya ngapi kwa jumla? Tunajumlisha: 12 + 9 = 21.","Njia rahisi ni kujumlisha makumi kwanza, kisha mamoja. Kwa 25 + 14: makumi 20 + 10 = 30, mamoja 5 + 4 = 9. Jibu ni 39.","Mama ana embe 15 na ananunua embe 5 zaidi kutoka shamba. Sasa ana embe 20.","Tumia mawe au vifuniko vya chupa kuonyesha kila hesabu. Weka makumi upande mmoja na mamoja upande mwingine.","Mazoezi: 30 + 20, 16 + 3, 24 + 15. Mwambie mwenzako jinsi ulivyopata jibu.","Kazi ya nyumbani: muulize mzazi bei ya vitu viwili sokoni na ujumlishe bei hizo."],"en":["Today we are going to the market with Mama Wanjiru. She sells tomatoes, mangoes and onions.","In the morning she sold 12 tomatoes. In the evening she sold 9 more. How many tomatoes did she sell altogether? We add: 12 + 9 = 21.","An easy way is to add the tens first, then the ones. For 25 + 14: tens 20 + 10 = 30, ones 5 + 4 = 9. The answer is 39.","Mama has 15 mangoes and buys 5 more from the farm. Now she has 20 mangoes.","Use stones or bottle tops to show each sum. Put the tens on one side and the ones on the other.","Practise: 30 + 20, 16 + 3, 24 + 15. Tell your partner how you found the answer.","Homework: ask a parent the prices of two things at the market and add them together."]}},
-  {"id":"sci1","mod":"sci","format":"Reading","min":25,"title":{"en":"How the sun makes electricity","sw":"Jinsi jua linavyotengeneza umeme"},"body":{"en":["The sun gives us light and heat every day. We can also use sunlight to make electricity.","A solar panel is a flat, dark board made of special cells. When sunlight shines on the cells, they make electricity.","The electricity travels through wires to a battery. The battery stores it, like a jerrican stores water.","At night there is no sunlight, so the panel makes no electricity. The lights, radio and TV use the power saved in the battery.","A panel works best when it faces the sun, has no shadow on it, and is clean. Dust and leaves block the light.","Our club TV and projector run on solar power. That is why we can watch lessons even where there is no electricity line.","Look at the solar panel at your school or home. Which way does it face? Is anything blocking the sun? Draw it and label the panel, wires and battery."],"sw":["Jua linatupa mwanga na joto kila siku. Tunaweza pia kutumia mwanga wa jua kutengeneza umeme.","Paneli ya jua ni ubao bapa, mweusi uliotengenezwa kwa seli maalum. Mwanga wa jua ukiangaza kwenye seli, zinatengeneza umeme.","Umeme unasafiri kupitia nyaya hadi kwenye betri. Betri inauhifadhi, kama mtungi unavyohifadhi maji.","Usiku hakuna mwanga wa jua, kwa hiyo paneli haitengenezi umeme. Taa, redio na TV zinatumia umeme uliohifadhiwa kwenye betri.","Paneli inafanya kazi vizuri zaidi ikielekea jua, bila kivuli juu yake, na ikiwa safi. Vumbi na majani huzuia mwanga.","TV na projekta ya klabu yetu zinatumia nguvu ya jua. Ndiyo sababu tunaweza kutazama masomo hata mahali pasipo na laini ya umeme.","Angalia paneli ya jua shuleni au nyumbani. Inaelekea upande gani? Kuna kitu kinachozuia jua? Ichore na uandike paneli, nyaya na betri."]}},
+  {"id":"lit1","mod":"kis","format":"Audio","min":20,"grade":1,"title":{"en":"Letter sounds: a, e, i, o, u","sw":"Sauti za herufi: a, e, i, o, u"},"lang":"Swahili","body":["Karibu kwenye somo la sauti za herufi. Leo tutajifunza irabu tano za Kiswahili: a, e, i, o na u.","Sikiliza kila sauti kisha uirudie mara tatu kwa sauti kubwa: a, a, a. E, e, e. I, i, i. O, o, o. U, u, u.","Kila neno la Kiswahili lina angalau irabu moja. Kwa mfano, neno \"maji\" lina irabu a na i. Neno \"kuku\" lina irabu u mara mbili.","Silabi ni kipande cha neno tunachotamka kwa pumzi moja. Piga makofi mara moja kwa kila silabi: ma-ji, sim-ba, ku-ku, em-be.","Tafuta irabu katika maneno haya: simba, ndoo, mama, embe, shule. Mwambie mwenzako umepata irabu ngapi.","Sasa tuimbe: \"a, e, i, o, u, hizi ni irabu zetu!\" Imba mara mbili pamoja na wenzako.","Kazi ya nyumbani: andika maneno matano unayoyaona nyumbani, kisha upige mstari chini ya kila irabu."]},
+  {"id":"lit2","mod":"lit","format":"Reading","min":25,"grade":4,"title":{"en":"The solar radio","sw":"Redio ya jua (The solar radio)"},"lang":"English","body":["Akiru is twelve years old and lives in Lodwar with her mother, her grandmother and two younger brothers.","Every evening, when the sun goes down, the family sits outside and turns on a small radio. The radio runs on power from the sun.","On the roof there is a small solar panel. During the day it catches sunlight and fills a battery. At night, the battery powers the radio and one bright light.","One evening the radio is quiet. Akiru presses the button again and again, but nothing happens. Her brothers are sad because they miss the story programme.","In the morning Akiru climbs up to look at the panel. It is covered in red dust, and a branch is making a shadow over it.","She wipes the panel with a soft cloth and moves it so it faces the bright, hot sun. By evening the battery is full and the radio plays again.","Her grandmother smiles. \"You fixed it because you looked carefully and asked why,\" she says. Akiru feels proud.","Read the story aloud to a friend. Then find three words that describe the sun, and one word that describes how Akiru felt."]},
+  {"id":"lit3","mod":"lit","format":"Video","min":20,"grade":2,"title":{"en":"Writing a sentence","sw":"Kuandika sentensi (Writing a sentence)"},"lang":"English","body":["A sentence is a group of words that tells a complete idea. \"The goat is eating\" is a sentence. \"The goat\" on its own is not.","Every sentence starts with a capital letter. The first word of the sentence always begins with a big letter: The, My, We.","Every sentence ends with a full stop, unless it is a question. A question ends with a question mark: \"Where is the goat?\"","Names of people and places also start with a capital letter, even in the middle of a sentence: \"Akiru lives in Lodwar.\"","A good sentence says who or what, and what they do: \"My sister carries water.\" Who? My sister. What does she do? Carries water.","Let us fix this sentence together: \"the girls play football in kakuma\". It needs a capital T, a capital K and a full stop.","Now write three sentences about your school. Check each one: capital letter at the start, full stop at the end."]},
+  {"id":"num1","mod":"num","format":"Reading","min":25,"grade":2,"title":{"en":"Counting in groups of ten","sw":"Kuhesabu kwa makundi ya kumi"},"body":{"en":["When we have many things to count, it is easier to put them in groups of ten.","Ten sticks tied together make one bundle. We call one bundle \"one ten\".","If we have three bundles and four loose sticks, we have 3 tens and 4 ones. That is 34.","In a two-digit number, the left digit tells us how many tens, and the right digit tells us how many ones. In 52, the 5 means 5 tens and the 2 means 2 ones.","Four bundles and no loose sticks make 40. There are 4 tens in 40.","Use stones, bottle tops or sticks to make these numbers: 27, 41, 50 and 63. Show your partner the tens and the ones.","Challenge: which is bigger, 3 tens and 8 ones, or 8 tens and 3 ones? Explain how you know."],"sw":["Tunapokuwa na vitu vingi vya kuhesabu, ni rahisi zaidi kuviweka katika makundi ya kumi.","Vijiti kumi vilivyofungwa pamoja ni kifurushi kimoja. Tunakiita kifurushi kimoja \"kumi moja\".","Tukiwa na vifurushi vitatu na vijiti vinne vilivyolegea, tuna makumi 3 na mamoja 4. Hiyo ni 34.","Katika namba ya tarakimu mbili, tarakimu ya kushoto inaonyesha makumi, na ya kulia inaonyesha mamoja. Katika 52, 5 ni makumi 5 na 2 ni mamoja 2.","Vifurushi vinne bila vijiti vilivyolegea ni 40. Kuna makumi 4 katika 40.","Tumia mawe, vifuniko vya chupa au vijiti kuunda namba hizi: 27, 41, 50 na 63. Mwonyeshe mwenzako makumi na mamoja.","Changamoto: ipi ni kubwa zaidi, makumi 3 na mamoja 8, au makumi 8 na mamoja 3? Eleza jinsi unavyojua."]}},
+  {"id":"num2","mod":"num","format":"Video","min":20,"grade":2,"title":{"en":"Adding at the market","sw":"Kujumlisha sokoni"},"body":{"sw":["Leo tutakwenda sokoni na Mama Wanjiru. Anauza nyanya, embe na vitunguu.","Asubuhi aliuza nyanya 12. Jioni aliuza nyanya 9 zaidi. Ameuza nyanya ngapi kwa jumla? Tunajumlisha: 12 + 9 = 21.","Njia rahisi ni kujumlisha makumi kwanza, kisha mamoja. Kwa 25 + 14: makumi 20 + 10 = 30, mamoja 5 + 4 = 9. Jibu ni 39.","Mama ana embe 15 na ananunua embe 5 zaidi kutoka shamba. Sasa ana embe 20.","Tumia mawe au vifuniko vya chupa kuonyesha kila hesabu. Weka makumi upande mmoja na mamoja upande mwingine.","Mazoezi: 30 + 20, 16 + 3, 24 + 15. Mwambie mwenzako jinsi ulivyopata jibu.","Kazi ya nyumbani: muulize mzazi bei ya vitu viwili sokoni na ujumlishe bei hizo."],"en":["Today we are going to the market with Mama Wanjiru. She sells tomatoes, mangoes and onions.","In the morning she sold 12 tomatoes. In the evening she sold 9 more. How many tomatoes did she sell altogether? We add: 12 + 9 = 21.","An easy way is to add the tens first, then the ones. For 25 + 14: tens 20 + 10 = 30, ones 5 + 4 = 9. The answer is 39.","Mama has 15 mangoes and buys 5 more from the farm. Now she has 20 mangoes.","Use stones or bottle tops to show each sum. Put the tens on one side and the ones on the other.","Practise: 30 + 20, 16 + 3, 24 + 15. Tell your partner how you found the answer.","Homework: ask a parent the prices of two things at the market and add them together."]}},
+  {"id":"sci1","mod":"sci","format":"Reading","min":25,"grade":4,"title":{"en":"How the sun makes electricity","sw":"Jinsi jua linavyotengeneza umeme"},"body":{"en":["The sun gives us light and heat every day. We can also use sunlight to make electricity.","A solar panel is a flat, dark board made of special cells. When sunlight shines on the cells, they make electricity.","The electricity travels through wires to a battery. The battery stores it, like a jerrican stores water.","At night there is no sunlight, so the panel makes no electricity. The lights, radio and TV use the power saved in the battery.","A panel works best when it faces the sun, has no shadow on it, and is clean. Dust and leaves block the light.","Our club TV and projector run on solar power. That is why we can watch lessons even where there is no electricity line.","Look at the solar panel at your school or home. Which way does it face? Is anything blocking the sun? Draw it and label the panel, wires and battery."],"sw":["Jua linatupa mwanga na joto kila siku. Tunaweza pia kutumia mwanga wa jua kutengeneza umeme.","Paneli ya jua ni ubao bapa, mweusi uliotengenezwa kwa seli maalum. Mwanga wa jua ukiangaza kwenye seli, zinatengeneza umeme.","Umeme unasafiri kupitia nyaya hadi kwenye betri. Betri inauhifadhi, kama mtungi unavyohifadhi maji.","Usiku hakuna mwanga wa jua, kwa hiyo paneli haitengenezi umeme. Taa, redio na TV zinatumia umeme uliohifadhiwa kwenye betri.","Paneli inafanya kazi vizuri zaidi ikielekea jua, bila kivuli juu yake, na ikiwa safi. Vumbi na majani huzuia mwanga.","TV na projekta ya klabu yetu zinatumia nguvu ya jua. Ndiyo sababu tunaweza kutazama masomo hata mahali pasipo na laini ya umeme.","Angalia paneli ya jua shuleni au nyumbani. Inaelekea upande gani? Kuna kitu kinachozuia jua? Ichore na uandike paneli, nyaya na betri."]}},
   {"id":"men1","mod":"men","format":"Video","min":20,"title":{"en":"What is a period?","sw":"Hedhi ni nini?"},"body":{"en":["As girls grow up, their bodies change. This time of change is called puberty. One of the changes is starting to have periods.","A period is a normal part of growing up. About once a month, a small amount of blood and tissue leaves the body through the vagina.","A period usually lasts between 3 and 7 days. The time from the start of one period to the start of the next is often between 21 and 35 days.","Most girls get their first period between ages 9 and 16. Every body is different, so early or late are both normal.","Some girls feel cramps in the tummy, or feel tired or moody. Resting, drinking water, walking gently or holding a warm cloth on the tummy can help.","If the bleeding is very heavy, lasts more than 7 days, or the pain stops you from doing daily things, talk to a health worker.","A period is healthy. It does not mean you are sick or unclean. You can go to school, play and do your usual activities during your period."],"sw":["Wasichana wanapokua, miili yao hubadilika. Kipindi hiki cha mabadiliko kinaitwa balehe. Mojawapo ya mabadiliko ni kuanza kupata hedhi.","Hedhi ni sehemu ya kawaida ya kukua. Takriban mara moja kwa mwezi, damu kidogo na tishu hutoka mwilini kupitia uke.","Hedhi kwa kawaida huchukua siku 3 hadi 7. Muda kutoka mwanzo wa hedhi moja hadi mwanzo wa inayofuata mara nyingi ni siku 21 hadi 35.","Wasichana wengi hupata hedhi yao ya kwanza kati ya umri wa miaka 9 na 16. Kila mwili ni tofauti, kwa hiyo mapema au kuchelewa yote ni kawaida.","Wasichana wengine huhisi maumivu ya tumbo, uchovu au hasira za haraka. Kupumzika, kunywa maji, kutembea taratibu au kuweka kitambaa chenye joto tumboni kunaweza kusaidia.","Kama damu ni nyingi sana, inadumu zaidi ya siku 7, au maumivu yanakuzuia kufanya shughuli za kila siku, zungumza na mhudumu wa afya.","Hedhi ni afya. Haimaanishi wewe ni mgonjwa au mchafu. Unaweza kwenda shule, kucheza na kufanya shughuli zako za kawaida wakati wa hedhi."]}},
   {"id":"men2","mod":"men","format":"Audio","min":15,"title":{"en":"Looking after yourself during your period","sw":"Kujitunza wakati wa hedhi"},"body":{"sw":["Kujitunza vizuri wakati wa hedhi kunakusaidia kuwa na afya na kujiamini.","Badilisha pedi kila saa 4 hadi 8, au mapema ikijaa.","Osha mikono kwa sabuni kabla na baada ya kubadilisha pedi. Oga kila siku kwa maji safi.","Pedi za kufua zioshwe kwa sabuni na maji, kisha zikaushwe juani. Jua husaidia kuua vijidudu.","Pedi zilizotumika zifungwe kwa karatasi na kutupwa kwenye pipa au choo cha shimo, si kwenye choo cha kuvuta maji.","Beba pedi ya ziada shuleni kwenye mfuko safi. Unaweza kuweka alama kwenye kalenda siku hedhi inapoanza.","Kama una swali, muulize mwalimu, mama, shangazi au mhudumu wa afya unayemwamini."],"en":["Looking after yourself well during your period helps you stay healthy and confident.","Change your pad every 4 to 8 hours, or sooner if it is full.","Wash your hands with soap before and after changing a pad. Bathe every day with clean water.","Reusable pads should be washed with soap and water, then dried in the sun. Sunlight helps kill germs.","Used pads should be wrapped in paper and thrown in a bin or a pit latrine, not in a flush toilet.","Carry a spare pad to school in a clean bag. You can mark the day your period starts on a calendar.","If you have a question, ask a teacher, your mother, an aunt or a health worker you trust."]}},
   {"id":"mind1","mod":"mind","format":"Audio","min":15,"title":{"en":"Naming your feelings","sw":"Kutaja hisia zako"},"body":{"en":["Everyone feels happy, sad, angry, worried or scared sometimes. All feelings are okay. They are messages from inside us.","Our bodies show feelings too. When we are worried, our heart may beat fast. When we are sad, we may feel heavy or tired.","Giving a feeling a name can make it smaller. Try saying: \"I feel worried because of the exam,\" or \"I feel angry because my brother took my book.\"","When a feeling is big, try this: breathe in slowly while you count to four, then breathe out while you count to four. Do it five times.","Other things that help: walking, drawing, singing, praying, or doing something kind for someone else.","Talking to someone you trust can make a heavy feeling lighter. That could be a parent, a teacher, an aunt or a friend.","You can also help a friend by listening without laughing at them. Sometimes the best thing to say is: \"I am here with you.\""],"sw":["Kila mtu huhisi furaha, huzuni, hasira, wasiwasi au hofu wakati mwingine. Hisia zote ni sawa. Ni ujumbe kutoka ndani yetu.","Miili yetu pia huonyesha hisia. Tukiwa na wasiwasi, moyo unaweza kupiga haraka. Tukiwa na huzuni, tunaweza kujihisi wazito au wachovu.","Kuipa hisia jina kunaweza kuifanya iwe ndogo. Jaribu kusema: \"Nina wasiwasi kwa sababu ya mtihani,\" au \"Nina hasira kwa sababu kaka yangu alichukua kitabu changu.\"","Hisia ikiwa kubwa, jaribu hivi: vuta pumzi taratibu huku ukihesabu hadi nne, kisha toa pumzi huku ukihesabu hadi nne. Fanya hivyo mara tano.","Mambo mengine yanayosaidia: kutembea, kuchora, kuimba, kusali, au kumfanyia mtu mwingine jambo la wema.","Kuzungumza na mtu unayemwamini kunaweza kufanya hisia nzito iwe nyepesi. Anaweza kuwa mzazi, mwalimu, shangazi au rafiki.","Unaweza pia kumsaidia rafiki kwa kumsikiliza bila kumcheka. Wakati mwingine jambo bora la kusema ni: \"Niko hapa pamoja nawe.\""]}},
@@ -609,16 +651,50 @@ const LESSONS = [
   {"id":"safe2","mod":"safe","format":"Audio","min":15,"title":{"en":"People I can trust","sw":"Watu ninaoweza kuwaamini"},"body":{"sw":["Mtu unayemwamini ni mtu mzima anayekusikiliza, anakuheshimu na anakusaidia ukiwa na shida.","Taja watu watatu unaoweza kuwaambia ukiwa na shida: kwa mfano mzazi, mwalimu, au mlezi.","Chora mkono wako kwenye karatasi. Kwenye kila kidole andika jina la mtu mmoja unayemwamini.","Ukimwambia mtu na hakusaidii, endelea kuwaambia wengine hadi mtu akusaidie.","Siri zinazokuumiza au kukuogopesha si siri za kuficha. Ni sawa kuzisema.","Ukihitaji msaada, piga simu 116 bure. Ni Childline Kenya, na wanapatikana wakati wowote."],"en":["A person you can trust is an adult who listens to you, respects you and helps you when you have a problem.","Name three people you could tell when you have a problem: for example a parent, a teacher or a carer.","Draw around your hand on a piece of paper. On each finger, write the name of one person you trust.","If you tell someone and they do not help you, keep telling others until someone helps you.","Secrets that hurt you or scare you are not secrets to keep. It is okay to tell.","If you need help, call 116 for free. It is Childline Kenya, and they are available at any time."]}},
   {"id":"rep1","mod":"repro","format":"Video","min":20,"title":{"en":"How pregnancy happens","sw":"Jinsi mimba inavyotokea"},"body":{"en":["This lesson is for girls aged 15 and over. It gives facts so you can keep yourself healthy and make your own choices.","Pregnancy can happen when a girl has sex with a boy or man. It can happen the first time, and even before her first period.","You have the right to decide about your own body. No one may force or pressure you into sex, and that includes a boyfriend or a husband.","Pregnancy when the body is still young can be risky for the girl and the baby. It can also make it hard to stay in school.","Staying in school and planning when to have children helps girls stay healthy and reach their goals.","Health centres offer confidential advice for young people about relationships, pregnancy and protecting yourself from infections.","If anyone forces or pressures you, it is not your fault. Tell a trusted adult or call Childline Kenya on 116."],"sw":["Somo hili ni la wasichana wenye umri wa miaka 15 na zaidi. Linatoa ukweli ili uweze kujitunza na kufanya maamuzi yako mwenyewe.","Mimba inaweza kutokea msichana anapofanya ngono na mvulana au mwanaume. Inaweza kutokea mara ya kwanza, na hata kabla ya hedhi yake ya kwanza.","Una haki ya kuamua kuhusu mwili wako. Hakuna anayeruhusiwa kukulazimisha au kukushinikiza kufanya ngono, hata mpenzi au mume.","Mimba wakati mwili bado ni mchanga inaweza kuwa hatari kwa msichana na mtoto. Inaweza pia kufanya iwe vigumu kuendelea na shule.","Kubaki shuleni na kupanga wakati wa kupata watoto kunawasaidia wasichana kuwa na afya na kufikia malengo yao.","Vituo vya afya vinatoa ushauri wa siri kwa vijana kuhusu mahusiano, mimba na kujikinga na maambukizi.","Mtu yeyote akikulazimisha au kukushinikiza, si kosa lako. Mwambie mtu mzima unayemwamini au piga simu Childline Kenya kwa namba 116."]}},
   {"id":"rep2","mod":"repro","format":"Audio","min":15,"title":{"en":"Health services for young people","sw":"Huduma za afya kwa vijana"},"body":{"sw":["Vituo vingi vya afya vina huduma rafiki kwa vijana. Unaweza kuuliza maswali kuhusu mwili wako bila kuhukumiwa.","Huduma hizi ni za siri. Mhudumu wa afya hatakiwi kumwambia mtu mwingine bila ruhusa yako.","Unaweza kupata ushauri kuhusu hedhi, mahusiano, mimba na jinsi ya kujikinga na maambukizi.","Ukienda, unaweza kwenda na rafiki au mtu mzima unayemwamini.","Ukiwa na swali, muulize mhudumu wa afya au mwalimu unayemwamini. Hakuna swali la aibu kuhusu afya yako."],"en":["Many health centres have youth-friendly services. You can ask questions about your body without being judged.","These services are confidential. A health worker should not tell anyone else without your permission.","You can get advice about periods, relationships, pregnancy and how to protect yourself from infections.","When you go, you can take a friend or an adult you trust with you.","If you have a question, ask a health worker or a teacher you trust. No question about your health is shameful."]}},
-  {"id":"num3","mod":"num","format":"Reading","min":25,"title":{"en":"Taking away: subtraction at the water point","sw":"Kutoa: kutoa kisimani"},"body":{"en":["Subtraction means taking away. When we take some things away from a group, we find out how many are left.","Ekiru carries 10 litres of water from the borehole. She pours 3 litres into the cooking pot. How many litres are left in the jerrican? 10 take away 3 is 7. We write 10 − 3 = 7.","The sign − is called minus. The answer to a subtraction is called the difference.","You can use stones to subtract. Put down 10 stones, move 3 of them away, and count the stones that are left.","Subtraction is the opposite of addition. If 7 + 3 = 10, then 10 − 3 = 7 and 10 − 7 = 3.","Practise: 9 − 4, 12 − 5 and 20 − 8. Check each answer by adding back.","Challenge: Nakai had 15 sweets and gave 6 to her friends. How many does she have now?"],"sw":["Kutoa maana yake ni kuondoa. Tunapoondoa baadhi ya vitu kutoka kwenye kundi, tunapata vilivyobaki.","Ekiru anabeba lita 10 za maji kutoka kisimani. Anamimina lita 3 kwenye sufuria ya kupikia. Lita ngapi zimebaki kwenye mtungi? 10 toa 3 ni 7. Tunaandika 10 − 3 = 7.","Alama − inaitwa kutoa. Jibu la kutoa linaitwa tofauti.","Unaweza kutumia mawe kutoa. Weka mawe 10, ondoa mawe 3, kisha hesabu mawe yaliyobaki.","Kutoa ni kinyume cha kujumlisha. Kama 7 + 3 = 10, basi 10 − 3 = 7 na 10 − 7 = 3.","Mazoezi: 9 − 4, 12 − 5 na 20 − 8. Hakikisha kila jibu kwa kujumlisha tena.","Changamoto: Nakai alikuwa na peremende 15 akawapa marafiki zake 6. Amebaki na ngapi?"]}},
-  {"id":"num4","mod":"num","format":"Video","min":20,"title":{"en":"Shapes around us","sw":"Maumbo yanayotuzunguka"},"body":{"sw":["Leo tutajifunza maumbo. Maumbo yako kila mahali: nyumbani, shuleni na sokoni.","Duara halina pembe. Mfano wa duara ni sahani, gurudumu la baiskeli na jua.","Pembetatu ina pande tatu na pembe tatu. Mfano ni paa la nyumba na kipande cha chapati.","Mraba una pande nne zilizo sawa. Mstatili una pande nne, mbili ndefu na mbili fupi, kama mlango au kitabu.","Tembea darasani na utafute vitu vitatu vyenye umbo la duara, na vitatu vyenye umbo la mstatili.","Chora maumbo manne kwenye daftari lako na uandike jina la kila umbo chini yake."],"en":["Today we will learn about shapes. Shapes are everywhere: at home, at school and at the market.","A circle has no corners. Examples of circles are a plate, a bicycle wheel and the sun.","A triangle has three sides and three corners. Examples are the roof of a house and a slice of chapati.","A square has four equal sides. A rectangle has four sides, two long and two short, like a door or a book.","Walk around the classroom and find three things shaped like a circle and three shaped like a rectangle.","Draw four shapes in your exercise book and write the name of each shape under it."]}},
-  {"id":"lit4","mod":"lit","format":"Audio","min":20,"title":{"en":"Greetings and introducing yourself","sw":"Salamu na kujitambulisha (Greetings)"},"lang":"English","body":["Good morning! Today we will learn how to greet people and introduce ourselves in English.","We say \"Good morning\" before midday, \"Good afternoon\" after midday and \"Good evening\" at night.","To introduce yourself, say: \"My name is Akiru. I am twelve years old. I live in Lodwar.\"","When you meet someone new, you can ask: \"What is your name?\" and \"How old are you?\"","It is polite to say \"Nice to meet you\", and to say \"Thank you\" when someone helps you.","Practise with a partner: greet her, say your name, your age and where you live. Then swap."]},
-  {"id":"lit5","mod":"lit","format":"Reading","min":25,"title":{"en":"Asking and answering questions","sw":"Kuuliza na kujibu maswali (Questions)"},"lang":"English","body":["A question asks for information. Question words help us: who, what, where, when, why and how.","\"Who\" asks about a person: \"Who is your teacher?\" \"What\" asks about a thing: \"What is in your bag?\"","\"Where\" asks about a place: \"Where is the borehole?\" \"When\" asks about time: \"When does the club start?\"","\"Why\" asks for a reason: \"Why is the radio quiet?\" \"How\" asks about the way something happens: \"How do you get to school?\"","A question starts with a capital letter and ends with a question mark.","Game: one girl thinks of an animal. The others ask questions to guess it: \"Where does it live?\" \"What does it eat?\""]},
-  {"id":"kis2","mod":"kis","format":"Audio","min":20,"title":{"en":"Greetings and good manners","sw":"Salamu na adabu"},"lang":"Swahili","body":["Karibu! Leo tutajifunza salamu za Kiswahili na jinsi ya kuonyesha adabu.","Asubuhi tunasema \"Habari za asubuhi?\" na jibu ni \"Nzuri\" au \"Salama\".","Kwa mtu mzima tunasema \"Shikamoo\", naye anajibu \"Marahaba\".","Kwa rafiki tunaweza kusema \"Mambo?\" na jibu ni \"Poa\" au \"Safi\".","Maneno ya adabu ni muhimu: \"Tafadhali\" unapoomba kitu, \"Asante\" unaposaidiwa, na \"Samahani\" unapokosea.","Zoezi: salimiana na wenzako watatu kwa salamu tofauti, kisha mwambie mmoja wao asante."]},
-  {"id":"kis3","mod":"kis","format":"Reading","min":25,"title":{"en":"Short story: The hen and her eggs","sw":"Hadithi fupi: Kuku na mayai yake"},"lang":"Swahili","body":["Hapo zamani, katika kijiji cha Kakuma, aliishi kuku mmoja mweupe aliyeitwa Tiba.","Kila asubuhi Tiba alitaga yai moja chini ya kichaka karibu na nyumba ya Mama Akai.","Siku moja, mbwa mwizi alikuja kunusa karibu na kichaka. Tiba aliogopa sana.","Tiba alipiga kelele kubwa: \"Kokoriko! Kokoriko!\" Watoto walikimbia kuja, na mbwa akakimbia mbali.","Mama Akai alihamishia mayai ndani ya kikapu salama. Baada ya siku ishirini na moja, vifaranga sita walitoka.","Soma hadithi hii kwa sauti na mwenzako. Kisha jibu: Kuku aliitwa nani? Nani alimsaidia?"]},
-  {"id":"sci2","mod":"sci","format":"Video","min":20,"title":{"en":"Germs and clean water","sw":"Vijidudu na maji safi"},"body":{"en":["Germs are tiny living things. They are too small to see, but some of them can make us sick.","Germs can live in dirty water, on unwashed hands and on food that flies have touched.","Drinking dirty water can cause diarrhoea and stomach pain. Young children are most at risk.","We can make water safe by boiling it for one minute, or by using water treatment tablets the way a health worker shows us.","Keep drinking water in a clean container with a lid, and use a clean cup to take water out.","Wash your hands with soap after using the toilet and before eating or cooking.","Activity: look at how your family stores drinking water. Is the container covered? Share one idea to keep it cleaner."],"sw":["Vijidudu ni viumbe hai vidogo sana. Ni vidogo mno kuonekana, lakini baadhi yao wanaweza kutuletea ugonjwa.","Vijidudu vinaweza kuishi kwenye maji machafu, mikononi isiyooshwa na kwenye chakula kilichoguswa na nzi.","Kunywa maji machafu kunaweza kusababisha kuhara na maumivu ya tumbo. Watoto wadogo wako hatarini zaidi.","Tunaweza kufanya maji kuwa salama kwa kuyachemsha kwa dakika moja, au kwa kutumia vidonge vya kusafisha maji kama mhudumu wa afya anavyotuonyesha.","Hifadhi maji ya kunywa kwenye chombo safi chenye mfuniko, na utumie kikombe safi kuchota maji.","Osha mikono kwa sabuni baada ya kutoka chooni na kabla ya kula au kupika.","Shughuli: angalia jinsi familia yako inavyohifadhi maji ya kunywa. Je, chombo kimefunikwa? Toa wazo moja la kukiweka safi zaidi."]}},
-  {"id":"sci3","mod":"sci","format":"Reading","min":25,"title":{"en":"What do plants need?","sw":"Mimea inahitaji nini?"},"body":{"sw":["Mimea ni viumbe hai. Kama sisi, inahitaji vitu fulani ili ikue.","Mimea inahitaji maji. Mvua au kumwagilia husaidia mizizi kunyonya maji kutoka ardhini.","Mimea inahitaji mwanga wa jua. Majani hutumia mwanga wa jua kutengeneza chakula cha mmea.","Mimea inahitaji hewa na udongo wenye rutuba. Samadi husaidia udongo kuwa na rutuba.","Mizizi hushika mmea ardhini na kunyonya maji. Shina hubeba maji hadi kwenye majani.","Jaribio: panda mbegu mbili za maharagwe. Moja iwekwe juani na kumwagiliwa maji, nyingine iwekwe gizani. Angalia kwa wiki moja: ipi inakua vizuri?"],"en":["Plants are living things. Like us, they need certain things to grow.","Plants need water. Rain or watering helps the roots take up water from the soil.","Plants need sunlight. The leaves use sunlight to make food for the plant.","Plants need air and fertile soil. Manure helps make the soil fertile.","Roots hold the plant in the ground and take up water. The stem carries water up to the leaves.","Experiment: plant two bean seeds. Put one in the sun and water it, and put the other in the dark. Watch for one week: which one grows well?"]}},
+  {"id":"num3","mod":"num","format":"Reading","min":25,"grade":3,"title":{"en":"Taking away: subtraction at the water point","sw":"Kutoa: kutoa kisimani"},"body":{"en":["Subtraction means taking away. When we take some things away from a group, we find out how many are left.","Ekiru carries 10 litres of water from the borehole. She pours 3 litres into the cooking pot. How many litres are left in the jerrican? 10 take away 3 is 7. We write 10 − 3 = 7.","The sign − is called minus. The answer to a subtraction is called the difference.","You can use stones to subtract. Put down 10 stones, move 3 of them away, and count the stones that are left.","Subtraction is the opposite of addition. If 7 + 3 = 10, then 10 − 3 = 7 and 10 − 7 = 3.","Practise: 9 − 4, 12 − 5 and 20 − 8. Check each answer by adding back.","Challenge: Nakai had 15 sweets and gave 6 to her friends. How many does she have now?"],"sw":["Kutoa maana yake ni kuondoa. Tunapoondoa baadhi ya vitu kutoka kwenye kundi, tunapata vilivyobaki.","Ekiru anabeba lita 10 za maji kutoka kisimani. Anamimina lita 3 kwenye sufuria ya kupikia. Lita ngapi zimebaki kwenye mtungi? 10 toa 3 ni 7. Tunaandika 10 − 3 = 7.","Alama − inaitwa kutoa. Jibu la kutoa linaitwa tofauti.","Unaweza kutumia mawe kutoa. Weka mawe 10, ondoa mawe 3, kisha hesabu mawe yaliyobaki.","Kutoa ni kinyume cha kujumlisha. Kama 7 + 3 = 10, basi 10 − 3 = 7 na 10 − 7 = 3.","Mazoezi: 9 − 4, 12 − 5 na 20 − 8. Hakikisha kila jibu kwa kujumlisha tena.","Changamoto: Nakai alikuwa na peremende 15 akawapa marafiki zake 6. Amebaki na ngapi?"]}},
+  {"id":"num4","mod":"num","format":"Video","min":20,"grade":1,"title":{"en":"Shapes around us","sw":"Maumbo yanayotuzunguka"},"body":{"sw":["Leo tutajifunza maumbo. Maumbo yako kila mahali: nyumbani, shuleni na sokoni.","Duara halina pembe. Mfano wa duara ni sahani, gurudumu la baiskeli na jua.","Pembetatu ina pande tatu na pembe tatu. Mfano ni paa la nyumba na kipande cha chapati.","Mraba una pande nne zilizo sawa. Mstatili una pande nne, mbili ndefu na mbili fupi, kama mlango au kitabu.","Tembea darasani na utafute vitu vitatu vyenye umbo la duara, na vitatu vyenye umbo la mstatili.","Chora maumbo manne kwenye daftari lako na uandike jina la kila umbo chini yake."],"en":["Today we will learn about shapes. Shapes are everywhere: at home, at school and at the market.","A circle has no corners. Examples of circles are a plate, a bicycle wheel and the sun.","A triangle has three sides and three corners. Examples are the roof of a house and a slice of chapati.","A square has four equal sides. A rectangle has four sides, two long and two short, like a door or a book.","Walk around the classroom and find three things shaped like a circle and three shaped like a rectangle.","Draw four shapes in your exercise book and write the name of each shape under it."]}},
+  {"id":"lit4","mod":"lit","format":"Audio","min":20,"grade":1,"title":{"en":"Greetings and introducing yourself","sw":"Salamu na kujitambulisha (Greetings)"},"lang":"English","body":["Good morning! Today we will learn how to greet people and introduce ourselves in English.","We say \"Good morning\" before midday, \"Good afternoon\" after midday and \"Good evening\" at night.","To introduce yourself, say: \"My name is Akiru. I am twelve years old. I live in Lodwar.\"","When you meet someone new, you can ask: \"What is your name?\" and \"How old are you?\"","It is polite to say \"Nice to meet you\", and to say \"Thank you\" when someone helps you.","Practise with a partner: greet her, say your name, your age and where you live. Then swap."]},
+  {"id":"lit5","mod":"lit","format":"Reading","min":25,"grade":3,"title":{"en":"Asking and answering questions","sw":"Kuuliza na kujibu maswali (Questions)"},"lang":"English","body":["A question asks for information. Question words help us: who, what, where, when, why and how.","\"Who\" asks about a person: \"Who is your teacher?\" \"What\" asks about a thing: \"What is in your bag?\"","\"Where\" asks about a place: \"Where is the borehole?\" \"When\" asks about time: \"When does the club start?\"","\"Why\" asks for a reason: \"Why is the radio quiet?\" \"How\" asks about the way something happens: \"How do you get to school?\"","A question starts with a capital letter and ends with a question mark.","Game: one girl thinks of an animal. The others ask questions to guess it: \"Where does it live?\" \"What does it eat?\""]},
+  {"id":"kis2","mod":"kis","format":"Audio","min":20,"grade":2,"title":{"en":"Greetings and good manners","sw":"Salamu na adabu"},"lang":"Swahili","body":["Karibu! Leo tutajifunza salamu za Kiswahili na jinsi ya kuonyesha adabu.","Asubuhi tunasema \"Habari za asubuhi?\" na jibu ni \"Nzuri\" au \"Salama\".","Kwa mtu mzima tunasema \"Shikamoo\", naye anajibu \"Marahaba\".","Kwa rafiki tunaweza kusema \"Mambo?\" na jibu ni \"Poa\" au \"Safi\".","Maneno ya adabu ni muhimu: \"Tafadhali\" unapoomba kitu, \"Asante\" unaposaidiwa, na \"Samahani\" unapokosea.","Zoezi: salimiana na wenzako watatu kwa salamu tofauti, kisha mwambie mmoja wao asante."]},
+  {"id":"kis3","mod":"kis","format":"Reading","min":25,"grade":3,"title":{"en":"Short story: The hen and her eggs","sw":"Hadithi fupi: Kuku na mayai yake"},"lang":"Swahili","body":["Hapo zamani, katika kijiji cha Kakuma, aliishi kuku mmoja mweupe aliyeitwa Tiba.","Kila asubuhi Tiba alitaga yai moja chini ya kichaka karibu na nyumba ya Mama Akai.","Siku moja, mbwa mwizi alikuja kunusa karibu na kichaka. Tiba aliogopa sana.","Tiba alipiga kelele kubwa: \"Kokoriko! Kokoriko!\" Watoto walikimbia kuja, na mbwa akakimbia mbali.","Mama Akai alihamishia mayai ndani ya kikapu salama. Baada ya siku ishirini na moja, vifaranga sita walitoka.","Soma hadithi hii kwa sauti na mwenzako. Kisha jibu: Kuku aliitwa nani? Nani alimsaidia?"]},
+  {"id":"sci2","mod":"sci","format":"Video","min":20,"grade":3,"title":{"en":"Germs and clean water","sw":"Vijidudu na maji safi"},"body":{"en":["Germs are tiny living things. They are too small to see, but some of them can make us sick.","Germs can live in dirty water, on unwashed hands and on food that flies have touched.","Drinking dirty water can cause diarrhoea and stomach pain. Young children are most at risk.","We can make water safe by boiling it for one minute, or by using water treatment tablets the way a health worker shows us.","Keep drinking water in a clean container with a lid, and use a clean cup to take water out.","Wash your hands with soap after using the toilet and before eating or cooking.","Activity: look at how your family stores drinking water. Is the container covered? Share one idea to keep it cleaner."],"sw":["Vijidudu ni viumbe hai vidogo sana. Ni vidogo mno kuonekana, lakini baadhi yao wanaweza kutuletea ugonjwa.","Vijidudu vinaweza kuishi kwenye maji machafu, mikononi isiyooshwa na kwenye chakula kilichoguswa na nzi.","Kunywa maji machafu kunaweza kusababisha kuhara na maumivu ya tumbo. Watoto wadogo wako hatarini zaidi.","Tunaweza kufanya maji kuwa salama kwa kuyachemsha kwa dakika moja, au kwa kutumia vidonge vya kusafisha maji kama mhudumu wa afya anavyotuonyesha.","Hifadhi maji ya kunywa kwenye chombo safi chenye mfuniko, na utumie kikombe safi kuchota maji.","Osha mikono kwa sabuni baada ya kutoka chooni na kabla ya kula au kupika.","Shughuli: angalia jinsi familia yako inavyohifadhi maji ya kunywa. Je, chombo kimefunikwa? Toa wazo moja la kukiweka safi zaidi."]}},
+  {"id":"sci3","mod":"sci","format":"Reading","min":25,"grade":2,"title":{"en":"What do plants need?","sw":"Mimea inahitaji nini?"},"body":{"sw":["Mimea ni viumbe hai. Kama sisi, inahitaji vitu fulani ili ikue.","Mimea inahitaji maji. Mvua au kumwagilia husaidia mizizi kunyonya maji kutoka ardhini.","Mimea inahitaji mwanga wa jua. Majani hutumia mwanga wa jua kutengeneza chakula cha mmea.","Mimea inahitaji hewa na udongo wenye rutuba. Samadi husaidia udongo kuwa na rutuba.","Mizizi hushika mmea ardhini na kunyonya maji. Shina hubeba maji hadi kwenye majani.","Jaribio: panda mbegu mbili za maharagwe. Moja iwekwe juani na kumwagiliwa maji, nyingine iwekwe gizani. Angalia kwa wiki moja: ipi inakua vizuri?"],"en":["Plants are living things. Like us, they need certain things to grow.","Plants need water. Rain or watering helps the roots take up water from the soil.","Plants need sunlight. The leaves use sunlight to make food for the plant.","Plants need air and fertile soil. Manure helps make the soil fertile.","Roots hold the plant in the ground and take up water. The stem carries water up to the leaves.","Experiment: plant two bean seeds. Put one in the sun and water it, and put the other in the dark. Watch for one week: which one grows well?"]}},
   {"id":"self1","mod":"self","format":"Audio","min":15,"title":{"en":"Believing in yourself","sw":"Kujiamini"},"body":{"en":["Self-confidence means believing that you can learn, try new things and make good choices.","Everyone is good at something. Think of one thing you do well: maybe singing, running, helping at home or explaining sums to a friend.","Mistakes are part of learning. When something goes wrong, say \"I can try again\" instead of \"I am stupid\".","Kind words to yourself make you stronger. Kind words to others help them grow too.","Stand tall, look people in the eye and speak clearly. Practising this helps you feel brave.","Activity: tell a partner one thing you like about yourself and one thing you like about her."],"sw":["Kujiamini maana yake ni kuamini kwamba unaweza kujifunza, kujaribu mambo mapya na kufanya maamuzi mazuri.","Kila mtu ni hodari katika jambo fulani. Fikiria jambo moja unalofanya vizuri: labda kuimba, kukimbia, kusaidia nyumbani au kumweleza rafiki hesabu.","Makosa ni sehemu ya kujifunza. Jambo likienda vibaya, sema \"Naweza kujaribu tena\" badala ya \"Mimi ni mjinga\".","Maneno mazuri kwako mwenyewe yanakufanya uwe na nguvu zaidi. Maneno mazuri kwa wengine yanawasaidia kukua pia.","Simama wima, watazame watu machoni na uongee kwa sauti wazi. Kufanya mazoezi ya hili kunakusaidia kujisikia jasiri.","Shughuli: mwambie mwenzako jambo moja unalopenda kuhusu wewe na jambo moja unalopenda kuhusu yeye."]}},
   {"id":"self2","mod":"self","format":"Video","min":20,"title":{"en":"My goals","sw":"Malengo yangu"},"body":{"sw":["Lengo ni kitu unachotaka kufikia, kama kumaliza shule, kuwa mwalimu, muuguzi au mfanyabiashara.","Malengo makubwa hufikiwa kwa hatua ndogo. Kwa mfano, kusoma kurasa mbili kila siku kunakusaidia kufaulu mtihani.","Andika lengo lako, kisha andika hatua tatu ndogo unazoweza kuanza nazo wiki hii.","Kuna changamoto njiani, kama kazi nyingi nyumbani au ukosefu wa karo. Zungumza na mtu mzima unayemwamini ili akusaidie.","Kubaki shuleni na kuepuka ndoa na mimba za mapema kunakusaidia kufikia malengo yako.","Zoezi: mwambie mwenzako lengo lako moja na hatua moja utakayochukua kesho."],"en":["A goal is something you want to achieve, like finishing school, or becoming a teacher, a nurse or a business owner.","Big goals are reached with small steps. For example, reading two pages every day helps you pass an exam.","Write down your goal, then write three small steps you can start with this week.","There are challenges on the way, like a lot of work at home or no school fees. Talk to an adult you trust so they can help you.","Staying in school and avoiding early marriage and pregnancy helps you reach your goals.","Activity: tell a partner one of your goals and one step you will take tomorrow."]}},
+  {"id":"num5","mod":"num","grade":1,"format":"Audio","min":20,"title":{"en":"Counting from 1 to 20","sw":"Kuhesabu kutoka 1 hadi 20"},"body":{"en":["Today we will count from 1 to 20. Counting tells us how many things there are.","Count with me slowly: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10. Hold up one finger for each number.","Now we go on: 11, 12, 13, 14, 15, 16, 17, 18, 19, 20. After 10 we use a ten and some more.","Put 12 stones in a line. Touch each stone as you count, so you do not count any stone twice.","Game: one girl claps some times, and the others count the claps and say the number."],"sw":["Leo tutahesabu kutoka 1 hadi 20. Kuhesabu kunatuambia vitu ni vingapi.","Hesabu nami taratibu: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10. Inua kidole kimoja kwa kila namba.","Sasa tunaendelea: 11, 12, 13, 14, 15, 16, 17, 18, 19, 20. Baada ya 10 tunatumia kumi na zaidi.","Panga mawe 12 kwa mstari. Gusa kila jiwe unapohesabu, ili usihesabu jiwe lolote mara mbili.","Mchezo: msichana mmoja anapiga makofi mara kadhaa, na wengine wanahesabu makofi na kutaja namba."]}},
+  {"id":"num6","mod":"num","grade":3,"format":"Video","min":25,"title":{"en":"Multiplication: equal groups","sw":"Kuzidisha: makundi sawa"},"body":{"en":["Multiplication is a quick way to add equal groups. Instead of 3 + 3 + 3 + 3, we say 4 groups of 3.","Mama Akai puts 3 eggs in each of 4 baskets. 4 groups of 3 make 12. We write 4 × 3 = 12.","The sign × means \"groups of\" or \"times\". 5 × 2 means 5 groups of 2, which is 10.","Use bottle tops to make 3 groups of 5. Count them all: 15. So 3 × 5 = 15.","Practise: 2 × 4, 5 × 3 and 6 × 2. Draw the groups in your book to check."],"sw":["Kuzidisha ni njia ya haraka ya kujumlisha makundi yaliyo sawa. Badala ya 3 + 3 + 3 + 3, tunasema makundi 4 ya 3.","Mama Akai anaweka mayai 3 katika kila kikapu kati ya vikapu 4. Makundi 4 ya 3 ni 12. Tunaandika 4 × 3 = 12.","Alama × inamaanisha \"makundi ya\" au \"mara\". 5 × 2 ni makundi 5 ya 2, yaani 10.","Tumia vifuniko vya chupa kuunda makundi 3 ya 5. Vihesabu vyote: 15. Kwa hiyo 3 × 5 = 15.","Mazoezi: 2 × 4, 5 × 3 na 6 × 2. Chora makundi kwenye daftari lako kuhakikisha."]}},
+  {"id":"num7","mod":"num","grade":4,"format":"Reading","min":25,"title":{"en":"Fractions: halves and quarters","sw":"Sehemu: nusu na robo"},"body":{"en":["A fraction is a part of a whole. When we cut a chapati into equal parts, each part is a fraction.","Cut a chapati into 2 equal parts. Each part is one half. We write it as 1/2.","Cut it into 4 equal parts. Each part is one quarter, written 1/4. Two quarters make one half.","The parts must be equal. If one piece is big and one is small, they are not halves.","Activity: fold a piece of paper into halves, then into quarters. Colour one quarter and write 1/4 on it."],"sw":["Sehemu ni kipande cha kitu kizima. Tunapokata chapati vipande vilivyo sawa, kila kipande ni sehemu.","Kata chapati vipande 2 vilivyo sawa. Kila kipande ni nusu moja. Tunaandika 1/2.","Ikate vipande 4 vilivyo sawa. Kila kipande ni robo moja, inaandikwa 1/4. Robo mbili ni nusu moja.","Vipande lazima viwe sawa. Kipande kimoja kikiwa kikubwa na kingine kidogo, si nusu.","Shughuli: kunja karatasi nusu, kisha robo. Paka rangi robo moja na uandike 1/4 juu yake."]}},
+  {"id":"num8","mod":"num","grade":4,"format":"Audio","min":20,"title":{"en":"Money: buying and getting change","sw":"Pesa: kununua na kupata chenji"},"body":{"en":["In Kenya we use shillings. We have coins of 1, 5, 10 and 20 shillings, and notes of 50, 100, 200 and more.","Nakai buys a mango for 30 shillings and pays with a 50 shilling note. Her change is 50 − 30 = 20 shillings.","To find the change, take the price away from the money you gave.","To find the total cost, add the prices: a pencil for 10 shillings and a book for 40 shillings cost 50 shillings.","Play shop: one girl sells, one girl buys. Use paper coins and check the change together."],"sw":["Kenya tunatumia shilingi. Tuna sarafu za shilingi 1, 5, 10 na 20, na noti za 50, 100, 200 na zaidi.","Nakai ananunua embe kwa shilingi 30 na analipa kwa noti ya shilingi 50. Chenji yake ni 50 − 30 = shilingi 20.","Kupata chenji, toa bei kutoka kwenye pesa uliyotoa.","Kupata gharama yote, jumlisha bei: penseli ya shilingi 10 na kitabu cha shilingi 40 ni shilingi 50.","Cheza duka: msichana mmoja anauza, mwingine ananunua. Tumieni sarafu za karatasi na mhakikishe chenji pamoja."]}},
+  {"id":"num9","mod":"num","grade":5,"format":"Reading","min":25,"title":{"en":"Perimeter: the distance around a shape","sw":"Mzingo: umbali kuzunguka umbo"},"body":{"en":["The perimeter is the total distance around the edge of a shape.","To find the perimeter, add the lengths of all the sides.","A garden is 6 metres long and 4 metres wide. Its perimeter is 6 + 4 + 6 + 4 = 20 metres.","A square with sides of 5 centimetres has a perimeter of 5 + 5 + 5 + 5 = 20 centimetres, or 4 × 5.","Activity: measure the sides of your desk or book with a ruler and work out its perimeter."],"sw":["Mzingo ni umbali wote kuzunguka ukingo wa umbo.","Kupata mzingo, jumlisha urefu wa pande zote.","Bustani ina urefu wa mita 6 na upana wa mita 4. Mzingo wake ni 6 + 4 + 6 + 4 = mita 20.","Mraba wenye pande za sentimita 5 una mzingo wa 5 + 5 + 5 + 5 = sentimita 20, au 4 × 5.","Shughuli: pima pande za dawati au kitabu chako kwa rula na ukokotoe mzingo wake."]}},
+  {"id":"num10","mod":"num","grade":5,"format":"Video","min":25,"title":{"en":"Decimals: tenths","sw":"Desimali: sehemu za kumi"},"body":{"en":["A decimal is another way to write a part of a whole. We use a dot called the decimal point.","If we cut something into 10 equal parts, each part is one tenth. We write it as 0.1.","Three tenths is 0.3. Seven tenths is 0.7. Ten tenths make one whole: 1.0.","We use decimals for measuring: 1.5 metres means one metre and five tenths of a metre.","Practise: write these as decimals: four tenths, nine tenths, one whole and two tenths."],"sw":["Desimali ni njia nyingine ya kuandika sehemu ya kitu kizima. Tunatumia nukta inayoitwa nukta ya desimali.","Tukikata kitu vipande 10 vilivyo sawa, kila kipande ni sehemu moja ya kumi. Tunaandika 0.1.","Sehemu tatu za kumi ni 0.3. Sehemu saba za kumi ni 0.7. Sehemu kumi za kumi ni kitu kizima kimoja: 1.0.","Tunatumia desimali kupima: mita 1.5 ni mita moja na sehemu tano za kumi za mita.","Mazoezi: andika kama desimali: sehemu nne za kumi, sehemu tisa za kumi, kizima kimoja na sehemu mbili za kumi."]}},
+  {"id":"num11","mod":"num","grade":6,"format":"Reading","min":25,"title":{"en":"Area of rectangles","sw":"Eneo la mstatili"},"body":{"en":["Area is the amount of space inside a flat shape. We measure it in square units.","Draw a rectangle on squared paper that is 4 squares long and 3 squares wide. Count the squares inside: 12.","A quick way: multiply the length by the width. Area = length × width = 4 × 3 = 12 square units.","A classroom floor is 8 metres long and 6 metres wide. Its area is 8 × 6 = 48 square metres.","Activity: find the area of a door, a book and the top of your desk. Which is the biggest?"],"sw":["Eneo ni nafasi iliyomo ndani ya umbo bapa. Tunalipima kwa vipimo vya mraba.","Chora mstatili kwenye karatasi ya miraba wenye urefu wa miraba 4 na upana wa miraba 3. Hesabu miraba iliyo ndani: 12.","Njia ya haraka: zidisha urefu kwa upana. Eneo = urefu × upana = 4 × 3 = vipimo 12 vya mraba.","Sakafu ya darasa ina urefu wa mita 8 na upana wa mita 6. Eneo lake ni 8 × 6 = mita za mraba 48.","Shughuli: tafuta eneo la mlango, kitabu na juu ya dawati lako. Lipi ni kubwa zaidi?"]}},
+  {"id":"num12","mod":"num","grade":6,"format":"Audio","min":25,"title":{"en":"Percentages in daily life","sw":"Asilimia katika maisha ya kila siku"},"body":{"en":["Per cent means \"out of 100\". The sign is %. 50% means 50 out of 100, which is one half.","25% is one quarter, and 100% is the whole thing.","If 20 girls are in the club and 10 come today, then 10 out of 20 came. That is one half, or 50%.","Shops sometimes say \"10% off\". On a 200 shilling dress, 10% is 20 shillings, so it costs 180 shillings.","Practise: what is 50% of 60? What is 25% of 40? What is 10% of 300?"],"sw":["Asilimia maana yake ni \"kati ya 100\". Alama yake ni %. 50% ni 50 kati ya 100, yaani nusu.","25% ni robo moja, na 100% ni kitu chote.","Kama klabu ina wasichana 20 na 10 wamekuja leo, basi 10 kati ya 20 wamekuja. Hiyo ni nusu, au 50%.","Maduka wakati mwingine husema \"punguzo la 10%\". Kwa gauni la shilingi 200, 10% ni shilingi 20, kwa hiyo linauzwa shilingi 180.","Mazoezi: 50% ya 60 ni ngapi? 25% ya 40 ni ngapi? 10% ya 300 ni ngapi?"]}},
+  {"id":"lit6","mod":"lit","grade":1,"format":"Audio","min":20,"title":{"en":"Letter sounds: a to m","sw":"Sauti za herufi za Kiingereza: a hadi m"},"lang":"English","body":["Today we will learn the sounds of the English letters a to m.","Listen and repeat: a as in apple, b as in ball, c as in cat, d as in dog, e as in egg.","f as in fish, g as in goat, h as in hat, i as in ink, j as in jug.","k as in kite, l as in leg, m as in mango. Say each sound three times.","Game: the teacher says a sound, and you point to something in the room that starts with that sound."]},
+  {"id":"lit7","mod":"lit","grade":2,"format":"Reading","min":20,"title":{"en":"Naming words: nouns","sw":"Maneno ya majina: nomino (nouns)"},"lang":"English","body":["A noun is a naming word. It names a person, an animal, a place or a thing.","People: girl, teacher, mother, Akiru. Animals: goat, camel, hen.","Places: school, market, Lodwar. Things: book, cup, radio, pencil.","Names of people and places start with a capital letter: Akiru, Kakuma, Kenya.","Activity: look around the classroom and write five nouns you can see."]},
+  {"id":"lit8","mod":"lit","grade":3,"format":"Audio","min":20,"title":{"en":"Action words: verbs","sw":"Maneno ya vitendo: vitenzi (verbs)"},"lang":"English","body":["A verb is an action word. It tells us what someone or something does.","In \"The girl runs\", the verb is \"runs\". In \"Mama cooks ugali\", the verb is \"cooks\".","More verbs: jump, sing, read, write, carry, sleep, eat, swim.","Every sentence needs a verb. \"The goat grass\" is not complete. \"The goat eats grass\" is complete.","Game: the teacher says a verb and everyone acts it out: jump, clap, sit, wave."]},
+  {"id":"lit9","mod":"lit","grade":4,"format":"Reading","min":25,"title":{"en":"Describing words: adjectives","sw":"Maneno ya kueleza: vivumishi (adjectives)"},"lang":"English","body":["An adjective is a describing word. It tells us more about a noun.","In \"a tall tree\", the word \"tall\" describes the tree. In \"a red dress\", \"red\" describes the dress.","Adjectives can tell colour (green, yellow), size (big, small), shape (round) and feeling (happy, tired).","We can use more than one: \"a small, brown goat\".","Activity: describe your best friend using three adjectives, then write one sentence about her."]},
+  {"id":"lit10","mod":"lit","grade":5,"format":"Reading","min":25,"title":{"en":"The past tense: what happened yesterday","sw":"Wakati uliopita: kilichotokea jana (past tense)"},"lang":"English","body":["We use the past tense to talk about things that already happened.","Many verbs add -ed: walk becomes walked, play becomes played, carry becomes carried.","Some verbs change completely: go becomes went, eat becomes ate, see becomes saw, run becomes ran.","\"Yesterday I walked to the market and saw my aunt. We ate mandazi.\"","Activity: write four sentences about what you did last Saturday. Underline the verbs."]},
+  {"id":"lit11","mod":"lit","grade":5,"format":"Reading","min":20,"title":{"en":"Reading a notice","sw":"Kusoma tangazo (notice)"},"lang":"English","body":["A notice gives people important information. We find notices at school, at the health centre and at the market.","Read this notice: \"GIRLS' CLUB. Health talk with Nurse Ekai. Friday 3 pm, in the library. Bring a notebook. All girls welcome.\"","A good notice tells us what is happening, when, where, and what to bring.","When we read a notice, we look for the key facts. Who is giving the talk? Nurse Ekai. Where? In the library.","Activity: write a notice for a football match. Include what, when, where and who can come."]},
+  {"id":"lit12","mod":"lit","grade":6,"format":"Reading","min":25,"title":{"en":"Writing a friendly letter","sw":"Kuandika barua ya kirafiki (friendly letter)"},"lang":"English","body":["A friendly letter is a letter to someone you know, like a friend, a cousin or a grandmother.","At the top right, write your address and the date. Then start with a greeting: \"Dear Amina,\"","In the body, write your news in short paragraphs. Ask how the other person is.","End with a closing such as \"Your friend,\" or \"With love,\" and then your name.","Activity: write a short letter to a friend telling her about something new you learned in the club."]},
+  {"id":"lit13","mod":"lit","grade":6,"format":"Reading","min":25,"title":{"en":"Comprehension: Nakai's science fair","sw":"Ufahamu: Maonyesho ya sayansi ya Nakai"},"lang":"English","body":["Nakai is in Grade 6. Her school is holding a science fair, and every pupil must make a project.","Nakai notices that the borehole water near her home is often dirty after rain. She decides to build a simple water filter.","She cuts a plastic bottle and fills it with layers of small stones, sand and charcoal. She pours dirty water in at the top.","The water that drips out at the bottom is much clearer. Nakai explains that it still needs boiling before drinking.","The judges give Nakai second prize. Her teacher says, \"You saw a problem in your community and tried to solve it.\" Answer: what did Nakai build, and why?"]},
+  {"id":"kis4","mod":"kis","grade":1,"format":"Audio","min":20,"title":{"en":"Syllables: ba, be, bi, bo, bu","sw":"Silabi: ba, be, bi, bo, bu"},"lang":"Swahili","body":["Leo tutajifunza silabi. Tunaunganisha herufi b na irabu: ba, be, bi, bo, bu.","Sikiliza na urudie: ba, be, bi, bo, bu. Ma, me, mi, mo, mu. Ka, ke, ki, ko, ku.","Tunaunganisha silabi kuunda maneno: ba + ba = baba. Ma + ma = mama. Ki + ti = kiti.","Soma maneno haya kwa sauti: bata, kaka, mama, kiti, buku.","Mchezo: mwalimu anataja silabi moja, nawe unataja neno linaloanza na silabi hiyo."]},
+  {"id":"kis5","mod":"kis","grade":2,"format":"Reading","min":20,"title":{"en":"Naming words: things at home","sw":"Nomino: vitu vya nyumbani"},"lang":"Swahili","body":["Nomino ni neno linalotaja mtu, mnyama, mahali au kitu.","Vitu vya nyumbani: kikombe, sufuria, kitanda, mkeka, taa na ndoo.","Watu nyumbani: mama, baba, bibi, babu, dada na kaka.","Wanyama nyumbani: mbuzi, kuku, mbwa, paka na ngamia.","Zoezi: chora vitu vitano vya nyumbani kwenu na uandike jina la kila kimoja chini yake."]},
+  {"id":"kis6","mod":"kis","grade":3,"format":"Audio","min":20,"title":{"en":"Singular and plural","sw":"Umoja na wingi"},"lang":"Swahili","body":["Umoja ni kitu kimoja. Wingi ni vitu zaidi ya kimoja.","Kiti — viti. Kitabu — vitabu. Kikombe — vikombe. Hapa ki- inakuwa vi-.","Mtoto — watoto. Mwalimu — walimu. Hapa m- au mw- inakuwa wa-.","Mti — miti. Mkate — mikate. Hapa m- inakuwa mi-.","Zoezi: andika wingi wa maneno haya: kijiko, mwanafunzi, mlango, kiatu."]},
+  {"id":"kis7","mod":"kis","grade":4,"format":"Reading","min":25,"title":{"en":"Action words: verbs","sw":"Vitenzi: kazi tunazofanya"},"lang":"Swahili","body":["Kitenzi ni neno linaloonyesha kitendo, yaani kazi inayofanywa.","Katika sentensi \"Akiru anasoma kitabu\", kitenzi ni \"anasoma\".","Vitenzi vingine: kula, kunywa, kucheza, kuandika, kulima, kuchota maji.","Wakati uliopita tunatumia -li-: \"Jana nilisoma.\" Wakati ujao tunatumia -ta-: \"Kesho nitasoma.\"","Zoezi: andika sentensi tatu kuhusu kazi unazofanya nyumbani, kisha upige mstari chini ya kitenzi."]},
+  {"id":"kis8","mod":"kis","grade":4,"format":"Reading","min":25,"title":{"en":"Reading comprehension: The Saturday market","sw":"Ufahamu: Soko la Jumamosi"},"lang":"Swahili","body":["Kila Jumamosi, Ekal huenda sokoni pamoja na mama yake. Soko liko karibu na mto.","Mama yake Ekal huuza mikeka aliyoisuka kwa mikono. Ekal humsaidia kupanga mikeka na kuhesabu pesa.","Jumamosi iliyopita, mama aliuza mikeka minne. Kwa pesa hizo, walinunua unga, sukari na daftari jipya la Ekal.","Ekal anapenda soko kwa sababu anakutana na watu wengi na anajifunza hesabu ya pesa.","Maswali: Soko liko wapi? Mama yake Ekal huuza nini? Walinunua nini kwa pesa?"]},
+  {"id":"kis9","mod":"kis","grade":5,"format":"Audio","min":20,"title":{"en":"Proverbs (methali)","sw":"Methali"},"lang":"Swahili","body":["Methali ni msemo mfupi wenye hekima. Wazee hutumia methali kufundisha na kushauri.","\"Haba na haba hujaza kibaba.\" Maana yake: kidogo kidogo, ukiendelea, hufikia kingi. Ni kama kuweka akiba kila siku.","\"Mwenda pole hajikwai.\" Maana yake: anayefanya mambo kwa uangalifu haanguki.","\"Usipoziba ufa utajenga ukuta.\" Maana yake: shughulikia tatizo dogo kabla halijawa kubwa.","Zoezi: muulize mzazi au babu methali moja, kisha uwaeleze wenzako maana yake."]},
+  {"id":"kis10","mod":"kis","grade":5,"format":"Reading","min":25,"title":{"en":"Writing a friendly letter","sw":"Kuandika barua ya kirafiki"},"lang":"Swahili","body":["Barua ya kirafiki tunaiandika kwa rafiki, ndugu au mtu tunayemfahamu.","Juu kulia, andika anwani yako na tarehe. Kisha anza na salamu: \"Mpendwa Amina,\"","Baada ya salamu, uliza hali yake: \"Habari za siku nyingi? Natumaini u mzima.\"","Katika kiini, eleza habari zako kwa aya fupi. Mwisho andika: \"Wako akupendaye,\" kisha jina lako.","Zoezi: mwandikie rafiki barua fupi ukimweleza jambo jipya ulilojifunza klabuni."]},
+  {"id":"kis11","mod":"kis","grade":6,"format":"Reading","min":25,"title":{"en":"Composition: My happiest day","sw":"Insha: Siku yangu ya furaha"},"lang":"Swahili","body":["Insha ni maandishi yanayoeleza jambo kwa mpangilio. Ina kichwa, utangulizi, kiini na hitimisho.","Utangulizi unamwambia msomaji insha inahusu nini: \"Siku yangu ya furaha zaidi ilikuwa siku ya kufunga shule.\"","Kiini kinaeleza kilichotokea kwa mpangilio: asubuhi, mchana na jioni. Tumia maneno kama \"kwanza\", \"kisha\" na \"hatimaye\".","Hitimisho linamaliza insha na kueleza ulivyohisi: \"Siku hiyo sitaisahau kamwe.\"","Zoezi: andika insha ya aya nne yenye kichwa \"Siku yangu ya furaha\"."]},
+  {"id":"kis12","mod":"kis","grade":6,"format":"Reading","min":25,"title":{"en":"Reading comprehension: Water is life","sw":"Ufahamu: Maji ni uhai"},"lang":"Swahili","body":["Katika kijiji cha Nadapal, wasichana walikuwa wakitembea kilomita sita kila siku kuchota maji.","Kwa sababu ya safari hiyo ndefu, wengi walichelewa shuleni au hawakwenda kabisa.","Mwaka jana, wazazi na viongozi walishirikiana kuchimba kisima karibu na shule na kuweka pampu ya nishati ya jua.","Sasa wasichana wanachota maji kwa dakika chache tu. Mahudhurio shuleni yameongezeka, na bustani ya shule ina mboga.","Maswali: Wasichana walitembea umbali gani? Kisima kilisaidiaje? Kwa nini tunasema \"maji ni uhai\"?"]},
+  {"id":"sci4","mod":"sci","grade":1,"format":"Video","min":20,"title":{"en":"Our five senses","sw":"Milango yetu mitano ya fahamu"},"body":{"en":["We learn about the world with our five senses: seeing, hearing, smelling, tasting and touching.","We see with our eyes and hear with our ears. We smell with our nose.","We taste with our tongue: sugar is sweet, a lemon is sour, and salt is salty.","We touch and feel with our skin: a stone is hard, cotton is soft, and fire is hot.","Game: close your eyes. A friend gives you something to hold. Can you name it by touch only?"],"sw":["Tunajifunza kuhusu dunia kwa milango yetu mitano ya fahamu: kuona, kusikia, kunusa, kuonja na kugusa.","Tunaona kwa macho na tunasikia kwa masikio. Tunanusa kwa pua.","Tunaonja kwa ulimi: sukari ni tamu, ndimu ni chachu, na chumvi ina ladha ya chumvi.","Tunagusa na kuhisi kwa ngozi: jiwe ni gumu, pamba ni laini, na moto ni wa joto.","Mchezo: funga macho. Rafiki akupe kitu ushike. Unaweza kukitaja kwa kugusa tu?"]}},
+  {"id":"sci5","mod":"sci","grade":1,"format":"Reading","min":20,"title":{"en":"Living and non-living things","sw":"Vitu vyenye uhai na visivyo na uhai"},"body":{"en":["Some things around us are living, and some are non-living.","Living things grow, need food and water, breathe, and can have young ones. People, goats, birds and trees are living.","Non-living things do not grow or eat. A stone, a cup, a chair and water are non-living.","Plants are living too. They grow, need water and make new plants from seeds.","Activity: walk around the school compound. List three living things and three non-living things you see."],"sw":["Baadhi ya vitu vinavyotuzunguka vina uhai, na vingine havina uhai.","Vitu vyenye uhai hukua, huhitaji chakula na maji, hupumua, na vinaweza kuzaa. Watu, mbuzi, ndege na miti vina uhai.","Vitu visivyo na uhai havikui wala havili. Jiwe, kikombe, kiti na maji havina uhai.","Mimea pia ina uhai. Inakua, inahitaji maji na huzaa mimea mipya kutoka kwa mbegu.","Shughuli: tembea kuzunguka shule. Orodhesha vitu vitatu vyenye uhai na vitatu visivyo na uhai unavyoviona."]}},
+  {"id":"sci6","mod":"sci","grade":2,"format":"Video","min":20,"title":{"en":"Animals around us","sw":"Wanyama wanaotuzunguka"},"body":{"en":["Many animals live around our homes: goats, camels, cows, chickens, dogs and donkeys.","Domestic animals live with people and help us. Goats give milk and meat. Donkeys carry loads.","Wild animals live on their own in the bush, like giraffes, lions, snakes and many birds.","Animals need food, water and shelter, just like us. We should treat them kindly.","Activity: draw one domestic animal and one wild animal. Write what each one eats."],"sw":["Wanyama wengi wanaishi karibu na nyumba zetu: mbuzi, ngamia, ng'ombe, kuku, mbwa na punda.","Wanyama wa nyumbani wanaishi na watu na hutusaidia. Mbuzi hutoa maziwa na nyama. Punda hubeba mizigo.","Wanyama wa porini wanaishi wenyewe msituni, kama twiga, simba, nyoka na ndege wengi.","Wanyama wanahitaji chakula, maji na makazi, kama sisi. Tunapaswa kuwatendea kwa upole.","Shughuli: chora mnyama mmoja wa nyumbani na mmoja wa porini. Andika kila mmoja anakula nini."]}},
+  {"id":"sci7","mod":"sci","grade":3,"format":"Audio","min":20,"title":{"en":"Weather and seasons","sw":"Hali ya hewa na misimu"},"body":{"en":["Weather is what the air outside is like today: sunny, cloudy, windy or rainy.","In northern Kenya most days are hot and dry. The rainy seasons are usually around April and November.","We can watch the weather: look at the sky, feel the wind and notice if the ground is wet.","Weather changes how we live. In the dry season, water is harder to find and animals move far for grass.","Activity: make a weather chart for one week. Each day, draw a sun, a cloud or rain."],"sw":["Hali ya hewa ni jinsi hewa ilivyo nje leo: jua, mawingu, upepo au mvua.","Kaskazini mwa Kenya siku nyingi ni za joto na kavu. Misimu ya mvua kwa kawaida ni karibu Aprili na Novemba.","Tunaweza kuchunguza hali ya hewa: angalia anga, hisi upepo na uone kama ardhi ina unyevu.","Hali ya hewa hubadilisha maisha yetu. Wakati wa kiangazi, maji ni vigumu kupata na mifugo husafiri mbali kutafuta nyasi.","Shughuli: tengeneza chati ya hali ya hewa kwa wiki moja. Kila siku, chora jua, wingu au mvua."]}},
+  {"id":"sci8","mod":"sci","grade":4,"format":"Reading","min":25,"title":{"en":"Food groups and a healthy plate","sw":"Makundi ya chakula na mlo kamili"},"body":{"en":["Our bodies need different kinds of food to grow strong and stay healthy.","Energy foods give us power to work and play: ugali, rice, bread, potatoes and bananas.","Body-building foods help us grow: beans, eggs, milk, fish, meat and lentils.","Protective foods help us fight sickness: fruits and vegetables like sukuma wiki, carrots, mangoes and oranges.","A healthy plate has some of each group, and we should drink clean water every day. Draw your healthy plate."],"sw":["Miili yetu inahitaji aina tofauti za chakula ili ikue imara na iwe na afya.","Vyakula vya nguvu vinatupa nguvu ya kufanya kazi na kucheza: ugali, wali, mkate, viazi na ndizi.","Vyakula vya kujenga mwili vinatusaidia kukua: maharagwe, mayai, maziwa, samaki, nyama na dengu.","Vyakula vya kulinda mwili vinatusaidia kupigana na magonjwa: matunda na mboga kama sukuma wiki, karoti, embe na machungwa.","Mlo kamili una baadhi ya kila kundi, na tunapaswa kunywa maji safi kila siku. Chora mlo wako kamili."]}},
+  {"id":"sci9","mod":"sci","grade":5,"format":"Video","min":25,"title":{"en":"Magnets","sw":"Sumaku"},"body":{"en":["A magnet is an object that pulls some metals towards it. This pull is called magnetism.","Magnets attract things made of iron and steel, like nails and paper clips. They do not attract wood, plastic or paper.","Every magnet has two ends called poles: a north pole and a south pole.","Two different poles pull together (attract). Two of the same poles push apart (repel).","Experiment: test ten objects with a magnet. Sort them into \"attracted\" and \"not attracted\"."],"sw":["Sumaku ni kitu kinachovuta baadhi ya metali kuelekea kwake. Mvuto huu unaitwa usumaku.","Sumaku huvuta vitu vilivyotengenezwa kwa chuma, kama misumari na pini za karatasi. Haivuti mbao, plastiki wala karatasi.","Kila sumaku ina ncha mbili zinazoitwa ncha: ncha ya kaskazini na ncha ya kusini.","Ncha mbili tofauti huvutana. Ncha mbili zinazofanana husukumana.","Jaribio: jaribu vitu kumi kwa sumaku. Vipange katika \"vinavyovutwa\" na \"visivyovutwa\"."]}},
+  {"id":"sci10","mod":"sci","grade":5,"format":"Reading","min":25,"title":{"en":"The water cycle","sw":"Mzunguko wa maji"},"body":{"en":["Water on Earth moves around and around in a journey called the water cycle.","The sun heats water in lakes, rivers and puddles. The water turns into vapour and rises into the air. This is evaporation.","High in the sky, the vapour cools and forms tiny drops that make clouds. This is condensation.","When the drops get heavy, they fall as rain. This is precipitation. The rain fills rivers, lakes and the ground again.","Experiment: put a little water in a dish in the sun in the morning. Check it in the afternoon. Where did the water go?"],"sw":["Maji duniani huzunguka tena na tena katika safari inayoitwa mzunguko wa maji.","Jua hupasha joto maji katika maziwa, mito na madimbwi. Maji hubadilika kuwa mvuke na kupanda hewani. Huu ni mvukizo.","Juu angani, mvuke hupoa na kutengeneza matone madogo yanayofanya mawingu. Huu ni ufupishaji.","Matone yakiwa mazito, huanguka kama mvua. Hii ni mvua (unyeshaji). Mvua hujaza tena mito, maziwa na ardhi.","Jaribio: weka maji kidogo kwenye sahani juani asubuhi. Angalia mchana. Maji yameenda wapi?"]}},
+  {"id":"sci11","mod":"sci","grade":6,"format":"Video","min":25,"title":{"en":"Simple machines","sw":"Mashine sahili"},"body":{"en":["A machine is something that makes work easier. Simple machines have few or no moving parts.","A lever is a bar that turns on a point. A bottle opener and a wheelbarrow are levers.","A pulley is a wheel with a rope. At a well, a pulley helps us lift a heavy bucket of water.","An inclined plane is a slope. It is easier to push a load up a ramp than to lift it straight up.","A wheel and axle helps things roll: think of a bicycle or a cart. Find one simple machine at home and explain how it helps."],"sw":["Mashine ni kitu kinachorahisisha kazi. Mashine sahili zina sehemu chache au hazina sehemu zinazosonga.","Wenzo ni fimbo inayozunguka kwenye kitovu. Kifungua chupa na toroli ni wenzo.","Kapi ni gurudumu lenye kamba. Kisimani, kapi hutusaidia kuinua ndoo nzito ya maji.","Mteremko ni mwinuko. Ni rahisi kusukuma mzigo juu ya mteremko kuliko kuuinua moja kwa moja.","Gurudumu na ekseli husaidia vitu kubingirika: fikiria baiskeli au mkokoteni. Tafuta mashine sahili moja nyumbani na ueleze inavyosaidia."]}},
+  {"id":"sci12","mod":"sci","grade":6,"format":"Audio","min":25,"title":{"en":"Caring for our environment","sw":"Kutunza mazingira yetu"},"body":{"en":["The environment is everything around us: land, water, air, plants and animals.","Cutting too many trees causes soil to be washed away and makes the land dry.","Plastic bags and bottles thrown on the ground harm animals and block water. We can reuse, reduce and recycle them.","Planting trees gives shade, stops soil erosion and gives homes to birds. Water trees in the dry season.","Project: as a club, choose one area of the school to clean, and plant one tree to look after together."],"sw":["Mazingira ni kila kitu kinachotuzunguka: ardhi, maji, hewa, mimea na wanyama.","Kukata miti mingi husababisha udongo kusombwa na maji na kufanya ardhi kuwa kavu.","Mifuko na chupa za plastiki zinazotupwa ardhini huwadhuru wanyama na huziba maji. Tunaweza kuzitumia tena, kupunguza na kuzirejeleza.","Kupanda miti hutoa kivuli, huzuia mmomonyoko wa udongo na hutoa makazi kwa ndege. Mwagilia miti wakati wa kiangazi.","Mradi: kama klabu, chagueni eneo moja la shule la kusafisha, na mpande mti mmoja wa kutunza pamoja."]}},
 ];
 const SEED_Q = [
   {"id":"q1","lesson":"lit1","text":"Ni herufi gani ni irabu?","type":"mc","opts":["b","o","t"],"a":1},
@@ -711,6 +787,108 @@ const SEED_Q = [
   {"id":"w8","lesson":"self1","text":{"en":"What can you say to yourself after a mistake?","sw":"Unaweza kujiambia nini baada ya kukosea?"},"type":"mc","opts":{"en":["I am stupid","I can try again","I will never learn"],"sw":["Mimi ni mjinga","Naweza kujaribu tena","Sitajifunza kamwe"]},"a":1},
   {"id":"w9","lesson":"self2","text":{"sw":"Lengo kubwa hufikiwaje?","en":"How is a big goal reached?"},"type":"mc","opts":{"sw":["Kwa hatua ndogo kila siku","Kwa kusubiri tu","Kwa kuacha shule"],"en":["With small steps every day","By just waiting","By leaving school"]},"a":0},
   {"id":"w10","lesson":"self2","text":{"sw":"Ukipata changamoto, unaweza kufanya nini?","en":"If you meet a challenge, what can you do?"},"type":"mc","opts":{"sw":["Kukata tamaa","Kuficha tatizo","Kuzungumza na mtu mzima unayemwamini"],"en":["Give up","Hide the problem","Talk to an adult you trust"]},"a":2},
+  {"id":"mg1","lesson":"num5","type":"mc","text":{"en":"What number comes after 13?","sw":"Namba gani inafuata 13?"},"opts":{"en":["12","14","15"],"sw":["12","14","15"]},"a":1},
+  {"id":"mg2","lesson":"num5","type":"mc","text":{"en":"Count: ● ● ● ● ● ● ●. How many?","sw":"Hesabu: ● ● ● ● ● ● ●. Ni ngapi?"},"opts":{"en":["6","7","8"],"sw":["6","7","8"]},"a":1},
+  {"id":"mg3","lesson":"num5","type":"mc","text":{"en":"Which number is bigger?","sw":"Namba ipi ni kubwa zaidi?"},"opts":{"en":["18","11","9"],"sw":["18","11","9"]},"a":0},
+  {"id":"mg4","lesson":"num6","type":"mc","text":{"en":"4 groups of 3 make:","sw":"Makundi 4 ya 3 ni:"},"opts":{"en":["7","12","34"],"sw":["7","12","34"]},"a":1},
+  {"id":"mg5","lesson":"num6","type":"mc","text":{"en":"5 × 2 = ?","sw":"5 × 2 = ?"},"opts":{"en":["10","7","52"],"sw":["10","7","52"]},"a":0},
+  {"id":"mg6","lesson":"num6","type":"mc","text":{"en":"What does × mean?","sw":"Alama × inamaanisha nini?"},"opts":{"en":["Take away","Groups of","Share"],"sw":["Kutoa","Makundi ya","Kugawa"]},"a":1},
+  {"id":"mg7","lesson":"num7","type":"mc","text":{"en":"A chapati cut into 2 equal parts. Each part is:","sw":"Chapati imekatwa vipande 2 sawa. Kila kipande ni:"},"opts":{"en":["One half","One quarter","One whole"],"sw":["Nusu moja","Robo moja","Kizima kimoja"]},"a":0},
+  {"id":"mg8","lesson":"num7","type":"mc","text":{"en":"How many quarters make one half?","sw":"Robo ngapi ni nusu moja?"},"opts":{"en":["One","Two","Four"],"sw":["Moja","Mbili","Nne"]},"a":1},
+  {"id":"mg9","lesson":"num7","type":"mc","text":{"en":"How do we write one quarter?","sw":"Robo moja inaandikwa vipi?"},"opts":{"en":["1/2","1/4","4/1"],"sw":["1/2","1/4","4/1"]},"a":1},
+  {"id":"mg10","lesson":"num8","type":"mc","text":{"en":"You pay 50 shillings for a 30 shilling mango. Your change is:","sw":"Unalipa shilingi 50 kwa embe la shilingi 30. Chenji ni:"},"opts":{"en":["20","80","30"],"sw":["20","80","30"]},"a":0},
+  {"id":"mg11","lesson":"num8","type":"mc","text":{"en":"A pencil costs 10 and a book costs 40. Together they cost:","sw":"Penseli ni 10 na kitabu ni 40. Pamoja ni:"},"opts":{"en":["30","50","400"],"sw":["30","50","400"]},"a":1},
+  {"id":"mg12","lesson":"num8","type":"mc","text":{"en":"To find the change, you:","sw":"Kupata chenji, wewe:"},"opts":{"en":["Add the price","Take the price away from the money you gave","Multiply"],"sw":["Unajumlisha bei","Unatoa bei kutoka kwenye pesa uliyotoa","Unazidisha"]},"a":1},
+  {"id":"mg13","lesson":"num9","type":"mc","text":{"en":"Perimeter is:","sw":"Mzingo ni:"},"opts":{"en":["The space inside a shape","The distance around a shape","The weight of a shape"],"sw":["Nafasi ndani ya umbo","Umbali kuzunguka umbo","Uzito wa umbo"]},"a":1},
+  {"id":"mg14","lesson":"num9","type":"mc","text":{"en":"A garden 6 m long and 4 m wide. Its perimeter is:","sw":"Bustani ya mita 6 kwa 4. Mzingo wake ni:"},"opts":{"en":["10 m","20 m","24 m"],"sw":["Mita 10","Mita 20","Mita 24"]},"a":1},
+  {"id":"mg15","lesson":"num9","type":"mc","text":{"en":"A square with 5 cm sides. Its perimeter is:","sw":"Mraba wenye pande za sm 5. Mzingo wake ni:"},"opts":{"en":["20 cm","10 cm","25 cm"],"sw":["Sm 20","Sm 10","Sm 25"]},"a":0},
+  {"id":"mg16","lesson":"num10","type":"mc","text":{"en":"Three tenths is written:","sw":"Sehemu tatu za kumi zinaandikwa:"},"opts":{"en":["3.0","0.3","30"],"sw":["3.0","0.3","30"]},"a":1},
+  {"id":"mg17","lesson":"num10","type":"mc","text":{"en":"How many tenths make one whole?","sw":"Sehemu ngapi za kumi ni kizima kimoja?"},"opts":{"en":["5","10","100"],"sw":["5","10","100"]},"a":1},
+  {"id":"mg18","lesson":"num10","type":"mc","text":{"en":"1.5 metres means:","sw":"Mita 1.5 ni:"},"opts":{"en":["One metre and five tenths","Fifteen metres","Five metres"],"sw":["Mita moja na sehemu tano za kumi","Mita kumi na tano","Mita tano"]},"a":0},
+  {"id":"mg19","lesson":"num11","type":"mc","text":{"en":"Area of a rectangle =","sw":"Eneo la mstatili ="},"opts":{"en":["length + width","length × width","length − width"],"sw":["urefu + upana","urefu × upana","urefu − upana"]},"a":1},
+  {"id":"mg20","lesson":"num11","type":"mc","text":{"en":"A rectangle 4 long and 3 wide has an area of:","sw":"Mstatili wa urefu 4 na upana 3 una eneo la:"},"opts":{"en":["7","12","14"],"sw":["7","12","14"]},"a":1},
+  {"id":"mg21","lesson":"num11","type":"mc","text":{"en":"A floor 8 m by 6 m has an area of:","sw":"Sakafu ya mita 8 kwa 6 ina eneo la:"},"opts":{"en":["48 square metres","14 square metres","28 square metres"],"sw":["Mita za mraba 48","Mita za mraba 14","Mita za mraba 28"]},"a":0},
+  {"id":"mg22","lesson":"num12","type":"mc","text":{"en":"50% is the same as:","sw":"50% ni sawa na:"},"opts":{"en":["One quarter","One half","The whole"],"sw":["Robo moja","Nusu moja","Kitu chote"]},"a":1},
+  {"id":"mg23","lesson":"num12","type":"mc","text":{"en":"10 out of 20 girls came. That is:","sw":"Wasichana 10 kati ya 20 walikuja. Hiyo ni:"},"opts":{"en":["10%","50%","20%"],"sw":["10%","50%","20%"]},"a":1},
+  {"id":"mg24","lesson":"num12","type":"mc","text":{"en":"10% of 200 shillings is:","sw":"10% ya shilingi 200 ni:"},"opts":{"en":["20","10","100"],"sw":["20","10","100"]},"a":0},
+  {"id":"eg1","lesson":"lit6","type":"mc","text":"Which word starts with the sound \"b\"?","opts":["ball","cat","egg"],"a":0},
+  {"id":"eg2","lesson":"lit6","type":"mc","text":"Which word starts with the sound \"g\"?","opts":["fish","goat","hat"],"a":1},
+  {"id":"eg3","lesson":"lit6","type":"mc","text":"\"m\" as in…","opts":["mango","kite","leg"],"a":0},
+  {"id":"eg4","lesson":"lit7","type":"mc","text":"Which word is a noun?","opts":["run","book","happy"],"a":1},
+  {"id":"eg5","lesson":"lit7","type":"mc","text":"Which noun needs a capital letter?","opts":["school","kakuma","goat"],"a":1},
+  {"id":"eg6","lesson":"lit7","type":"mc","text":"A noun names a…","opts":["person, animal, place or thing","colour only","action"],"a":0},
+  {"id":"eg7","lesson":"lit8","type":"mc","text":"In \"Mama cooks ugali\", the verb is:","opts":["Mama","cooks","ugali"],"a":1},
+  {"id":"eg8","lesson":"lit8","type":"mc","text":"Which word is a verb?","opts":["jump","table","blue"],"a":0},
+  {"id":"eg9","lesson":"lit8","type":"mc","text":"Which sentence is complete?","opts":["The goat grass.","The goat eats grass.","The goat."],"a":1},
+  {"id":"eg10","lesson":"lit9","type":"mc","text":"In \"a tall tree\", the adjective is:","opts":["a","tall","tree"],"a":1},
+  {"id":"eg11","lesson":"lit9","type":"mc","text":"Which word is an adjective?","opts":["happy","sing","girl"],"a":0},
+  {"id":"eg12","lesson":"lit9","type":"mc","text":"An adjective describes a…","opts":["verb","noun","full stop"],"a":1},
+  {"id":"eg13","lesson":"lit10","type":"mc","text":"The past tense of \"go\" is:","opts":["goed","went","going"],"a":1},
+  {"id":"eg14","lesson":"lit10","type":"mc","text":"The past tense of \"play\" is:","opts":["played","plays","plaid"],"a":0},
+  {"id":"eg15","lesson":"lit10","type":"mc","text":"Which sentence is in the past tense?","opts":["I eat mandazi.","I ate mandazi.","I will eat mandazi."],"a":1},
+  {"id":"eg16","lesson":"lit11","type":"mc","text":"Where is the health talk?","opts":["In the library","At the market","At home"],"a":0},
+  {"id":"eg17","lesson":"lit11","type":"mc","text":"Who is giving the talk?","opts":["Nurse Ekai","Akiru","The head teacher"],"a":0},
+  {"id":"eg18","lesson":"lit11","type":"mc","text":"A good notice tells us:","opts":["what, when and where","only a story","a song"],"a":0},
+  {"id":"eg19","lesson":"lit12","type":"mc","text":"How does a friendly letter start?","opts":["Dear Amina,","The end.","Yours faithfully"],"a":0},
+  {"id":"eg20","lesson":"lit12","type":"mc","text":"Where do you write the date?","opts":["At the top right","In the middle","It is not needed"],"a":0},
+  {"id":"eg21","lesson":"lit12","type":"mc","text":"Which is a good closing?","opts":["Your friend,","Hello,","Question:"],"a":0},
+  {"id":"eg22","lesson":"lit13","type":"mc","text":"What did Nakai build?","opts":["A water filter","A radio","A house"],"a":0},
+  {"id":"eg23","lesson":"lit13","type":"mc","text":"Why did she build it?","opts":["The borehole water was dirty after rain","She wanted a toy","Her teacher was angry"],"a":0},
+  {"id":"eg24","lesson":"lit13","type":"mc","text":"What must still be done before drinking the water?","opts":["Boil it","Add sugar","Nothing"],"a":0},
+  {"id":"kg1","lesson":"kis4","type":"mc","text":"ba + ba = ?","opts":["baba","mama","kaka"],"a":0},
+  {"id":"kg2","lesson":"kis4","type":"mc","text":"Neno \"kiti\" lina silabi zipi?","opts":["ki-ti","k-iti","kit-i"],"a":0},
+  {"id":"kg3","lesson":"kis4","type":"mc","text":"Silabi ipi inaanza neno \"mama\"?","opts":["ba","ma","ka"],"a":1},
+  {"id":"kg4","lesson":"kis5","type":"mc","text":"Kipi ni kitu cha nyumbani?","opts":["Sufuria","Simba","Mto"],"a":0},
+  {"id":"kg5","lesson":"kis5","type":"mc","text":"Nomino ni neno linalotaja…","opts":["mtu, mnyama, mahali au kitu","kitendo tu","rangi tu"],"a":0},
+  {"id":"kg6","lesson":"kis5","type":"mc","text":"Yupi ni mnyama wa nyumbani?","opts":["Kuku","Twiga","Simba"],"a":0},
+  {"id":"kg7","lesson":"kis6","type":"mc","text":"Wingi wa \"kiti\" ni:","opts":["viti","miti","witi"],"a":0},
+  {"id":"kg8","lesson":"kis6","type":"mc","text":"Wingi wa \"mtoto\" ni:","opts":["mitoto","watoto","vitoto"],"a":1},
+  {"id":"kg9","lesson":"kis6","type":"mc","text":"Wingi wa \"mti\" ni:","opts":["viti","miti","wati"],"a":1},
+  {"id":"kg10","lesson":"kis7","type":"mc","text":"Katika \"Akiru anasoma kitabu\", kitenzi ni:","opts":["Akiru","anasoma","kitabu"],"a":1},
+  {"id":"kg11","lesson":"kis7","type":"mc","text":"\"Jana nilisoma\" ni wakati gani?","opts":["Uliopita","Ujao","Uliopo"],"a":0},
+  {"id":"kg12","lesson":"kis7","type":"mc","text":"Neno lipi ni kitenzi?","opts":["kucheza","meza","nzuri"],"a":0},
+  {"id":"kg13","lesson":"kis8","type":"mc","text":"Soko liko wapi?","opts":["Karibu na mto","Mjini Nairobi","Shuleni"],"a":0},
+  {"id":"kg14","lesson":"kis8","type":"mc","text":"Mama yake Ekal huuza nini?","opts":["Mikeka","Samaki","Viatu"],"a":0},
+  {"id":"kg15","lesson":"kis8","type":"mc","text":"Mama aliuza mikeka mingapi?","opts":["Miwili","Minne","Kumi"],"a":1},
+  {"id":"kg16","lesson":"kis9","type":"mc","text":"\"Haba na haba hujaza kibaba\" maana yake:","opts":["Kidogo kidogo hufikia kingi","Usile sana","Kimbia haraka"],"a":0},
+  {"id":"kg17","lesson":"kis9","type":"mc","text":"\"Mwenda pole hajikwai\" inatufundisha:","opts":["Kufanya mambo kwa uangalifu","Kukimbia","Kulala mapema"],"a":0},
+  {"id":"kg18","lesson":"kis9","type":"mc","text":"Methali ni nini?","opts":["Msemo mfupi wenye hekima","Wimbo mrefu","Jina la mtu"],"a":0},
+  {"id":"kg19","lesson":"kis10","type":"mc","text":"Barua ya kirafiki inaanza na:","opts":["Mpendwa Amina,","Mwisho","Kwaheri"],"a":0},
+  {"id":"kg20","lesson":"kis10","type":"mc","text":"Tarehe inaandikwa wapi?","opts":["Juu kulia","Chini kabisa","Haiandikwi"],"a":0},
+  {"id":"kg21","lesson":"kis10","type":"mc","text":"Mwisho wa barua tunaandika:","opts":["Wako akupendaye,","Habari za asubuhi","Swali la kwanza"],"a":0},
+  {"id":"kg22","lesson":"kis11","type":"mc","text":"Insha ina sehemu zipi?","opts":["Kichwa, utangulizi, kiini na hitimisho","Maswali tu","Jina tu"],"a":0},
+  {"id":"kg23","lesson":"kis11","type":"mc","text":"Neno lipi husaidia kupanga matukio?","opts":["kisha","meza","kubwa"],"a":0},
+  {"id":"kg24","lesson":"kis11","type":"mc","text":"Hitimisho hufanya nini?","opts":["Humaliza insha","Huanza insha","Huuliza swali"],"a":0},
+  {"id":"kg25","lesson":"kis12","type":"mc","text":"Wasichana walitembea kilomita ngapi kuchota maji?","opts":["Mbili","Sita","Kumi"],"a":1},
+  {"id":"kg26","lesson":"kis12","type":"mc","text":"Pampu inatumia nishati gani?","opts":["Ya jua","Ya mafuta","Ya upepo"],"a":0},
+  {"id":"kg27","lesson":"kis12","type":"mc","text":"Baada ya kisima, mahudhurio shuleni:","opts":["Yameongezeka","Yamepungua","Hayakubadilika"],"a":0},
+  {"id":"sg1","lesson":"sci4","type":"mc","text":{"en":"We hear with our:","sw":"Tunasikia kwa:"},"opts":{"en":["Eyes","Ears","Nose"],"sw":["Macho","Masikio","Pua"]},"a":1},
+  {"id":"sg2","lesson":"sci4","type":"mc","text":{"en":"Which sense tells us that sugar is sweet?","sw":"Mlango upi unatuambia sukari ni tamu?"},"opts":{"en":["Taste","Sight","Hearing"],"sw":["Kuonja","Kuona","Kusikia"]},"a":0},
+  {"id":"sg3","lesson":"sci4","type":"mc","text":{"en":"How many senses do we have?","sw":"Tuna milango mingapi ya fahamu?"},"opts":{"en":["Three","Five","Ten"],"sw":["Mitatu","Mitano","Kumi"]},"a":1},
+  {"id":"sg4","lesson":"sci5","type":"mc","text":{"en":"Which one is a living thing?","sw":"Kipi kina uhai?"},"opts":{"en":["A stone","A goat","A cup"],"sw":["Jiwe","Mbuzi","Kikombe"]},"a":1},
+  {"id":"sg5","lesson":"sci5","type":"mc","text":{"en":"Living things:","sw":"Vitu vyenye uhai:"},"opts":{"en":["Grow and need food","Never change","Are always hard"],"sw":["Hukua na huhitaji chakula","Havibadiliki kamwe","Daima ni vigumu"]},"a":0},
+  {"id":"sg6","lesson":"sci5","type":"mc","text":{"en":"Is a tree living?","sw":"Je, mti una uhai?"},"opts":{"en":["Yes","No"],"sw":["Ndiyo","Hapana"]},"a":0},
+  {"id":"sg7","lesson":"sci6","type":"mc","text":{"en":"Which animal carries loads for people?","sw":"Mnyama yupi hubeba mizigo ya watu?"},"opts":{"en":["Lion","Donkey","Giraffe"],"sw":["Simba","Punda","Twiga"]},"a":1},
+  {"id":"sg8","lesson":"sci6","type":"mc","text":{"en":"Which is a wild animal?","sw":"Yupi ni mnyama wa porini?"},"opts":{"en":["Goat","Chicken","Giraffe"],"sw":["Mbuzi","Kuku","Twiga"]},"a":2},
+  {"id":"sg9","lesson":"sci6","type":"mc","text":{"en":"All animals need:","sw":"Wanyama wote wanahitaji:"},"opts":{"en":["Food, water and shelter","Only toys","Nothing"],"sw":["Chakula, maji na makazi","Vitu vya kuchezea tu","Hakuna kitu"]},"a":0},
+  {"id":"sg10","lesson":"sci7","type":"mc","text":{"en":"Weather is:","sw":"Hali ya hewa ni:"},"opts":{"en":["What the air outside is like today","The name of a month","A kind of food"],"sw":["Jinsi hewa ilivyo nje leo","Jina la mwezi","Aina ya chakula"]},"a":0},
+  {"id":"sg11","lesson":"sci7","type":"mc","text":{"en":"In the dry season, water is:","sw":"Wakati wa kiangazi, maji:"},"opts":{"en":["Easier to find","Harder to find","Everywhere"],"sw":["Ni rahisi kupata","Ni vigumu kupata","Yako kila mahali"]},"a":1},
+  {"id":"sg12","lesson":"sci7","type":"mc","text":{"en":"What do we draw for a rainy day on a weather chart?","sw":"Tunachora nini kwa siku ya mvua kwenye chati?"},"opts":{"en":["A sun","Rain","A star"],"sw":["Jua","Mvua","Nyota"]},"a":1},
+  {"id":"sg13","lesson":"sci8","type":"mc","text":{"en":"Beans and eggs are:","sw":"Maharagwe na mayai ni:"},"opts":{"en":["Energy foods","Body-building foods","Drinks"],"sw":["Vyakula vya nguvu","Vyakula vya kujenga mwili","Vinywaji"]},"a":1},
+  {"id":"sg14","lesson":"sci8","type":"mc","text":{"en":"Which food helps protect us from sickness?","sw":"Chakula kipi kinatulinda dhidi ya magonjwa?"},"opts":{"en":["Fruits and vegetables","Sweets","Soda"],"sw":["Matunda na mboga","Peremende","Soda"]},"a":0},
+  {"id":"sg15","lesson":"sci8","type":"mc","text":{"en":"Ugali and rice give us:","sw":"Ugali na wali hutupa:"},"opts":{"en":["Energy","Vitamins only","Nothing"],"sw":["Nguvu","Vitamini tu","Hakuna kitu"]},"a":0},
+  {"id":"sg16","lesson":"sci9","type":"mc","text":{"en":"A magnet attracts:","sw":"Sumaku huvuta:"},"opts":{"en":["Wood","Iron nails","Paper"],"sw":["Mbao","Misumari ya chuma","Karatasi"]},"a":1},
+  {"id":"sg17","lesson":"sci9","type":"mc","text":{"en":"Two of the same poles:","sw":"Ncha mbili zinazofanana:"},"opts":{"en":["Pull together","Push apart","Melt"],"sw":["Huvutana","Husukumana","Huyeyuka"]},"a":1},
+  {"id":"sg18","lesson":"sci9","type":"mc","text":{"en":"How many poles does a magnet have?","sw":"Sumaku ina ncha ngapi?"},"opts":{"en":["One","Two","Four"],"sw":["Moja","Mbili","Nne"]},"a":1},
+  {"id":"sg19","lesson":"sci10","type":"mc","text":{"en":"When the sun turns water into vapour, it is called:","sw":"Jua linapogeuza maji kuwa mvuke, huitwa:"},"opts":{"en":["Evaporation","Rain","Freezing"],"sw":["Mvukizo","Mvua","Kuganda"]},"a":0},
+  {"id":"sg20","lesson":"sci10","type":"mc","text":{"en":"Clouds are made of:","sw":"Mawingu yametengenezwa kwa:"},"opts":{"en":["Smoke","Tiny drops of water","Dust only"],"sw":["Moshi","Matone madogo ya maji","Vumbi tu"]},"a":1},
+  {"id":"sg21","lesson":"sci10","type":"mc","text":{"en":"What falls from clouds when the drops get heavy?","sw":"Nini huanguka kutoka mawinguni matone yakiwa mazito?"},"opts":{"en":["Rain","Sand","Leaves"],"sw":["Mvua","Mchanga","Majani"]},"a":0},
+  {"id":"sg22","lesson":"sci11","type":"mc","text":{"en":"A pulley at a well helps us:","sw":"Kapi kisimani hutusaidia:"},"opts":{"en":["Lift a heavy bucket","Cook food","Read"],"sw":["Kuinua ndoo nzito","Kupika chakula","Kusoma"]},"a":0},
+  {"id":"sg23","lesson":"sci11","type":"mc","text":{"en":"A ramp is an example of:","sw":"Mteremko ni mfano wa:"},"opts":{"en":["A lever","An inclined plane","A magnet"],"sw":["Wenzo","Mteremko (mashine sahili)","Sumaku"]},"a":1},
+  {"id":"sg24","lesson":"sci11","type":"mc","text":{"en":"Machines help us by:","sw":"Mashine hutusaidia kwa:"},"opts":{"en":["Making work easier","Making work harder","Stopping work"],"sw":["Kurahisisha kazi","Kufanya kazi kuwa ngumu","Kusimamisha kazi"]},"a":0},
+  {"id":"sg25","lesson":"sci12","type":"mc","text":{"en":"Cutting too many trees can cause:","sw":"Kukata miti mingi kunaweza kusababisha:"},"opts":{"en":["Soil erosion","More rain","Cleaner air"],"sw":["Mmomonyoko wa udongo","Mvua zaidi","Hewa safi zaidi"]},"a":0},
+  {"id":"sg26","lesson":"sci12","type":"mc","text":{"en":"What can we do with plastic bottles?","sw":"Tufanye nini na chupa za plastiki?"},"opts":{"en":["Throw them on the ground","Reuse and recycle them","Burn them in class"],"sw":["Kuzitupa ardhini","Kuzitumia tena na kuzirejeleza","Kuzichoma darasani"]},"a":1},
+  {"id":"sg27","lesson":"sci12","type":"mc","text":{"en":"Trees give us:","sw":"Miti hutupa:"},"opts":{"en":["Shade and homes for birds","Plastic","Noise"],"sw":["Kivuli na makazi ya ndege","Plastiki","Kelele"]},"a":0},
 ];
 // Lessons and questions carry both languages; these getters return the one in use.
 // Language subjects (English, Kiswahili) keep their lesson text in the language being taught.
@@ -745,6 +923,18 @@ const SEED_GRADES = { // module -> student -> score (sample)
   kis: [78, 85, 70, 88, 55, 74, 90, 60, 76, 48, 80, 71],
 };
 const SEED_ATT = { men: ['s01', 's02', 's03', 's04', 's05', 's07', 's09', 's10', 's11'], mind: ['s01', 's02', 's03', 's04', 's05', 's07', 's08', 's09', 's11', 's12'], safe: ['s01', 's02', 's04', 's05', 's06', 's07', 's09', 's11'], repro: ['s03', 's07', 's09'], self: ['s01', 's02', 's03', 's04', 's05', 's07', 's09', 's11', 's12'] };
+// Each girl's grade (1–6) in each graded subject, so she learns at her level. Sample values; teachers change them in the Gradebook.
+const GRADED = ['maths', 'english', 'kiswahili', 'science'];
+const GRADES = [1, 2, 3, 4, 5, 6];
+const SEED_LEVELS = { // girl -> [maths, english, kiswahili, science]
+  s01: [4, 5, 5, 4], s02: [5, 4, 5, 5], s03: [4, 4, 5, 4], s04: [4, 5, 5, 4], s05: [3, 3, 4, 3], s06: [4, 4, 4, 4],
+  s07: [6, 6, 6, 6], s08: [2, 2, 3, 2], s09: [4, 4, 5, 4], s10: [2, 2, 3, 3], s11: [4, 5, 5, 4], s12: [4, 4, 4, 4],
+};
+function seedLevels() { const o = {}; Object.entries(SEED_LEVELS).forEach(([id, a]) => { o[id] = {}; GRADED.forEach((g, i) => { o[id][g] = a[i]; }); }); return o; }
+const levelIn = (sid, subject) => (levels && levels[sid] && levels[sid][subject]) || null;
+const subjOfLesson = (l) => mod(l.mod).subject;
+const SHORT = { en: { maths: 'M', english: 'E', kiswahili: 'K', science: 'S' }, sw: { maths: 'H', english: 'Kg', kiswahili: 'Ks', science: 'S' } };
+const gradesText = (sid) => GRADED.map((g) => SHORT[lang][g] + (levelIn(sid, g) || '–')).join(' · ');
 const DEMO_USERS = { user1: { pass: '1234', name: 'Ms Nakiru', site: "Lodwar Girls' Club", ages: '10–17' } }; // used only in demo mode (no Supabase configured)
 
 // ---------- Two languages for the interface ----------
@@ -769,7 +959,7 @@ const store = {
   set(k, v) { try { localStorage.setItem('lrg3_' + k, JSON.stringify(v)); } catch {} },
 };
 let lang = store.get('lang', 'en');
-let user = null, grades, attendance, questions, presented, sessions, results;
+let user = null, grades, attendance, questions, presented, sessions, results, levels;
 const $ = (s) => document.querySelector(s);
 const t = (k) => T[lang][k] ?? T.en[k] ?? k;
 const mod = (id) => MODULES.find((m) => m.id === id);
@@ -786,11 +976,12 @@ function loadState() {
   const qDel = store.get('qDeleted', []);
   questions = [...SEED_Q.filter((q) => !qDel.includes(q.id)), ...(store.get('questions', null) || []).filter((q) => !SEED_IDS.has(q.id))];
   presented = store.get('presented', []);
+  levels = store.get('levels', null) || seedLevels();
   sessions = store.get('sessions', null) || seedSessions();
   results = store.get('results', null) || seedResults();
   loadVideos();
 }
-const save = () => { store.set('grades', grades); store.set('attendance', attendance); store.set('questions', questions.filter((q) => !SEED_IDS.has(q.id))); store.set('presented', presented); store.set('sessions', sessions); store.set('results', results); };
+const save = () => { store.set('grades', grades); store.set('attendance', attendance); store.set('questions', questions.filter((q) => !SEED_IDS.has(q.id))); store.set('presented', presented); store.set('sessions', sessions); store.set('results', results); store.set('levels', levels); };
 
 function applyLang() {
   document.documentElement.lang = lang;
@@ -975,7 +1166,7 @@ function show(view) {
   document.querySelectorAll('.tabs [data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === tab)));
   window.scrollTo({ top: 0 });
 }
-document.querySelectorAll('.tabs [data-view]').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
+document.querySelectorAll('.tabs [data-view]').forEach((b) => b.addEventListener('click', () => { if (b.dataset.view === 'modules') { modNav = { subject: null, key: null }; renderModules(); } show(b.dataset.view); }));
 $('#back').addEventListener('click', () => show('modules'));
 
 function renderAll() { renderClass(); renderPlanForm(); renderSessions(); if (!$('#view-register').hidden && regId) renderRegister(); if (!$('#view-quiz').hidden && regId) renderQuizList(); if (!$('#view-report').hidden && repId) renderReport(); renderModules(); renderGradeSelect(); renderGrades(); renderQForm(); renderBank(); if (!$('#view-lesson').hidden && currentLesson) renderLesson(currentLesson); }
@@ -983,6 +1174,7 @@ function renderAll() { renderClass(); renderPlanForm(); renderSessions(); if (!$
 // ---------- Class ----------
 function avgFor(sid) { const v = MODULES.filter((m) => m.area === 'learn').map((m) => grades[m.id]?.[sid]).filter((x) => x != null); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null; }
 function renderClass() {
+  renderCatchUp();
   const wellMods = MODULES.filter((m) => m.area === 'well');
   const eligible = (s, m) => !m.minAge || s.age >= m.minAge;
   const avgs = STUDENTS.map((s) => avgFor(s.id)).filter((x) => x != null);
@@ -1000,7 +1192,7 @@ function renderClass() {
     const mine = wellMods.filter((m) => eligible(s, m));
     const wn = mine.filter((m) => (attendance[m.id] || []).includes(s.id)).length;
     const ar = attStats(s).rate;
-    tr.append(el('td', null, s.name), el('td', 'n', String(s.age)), el('td', 'n', a == null ? '–' : a + '%'), lvTd, el('td', 'n', ar == null ? '–' : pct(ar)), el('td', 'n', `${wn} / ${mine.length}`));
+    tr.append(el('td', null, s.name), el('td', 'n', String(s.age)), el('td', null, gradesText(s.id)), el('td', 'n', a == null ? '–' : a + '%'), lvTd, el('td', 'n', ar == null ? '–' : pct(ar)), el('td', 'n', `${wn} / ${mine.length}`));
     tb.append(tr);
   });
 }
@@ -1011,10 +1203,14 @@ const pad = (n) => String(n).padStart(2, '0');
 const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const todayIso = () => iso(new Date());
 const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return iso(d); };
-const pct = (r) => Math.round(r * 100) + '%';
+const pct = (r) => (Number.isFinite(r) ? Math.round(r * 100) + '%' : '–');
 const loc = () => (lang === 'sw' ? 'sw-KE' : 'en-GB');
 const fmtDate = (d, o) => new Date(d + 'T12:00:00').toLocaleDateString(loc(), o);
-const eligibleFor = (lessonId) => { const m = mod(lesson(lessonId).mod); return STUDENTS.filter((s) => !m.minAge || s.age >= m.minAge); };
+const eligibleFor = (lessonId) => { const l = lesson(lessonId), m = mod(l.mod); if (l.grade) return STUDENTS.filter((s) => levelIn(s.id, m.subject) === l.grade); return STUDENTS.filter((s) => !m.minAge || s.age >= m.minAge); };
+// The girls a session was for. Fixed when the register is taken, so a later grade change does not rewrite history.
+const eligibleOf = (x) => { if (x.girls) return STUDENTS.filter((s) => x.girls.includes(s.id)); const ids = new Set(eligibleFor(x.lesson).map((g) => g.id)); (x.attendance || []).forEach((id) => ids.add(id)); return STUDENTS.filter((s) => ids.has(s.id)); };
+const missedOf = (x) => (x.status === 'done' && !x.catchUpOf) ? eligibleOf(x).filter((g) => !x.attendance.includes(g.id) && !(x.caught || []).includes(g.id)) : [];
+const lessonTag = (l) => modLabel(mod(l.mod)) + (l.grade ? ` · ${t('grade')} ${l.grade}` : '');
 const isDone = (x) => x.status === 'done';
 const upcoming = () => sessions.filter((x) => !isDone(x) && x.date >= todayIso()).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 const pastList = () => sessions.filter((x) => isDone(x) || x.date < todayIso()).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
@@ -1022,15 +1218,15 @@ const pastList = () => sessions.filter((x) => isDone(x) || x.date < todayIso()).
 const roll = (a, b) => { const x = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return x - Math.floor(x); };
 const hm = (iso) => new Date(iso).toLocaleTimeString(loc(), { hour: '2-digit', minute: '2-digit' });
 function seedSessions() { // sample history so the planner opens in a working state
-  const plan = [['lit1', -28], ['men1', -24], ['num1', -21], ['mind1', -17], ['lit2', -14], ['safe1', -10], ['rep1', -7], ['sci1', -3]];
+  const plan = [['kis9', -28], ['men1', -24], ['num7', -21], ['mind1', -17], ['lit2', -14], ['safe1', -10], ['rep1', -7], ['sci1', -3]];
   const likely = [0.95, 0.9, 0.7, 0.85, 0.5, 0.8, 0.95, 0.45, 0.9, 0.55, 0.85, 0.75]; // per girl, sample only
   const past = plan.map(([l, d], i) => {
     const went = eligibleFor(l).filter((g) => roll(i + 1, STUDENTS.indexOf(g) + 1) < likely[STUDENTS.indexOf(g)]).map((g) => g.id);
     const late = went.filter((id, k) => roll(i + 7, k + 3) < 0.15);
     const start = new Date(addDays(d) + 'T15:3' + (2 + (i % 6)) + ':00'), end = new Date(start.getTime() + (lesson(l).min + 18 + (i * 7) % 20) * 60000);
-    return { id: 'ss' + i, date: addDays(d), time: '15:30', lesson: l, place: 'Club room', status: 'done', attendance: went, late, startedAt: start.toISOString(), endedAt: end.toISOString(), notes: '' };
+    return { id: 'ss' + i, girls: eligibleFor(l).map((g) => g.id), date: addDays(d), time: '15:30', lesson: l, place: 'Club room', status: 'done', attendance: went, late, startedAt: start.toISOString(), endedAt: end.toISOString(), notes: '' };
   });
-  const next = [['num2', 1], ['men2', 4], ['safe2', 8]].map(([l, d], i) => ({ id: 'su' + i, date: addDays(d), time: '15:30', lesson: l, place: 'Club room', status: 'planned', attendance: [], late: [] }));
+  const next = [['num8', 1], ['men2', 4], ['safe2', 8]].map(([l, d], i) => ({ id: 'su' + i, date: addDays(d), time: '15:30', lesson: l, place: 'Club room', status: 'planned', attendance: [], late: [] }));
   return [...past, ...next];
 }
 function seedResults() { // sample answers for past learning sessions
@@ -1061,21 +1257,27 @@ function moduleQuizAvg(mid, sid) {
 }
 const durationMin = (x) => x.startedAt && x.endedAt ? Math.max(1, Math.round((new Date(x.endedAt) - new Date(x.startedAt)) / 60000)) : null;
 function attStats(s) {
-  const mine = sessions.filter((x) => isDone(x) && eligibleFor(x.lesson).some((g) => g.id === s.id));
+  const mine = sessions.filter((x) => isDone(x) && eligibleOf(x).some((g) => g.id === s.id));
   const went = mine.filter((x) => x.attendance.includes(s.id));
   const last = went.map((x) => x.date).sort().at(-1) || null;
   return { eligible: mine.length, attended: went.length, late: went.filter((x) => (x.late || []).includes(s.id)).length, rate: mine.length ? went.length / mine.length : null, last };
 }
 function classRate(days) {
   const from = addDays(-days); let p = 0, e = 0;
-  sessions.filter((x) => isDone(x) && x.date >= from).forEach((x) => { p += x.attendance.length; e += eligibleFor(x.lesson).length; });
+  sessions.filter((x) => isDone(x) && x.date >= from).forEach((x) => { p += x.attendance.length; e += eligibleOf(x).length; });
   return e ? p / e : null;
 }
 
+function planWho() {
+  const l = lesson($('#ps-lesson').value); if (!l) return; const g = eligibleFor(l.id);
+  $('#ps-who').textContent = `${lessonTag(l)}: ${g.length} ${t(g.length === 1 ? 'girlOne' : 'girlsN')}${g.length ? ' · ' + g.map((s) => s.name.split(' ')[0]).join(', ') : ''}`;
+}
+$('#ps-lesson').addEventListener('change', planWho);
 function renderPlanForm() {
   const sel = $('#ps-lesson'), v = sel.value;
-  sel.replaceChildren(...MODULES.map((m) => { const g = document.createElement('optgroup'); g.label = modLabel(m) + (m.minAge ? ` (${t('age15')})` : ''); LESSONS.filter((l) => l.mod === m.id).forEach((l) => g.append(new Option(l.title, l.id))); return g; }));
+  sel.replaceChildren(...groupOptions());
   if (v) sel.value = v;
+  planWho();
   if (!$('#ps-date').value) $('#ps-date').value = addDays(1);
 }
 $('#plan-form').addEventListener('submit', (e) => {
@@ -1087,13 +1289,14 @@ $('#plan-form').addEventListener('submit', (e) => {
   save(); renderSessions(); renderClass(); toast(t('planned'));
 });
 
-function sessionCard(x) {
-  const l = lesson(x.lesson), m = mod(l.mod), n = eligibleFor(x.lesson).length;
+function sessionCard(x, withNames) {
+  const l = lesson(x.lesson), m = mod(l.mod), n = eligibleOf(x).length;
   const c = el('div', 'ses ' + (m.area === 'well' ? 'well' : 'learn'));
   const when = el('div', 'when'); when.append(el('span', null, fmtDate(x.date, { weekday: 'short' })), el('b', null, fmtDate(x.date, { day: 'numeric' })), el('span', null, fmtDate(x.date, { month: 'short' })));
   const what = el('div', 'what'); what.append(el('strong', null, l.title));
   const chips = el('div', 'chips');
-  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), modLabel(m)), el('span', 'chip line', [x.time, x.place].filter(Boolean).join(' · ')));
+  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), lessonTag(l)), el('span', 'chip line', [x.time, x.place].filter(Boolean).join(' · ')));
+  if (x.catchUpOf) { const o = sessions.find((y) => y.id === x.catchUpOf); chips.append(el('span', 'chip av', t('catchChip') + (o ? ' · ' + fmtDate(o.date, { day: 'numeric', month: 'short' }) : ''))); }
   if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
   if (isDone(x)) {
     const r = x.attendance.length / n; chips.append(el('span', 'chip ' + (r >= 0.6 ? 'ok' : 'warn'), `${x.attendance.length} / ${n} ${t('nPresent')}`));
@@ -1102,6 +1305,12 @@ function sessionCard(x) {
   } else if (x.startedAt) chips.append(el('span', 'chip bad', t('inProgress')));
   else if (x.date < todayIso()) chips.append(el('span', 'chip warn', t('noRegister')));
   what.append(chips);
+  if (withNames && isDone(x)) {
+    const nm = (ids) => ids.map((id) => (STUDENTS.find((g) => g.id === id) || {}).name).filter(Boolean).join(', ');
+    const wp = el('div', 'who'); wp.append(el('b', null, t('presentL') + ': '), document.createTextNode(nm(x.attendance) || '–')); what.append(wp);
+    const miss = eligibleOf(x).filter((g) => !x.attendance.includes(g.id));
+    if (miss.length) { const wm = el('div', 'who'); wm.append(el('b', null, t('missedL') + ': '), document.createTextNode(miss.map((g) => g.name + ((x.caught || []).includes(g.id) ? ' (' + t('caughtUp') + ')' : '')).join(', '))); what.append(wm); }
+  }
   const acts = el('div', 'acts');
   if (isDone(x)) {
     acts.append(btn(t('report'), 'sm', () => openReport(x.id)), btn(t('editRegister'), 'ghost sm', () => openRegister(x.id)));
@@ -1124,10 +1333,7 @@ function renderSessions() {
   const ups = upcoming();
   if (!ups.length) up.append(el('p', 'empty muted', t('noUpcoming')));
   ups.forEach((x) => up.append(sessionCard(x)));
-  const past = $('#ses-past'); past.replaceChildren();
-  const ps = pastList();
-  if (!ps.length) past.append(el('p', 'empty muted', t('noPast')));
-  ps.forEach((x) => past.append(sessionCard(x)));
+  renderHistory();
   drawChart();
   const tb = $('#ses-girls'); tb.replaceChildren();
   STUDENTS.map((s) => ({ s, a: attStats(s) })).sort((p, q) => (p.a.rate ?? 2) - (q.a.rate ?? 2)).forEach(({ s, a }) => {
@@ -1136,15 +1342,103 @@ function renderSessions() {
     box.append(bar, el('span', null, a.rate == null ? '–' : pct(a.rate)));
     if (a.rate != null && a.rate < 0.6 && a.eligible >= 3) box.append(el('span', 'chip warn', t('followUp')));
     rateTd.append(box);
-    tr.append(el('td', null, s.name), el('td', 'n', `${a.attended} / ${a.eligible}`), rateTd, el('td', null, a.last ? fmtDate(a.last, { day: 'numeric', month: 'short' }) : '–'));
+    tr.append(el('td', null, s.name), el('td', 'n', `${a.attended} / ${a.eligible}`), rateTd, el('td', null, a.last ? fmtDate(a.last, { day: 'numeric', month: 'short' }) : '–'), el('td', 'n', String(toCatchFor(s.id))));
     tb.append(tr);
   });
+}
+
+const toCatchFor = (sid) => sessions.filter((x) => missedOf(x).some((g) => g.id === sid)).length;
+
+// ---------- Session history: what was taught, when, and to which girls ----------
+const shiftDay = (d, n) => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() + n); return iso(x); };
+const weekStart = (d) => { const x = new Date(d + 'T12:00:00'); return shiftDay(d, -((x.getDay() + 6) % 7)); };
+function histRange() {
+  const r = $('#h-range').value, today = todayIso(), ws = weekStart(today);
+  if (r === 'week') return [ws, shiftDay(ws, 6)];
+  if (r === 'last') return [shiftDay(ws, -7), shiftDay(ws, -1)];
+  if (r === 'month') return [today.slice(0, 8) + '01', today];
+  if (r === 'custom') return [$('#h-from').value || '0000-01-01', $('#h-to').value || '9999-12-31'];
+  return ['0000-01-01', '9999-12-31'];
+}
+function histList() {
+  const [from, to] = histRange(), subj = $('#h-subj').value, girl = $('#h-girl').value;
+  return pastList().filter((x) => x.date >= from && x.date <= to)
+    .filter((x) => !subj || subjOfLesson(lesson(x.lesson)) === subj)
+    .filter((x) => !girl || eligibleOf(x).some((g) => g.id === girl));
+}
+function fillHistFilters() {
+  const s = $('#h-subj'), sv = s.value; s.replaceChildren(new Option(t('allSubjects'), ''), ...SUBJECTS.map((x) => new Option(x.name[lang], x.id))); s.value = sv;
+  const g = $('#h-girl'), gv = g.value; g.replaceChildren(new Option(t('allGirls'), ''), ...STUDENTS.map((x) => new Option(x.name, x.id))); g.value = gv;
+}
+function renderHistory() {
+  fillHistFilters();
+  const custom = $('#h-range').value === 'custom'; $('#h-from-f').hidden = !custom; $('#h-to-f').hidden = !custom;
+  const box = $('#ses-past'); box.replaceChildren();
+  const list = histList(), girl = $('#h-girl').value;
+  $('#h-count').textContent = `${list.length} ${t(list.length === 1 ? 'sessionOne' : 'sessionsN')}`;
+  if (!list.length) { box.append(el('p', 'empty muted', t('noHist'))); return; }
+  let wk = null;
+  list.forEach((x) => {
+    const w = weekStart(x.date);
+    if (w !== wk) { wk = w; box.append(el('div', 'week-h', `${t('weekOf')} ${fmtDate(w, { day: 'numeric', month: 'long', year: 'numeric' })}`)); }
+    const c = sessionCard(x, true);
+    if (girl && isDone(x)) {
+      const st = x.attendance.includes(girl) ? ((x.late || []).includes(girl) ? ['warn', t('pLate')] : ['ok', t('pPresent')]) : ((x.caught || []).includes(girl) ? ['ok', t('caughtUp')] : ['bad', t('missedL')]);
+      c.querySelector('.chips').prepend(el('span', 'chip ' + st[0], (STUDENTS.find((g) => g.id === girl) || {}).name + ': ' + st[1]));
+    }
+    box.append(c);
+  });
+}
+['h-range', 'h-from', 'h-to', 'h-subj', 'h-girl'].forEach((id) => $('#' + id).addEventListener('change', renderHistory));
+$('#h-csv').addEventListener('click', () => {
+  const nm = (ids) => ids.map((id) => (STUDENTS.find((g) => g.id === id) || {}).name).filter(Boolean).join('; ');
+  const rows = [[t('fDate'), t('fTime'), t('hSubj'), t('fGrade'), t('qLesson'), t('presentL'), t('lateH'), t('missedL'), t('caughtUp'), t('classAvg')]];
+  histList().filter(isDone).forEach((x) => {
+    const l = lesson(x.lesson), m = mod(l.mod), miss = eligibleOf(x).filter((g) => !x.attendance.includes(g.id)).map((g) => g.id);
+    const sc = x.attendance.map((id) => scoreOf(x.lesson, id)).filter(Boolean);
+    rows.push([x.date, x.time || '', subjectOf(m).name[lang] + (m.subject === 'life' ? ' · ' + m.name[lang] : ''), l.grade || '', l.title, nm(x.attendance), nm(x.late || []), nm(miss), nm(x.caught || []), sc.length ? pct(sc.reduce((a, b) => a + b.rate, 0) / sc.length) : '']);
+  });
+  const csv = '\ufeff' + rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `learnreach-sessions-${todayIso()}.csv`;
+  document.body.append(a); a.click(); a.remove(); toast(t('csvDone'));
+});
+
+// ---------- Catch-up: girls who missed a lesson ----------
+function renderCatchUp() {
+  const box = $('#catch-list'); if (!box || !sessions) return; box.replaceChildren();
+  const from = addDays(-60);
+  const list = sessions.filter((x) => x.date >= from).map((x) => ({ x, miss: missedOf(x) })).filter((o) => o.miss.length).sort((a, b) => b.x.date.localeCompare(a.x.date));
+  const total = list.reduce((n, o) => n + o.miss.length, 0);
+  $('#catch-count').textContent = total ? `${total} ${t('toCatchN')}` : '';
+  if (!list.length) { box.append(el('p', 'empty muted', t('noCatch'))); return; }
+  list.forEach(({ x, miss }) => {
+    const l = lesson(x.lesson), row = el('div', 'catch-row');
+    const top = el('div', 'row'), info = el('div');
+    info.append(el('strong', null, l.title), el('div', 'small muted', `${lessonTag(l)} · ${fmtDate(x.date, { weekday: 'short', day: 'numeric', month: 'short' })} · ${miss.length} ${t('missedN')}`));
+    const acts = el('div', 'row');
+    const go = btn('▶ ' + t('startCatch'), 'sm', () => startCatchUp(x, miss)); go.dataset.catch = x.id;
+    acts.append(go, btn(t('openLesson'), 'ghost sm', () => openLesson(l.id)));
+    top.append(info, acts);
+    const names = el('div', 'names');
+    miss.forEach((g) => {
+      const b = el('button', null, '✓ ' + g.name); b.type = 'button'; b.title = t('markCaught'); b.dataset.girl = g.id;
+      b.addEventListener('click', () => { x.caught = [...new Set([...(x.caught || []), g.id])]; save(); toast(`${g.name}: ${t('caughtUp')}`); renderClass(); renderSessions(); });
+      names.append(b);
+    });
+    row.append(top, names, el('p', 'small muted', t('catchHow')));
+    box.append(row);
+  });
+}
+function startCatchUp(x, miss) {
+  const now = new Date();
+  const y = { id: 's' + Date.now(), date: todayIso(), time: `${pad(now.getHours())}:${pad(now.getMinutes())}`, lesson: x.lesson, place: x.place || '', status: 'planned', attendance: [], late: [], girls: miss.map((g) => g.id), catchUpOf: x.id };
+  sessions.push(y); save(); renderSessions(); openRegister(y.id);
 }
 
 function drawChart() {
   const box = $('#ses-chart'); box.replaceChildren();
   const data = sessions.filter(isDone).sort((a, b) => a.date.localeCompare(b.date)).slice(-8)
-    .map((x) => ({ x, r: x.attendance.length / eligibleFor(x.lesson).length, well: mod(lesson(x.lesson).mod).area === 'well' }));
+    .map((x) => ({ x, r: x.attendance.length / eligibleOf(x).length, well: mod(lesson(x.lesson).mod).area === 'well' })).filter((d) => Number.isFinite(d.r));
   if (!data.length) { box.append(el('p', 'empty muted', t('noPast'))); return; }
   const css = getComputedStyle(document.documentElement), col = (v) => css.getPropertyValue(v).trim();
   const W = Math.max(300, box.clientWidth || 600), H = 200, ml = 36, mb = 30, mt = 10, mr = 8;
@@ -1169,7 +1463,7 @@ let regId = null, regState = {}, clockTimer = null;
 const regSession = () => sessions.find((y) => y.id === regId);
 function openRegister(id) {
   regId = id; const x = regSession(); regState = {};
-  eligibleFor(x.lesson).forEach((g) => { regState[g.id] = (x.late || []).includes(g.id) ? 'l' : x.attendance.includes(g.id) ? 'p' : 'a'; });
+  eligibleOf(x).forEach((g) => { regState[g.id] = (x.late || []).includes(g.id) ? 'l' : x.attendance.includes(g.id) ? 'p' : 'a'; });
   renderRegister(); show('register'); tick();
 }
 function tick() {
@@ -1182,11 +1476,12 @@ function tick() {
 }
 function renderRegister() {
   const x = regSession(); if (!x) return;
-  const l = lesson(x.lesson), m = mod(l.mod), girls = eligibleFor(x.lesson);
+  const l = lesson(x.lesson), m = mod(l.mod), girls = eligibleOf(x);
   const head = $('#reg-head'); head.replaceChildren();
   head.append(el('span', 'label', fmtDate(x.date, { weekday: 'long', day: 'numeric', month: 'long' }) + (x.time ? ' · ' + x.time : '')), el('h2', null, l.title));
-  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), modLabel(m))); if (m.minAge) chips.append(el('span', 'chip line', t('age15'))); head.append(chips);
+  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), lessonTag(l))); if (x.catchUpOf) chips.append(el('span', 'chip av', t('catchChip'))); if (m.minAge) chips.append(el('span', 'chip line', t('age15'))); head.append(chips);
   if (m.minAge) head.append(el('p', 'small muted', t('ageNote')));
+  if (x.catchUpOf) head.append(el('p', 'small muted', t('catchRegNote'))); else if (l.grade) head.append(el('p', 'small muted', t('gradeRegNote')));
   const list = $('#reg-list'); list.replaceChildren();
   const count = () => { const v = Object.values(regState); $('#reg-count').textContent = `${v.filter((s) => s === 'p').length} ${t('onTime')} · ${v.filter((s) => s === 'l').length} ${t('nLate')} · ${v.filter((s) => s === 'a').length} ${t('absent')}`; };
   girls.forEach((g) => {
@@ -1211,6 +1506,8 @@ function renderRegister() {
 }
 function writeRegister(x) {
   x.attendance = Object.keys(regState).filter((k) => regState[k] !== 'a'); x.late = Object.keys(regState).filter((k) => regState[k] === 'l');
+  x.girls = Object.keys(regState);
+  if (x.catchUpOf) { const o = sessions.find((y) => y.id === x.catchUpOf); if (o) o.caught = [...new Set([...(o.caught || []), ...x.attendance])]; }
   const m = mod(lesson(x.lesson).mod);
   if (m.area === 'well') attendance[m.id] = [...new Set([...(attendance[m.id] || []), ...x.attendance])]; // feeds the wellbeing attendance view
 }
@@ -1218,7 +1515,7 @@ $('#reg-start').addEventListener('click', () => { const x = regSession(); x.star
 $('#reg-save').addEventListener('click', () => {
   const x = regSession(); if (!x) return;
   writeRegister(x); x.status = 'done'; save();
-  toast(`${t('regSaved')}: ${x.attendance.length} / ${eligibleFor(x.lesson).length} ${t('nPresent')}`);
+  toast(`${t('regSaved')}: ${x.attendance.length} / ${eligibleOf(x).length} ${t('nPresent')}`);
   regId = null; renderAll(); show('sessions');
 });
 $('#reg-end').addEventListener('click', () => {
@@ -1303,11 +1600,11 @@ let repId = null;
 function openReport(id) { repId = id; renderReport(); show('report'); }
 function renderReport() {
   const x = sessions.find((y) => y.id === repId); if (!x) return;
-  const l = lesson(x.lesson), m = mod(l.mod), girls = eligibleFor(x.lesson), box = $('#report'); box.replaceChildren();
+  const l = lesson(x.lesson), m = mod(l.mod), girls = eligibleOf(x), box = $('#report'); box.replaceChildren();
   const late = x.late || [], onTime = x.attendance.filter((id) => !late.includes(id)), absent = girls.filter((g) => !x.attendance.includes(g.id));
   const head = el('div', 'reg-head');
   head.append(el('span', 'label', `${t('sessionReport')} · ${fmtDate(x.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`), el('h1', null, l.title));
-  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), modLabel(m)), el('span', 'chip line', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', x.place || '')); head.append(chips);
+  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), lessonTag(l)), el('span', 'chip line', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', x.place || '')); if (x.catchUpOf) chips.append(el('span', 'chip av', t('catchChip'))); head.append(chips);
   box.append(head);
   const kv = el('div', 'kv'), add = (label, value, sub) => { const d = el('div'); d.append(el('span', 'small muted', label), el('b', null, value)); if (sub) d.append(el('span', 'small muted', sub)); kv.append(d); };
   const d = durationMin(x);
@@ -1324,7 +1621,7 @@ function renderReport() {
   }
   box.append(kv);
   const names = (title, ids, cls) => { if (!ids.length) return; const s2 = el('div', 'stack'); s2.append(el('h3', null, title)); const n = el('div', 'names'); ids.forEach((id) => n.append(el('span', 'chip ' + cls, STUDENTS.find((g) => g.id === id).name))); s2.append(n); box.append(s2); };
-  names(t('lateH'), late, 'warn'); names(t('absentH'), absent.map((g) => g.id), 'bad');
+  names(t('lateH'), late, 'warn'); names(t('absentH'), absent.filter((g) => !(x.caught || []).includes(g.id)).map((g) => g.id), 'bad'); names(t('caughtLater'), x.caught || [], 'ok');
   if (m.area === 'learn' && mc.length) {
     const sec = el('div', 'stack'); sec.append(el('h3', null, t('perQuestion')));
     const tw = el('div', 'tw'), tb = el('table'), th = el('thead'), hr = el('tr'); hr.append(el('th', null, t('question')), el('th', null, t('correctH'))); th.append(hr); tb.append(th);
@@ -1347,32 +1644,91 @@ function renderReport() {
 }
 $('#rep-back').addEventListener('click', () => { repId = null; show('sessions'); });
 
-// ---------- Modules ----------
-function renderModules() {
-  const box = $('#module-cards'); box.replaceChildren();
+// ---------- Modules: subject → grade (or Life Skills topic) → lessons ----------
+let modNav = { subject: null, key: null }; // key: a grade number, or a Life Skills topic id
+function lessonGroups() {
+  const out = [];
   MODULES.forEach((m) => {
-    if (m.subject === 'life' && !box.querySelector('.subj-h')) { const h = el('div', 'subj-h'); h.append(el('h2', null, subjectOf(m).name[lang]), el('span', 'chip well', t('lifeNote'))); box.append(h); }
     const ls = LESSONS.filter((l) => l.mod === m.id);
-    const c = el('div', 'card' + (m.area === 'well' ? ' well' : ''));
-    const chips = el('div', 'chips');
-    chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.area === 'well' ? t('attendance') : t('graded')), el('span', 'chip line', `${ls.length} ${t(ls.length === 1 ? 'lessonOne' : 'lessons')}`));
-    if (m.area === 'well') chips.append(el('span', 'chip av', t('avA')));
-    if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
-    c.append(el('h3', null, m.name[lang]), chips);
-    const list = el('div', 'lesson-list');
-    ls.forEach((l) => {
-      const r = el('div', 'lesson-row'); const ttl = el('div', 'ttl');
-      const open = el('button', null, l.title); open.type = 'button'; open.style.cssText = 'all:unset;cursor:pointer;font-weight:700;color:var(--ink)';
-      open.addEventListener('click', () => openLesson(l.id));
-      ttl.append(open, el('span', 'small muted', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${videoUrls[l.id] ? ' · ▶ ' + t('hasVideo') : ''}`));
-      const acts = el('div', 'acts');
-      acts.append(btn('▶ ' + t('present'), 'sm' + (m.area === 'well' ? ' rose' : ''), () => present(l.id)));
-      if (l.format === 'Reading') acts.append(btn('♪ ' + t('listen'), 'ghost sm', (e) => toggleListen(l, e.currentTarget)));
-      if (actFor(l.id)) acts.append(btn('★ ' + t('actShort'), 'ghost sm', () => openActivity(actFor(l.id).id, l.id, null, null)));
-      r.append(ttl, acts); list.append(r);
-    });
-    c.append(list); box.append(c);
+    if (m.area === 'learn') GRADES.forEach((g) => { const gl = ls.filter((l) => l.grade === g); if (gl.length) out.push({ label: `${modLabel(m)} · ${t('grade')} ${g}`, lessons: gl }); });
+    else out.push({ label: modLabel(m) + (m.minAge ? ` (${t('age15')})` : ''), lessons: ls });
   });
+  return out;
+}
+const groupOptions = () => lessonGroups().map(({ label, lessons }) => { const g = document.createElement('optgroup'); g.label = label; lessons.forEach((l) => g.append(new Option(l.title, l.id))); return g; });
+function lessonRow(l, m) {
+  const r = el('div', 'lesson-row'); const ttl = el('div', 'ttl');
+  const open = el('button', null, l.title); open.type = 'button'; open.style.cssText = 'all:unset;cursor:pointer;font-weight:700;color:var(--ink)';
+  open.addEventListener('click', () => openLesson(l.id));
+  ttl.append(open, el('span', 'small muted', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${videoUrls[l.id] ? ' · ▶ ' + t('hasVideo') : ''}`));
+  const acts = el('div', 'acts');
+  acts.append(btn('▶ ' + t('present'), 'sm' + (m.area === 'well' ? ' rose' : ''), () => present(l.id)));
+  if (l.format === 'Reading') acts.append(btn('♪ ' + t('listen'), 'ghost sm', (e) => toggleListen(l, e.currentTarget)));
+  if (actFor(l.id)) acts.append(btn('★ ' + t('actShort'), 'ghost sm', () => openActivity(actFor(l.id).id, l.id, null, null)));
+  r.append(ttl, acts); return r;
+}
+function renderModules() {
+  const box = $('#module-cards'), crumbs = $('#mod-crumbs'); box.replaceChildren(); crumbs.replaceChildren();
+  const subj = modNav.subject ? SUBJECTS.find((x) => x.id === modNav.subject) : null;
+  $('#life-banner').hidden = !!subj && subj.id !== 'life';
+  const crumb = (label, fn) => {
+    if (crumbs.childNodes.length) crumbs.append(el('span', 'sep', '›'));
+    if (fn) { const b = el('button', null, label); b.type = 'button'; b.addEventListener('click', fn); crumbs.append(b); } else crumbs.append(el('b', null, label));
+  };
+  const n = (k1, k2, v) => `${v} ${t(v === 1 ? k1 : k2)}`;
+  if (!subj) {
+    crumb(t('allSubjectsH'));
+    const grid = el('div', 'grade-tiles');
+    SUBJECTS.forEach((s) => {
+      const mods = MODULES.filter((m) => m.subject === s.id), ls = LESSONS.filter((l) => mods.some((m) => m.id === l.mod)), life = s.id === 'life';
+      const tile = el('button', 'tile' + (life ? ' well' : '')); tile.type = 'button'; tile.id = 'subj-' + s.id;
+      const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (life ? ' well' : ''), life ? t('attendance') : t('graded')), el('span', 'chip line', n('lessonOne', 'lessons', ls.length)));
+      tile.append(el('h3', null, s.name[lang]), chips, el('span', 'small muted', life ? n('topicOne', 'topicsN', mods.length) : t('grades16')));
+      tile.addEventListener('click', () => { modNav = { subject: s.id, key: null }; renderModules(); });
+      grid.append(tile);
+    });
+    box.append(grid); return;
+  }
+  const life = subj.id === 'life';
+  crumb(t('allSubjectsH'), () => { modNav = { subject: null, key: null }; renderModules(); });
+  if (modNav.key == null) {
+    crumb(subj.name[lang]);
+    box.append(el('p', 'muted', t(life ? 'pickTopic' : 'pickGrade')));
+    const grid = el('div', 'grade-tiles');
+    if (life) MODULES.filter((m) => m.subject === 'life').forEach((m) => {
+      const ls = LESSONS.filter((l) => l.mod === m.id), tile = el('button', 'tile well'); tile.type = 'button'; tile.id = 'topic-' + m.id;
+      const chips = el('div', 'chips'); chips.append(el('span', 'chip line', n('lessonOne', 'lessons', ls.length))); if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
+      tile.append(el('h3', null, m.name[lang]), chips);
+      tile.addEventListener('click', () => { modNav.key = m.id; renderModules(); }); grid.append(tile);
+    });
+    else {
+      const m = MODULES.find((x) => x.subject === subj.id);
+      GRADES.forEach((g) => {
+        const ls = LESSONS.filter((l) => l.mod === m.id && l.grade === g), girls = STUDENTS.filter((s) => levelIn(s.id, subj.id) === g);
+        const tile = el('button', 'tile'); tile.type = 'button'; tile.id = `grade-${subj.id}-${g}`;
+        const chips = el('div', 'chips'); chips.append(el('span', 'chip line', n('lessonOne', 'lessons', ls.length)), el('span', 'chip' + (girls.length ? '' : ' line'), n('girlOne', 'girlsN', girls.length)));
+        tile.append(el('span', 'small muted', subj.name[lang]), el('span', 'big', `${t('grade')} ${g}`), chips);
+        tile.addEventListener('click', () => { modNav.key = g; renderModules(); }); grid.append(tile);
+      });
+    }
+    box.append(grid); return;
+  }
+  crumb(subj.name[lang], () => { modNav.key = null; renderModules(); });
+  let m, ls, title, girls = null;
+  if (life) { m = mod(modNav.key); ls = LESSONS.filter((l) => l.mod === m.id); title = m.name[lang]; }
+  else { m = MODULES.find((x) => x.subject === subj.id); ls = LESSONS.filter((l) => l.mod === m.id && l.grade === modNav.key); title = `${t('grade')} ${modNav.key}`; girls = STUDENTS.filter((s) => levelIn(s.id, subj.id) === modNav.key); }
+  crumb(title);
+  const c = el('div', 'card' + (life ? ' well' : ''));
+  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (life ? ' well' : ''), life ? t('attendance') : t('graded')), el('span', 'chip line', n('lessonOne', 'lessons', ls.length)));
+  if (life) chips.append(el('span', 'chip av', t('avA'))); if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
+  c.append(el('h3', null, life ? title : `${subj.name[lang]} · ${title}`), chips);
+  if (girls) {
+    const g = el('div', 'stack'); g.append(el('span', 'label', t('girlsAtGrade')));
+    const nm = el('div', 'names'); if (girls.length) girls.forEach((s) => nm.append(el('span', 'chip', s.name))); else nm.append(el('span', 'small muted', t('noGirlsGrade')));
+    g.append(nm, el('p', 'small muted', t('changeGradeNote'))); c.append(g);
+  }
+  const list = el('div', 'lesson-list'); if (!ls.length) list.append(el('p', 'empty muted', t('noLessonsYet'))); ls.forEach((l) => list.append(lessonRow(l, m))); c.append(list);
+  box.append(c);
 }
 
 // ---------- Lesson videos (kept on this device in IndexedDB, so they play offline) ----------
@@ -1403,7 +1759,7 @@ function openLesson(id) { currentLesson = id; renderLesson(id); show('lesson'); 
 function renderLesson(id) {
   const l = lesson(id), m = mod(l.mod), box = $('#lesson-detail'); box.replaceChildren();
   const chips = el('div', 'chips');
-  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), modLabel(m)), el('span', 'chip', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', `${l.min} ${t('min')}`));
+  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), lessonTag(l)), el('span', 'chip', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', `${l.min} ${t('min')}`));
   if (videoUrls[id]) chips.append(el('span', 'chip av', '▶ ' + t('hasVideo')));
   let media;
   if (videoUrls[id]) { media = el('video', 'lesson-video'); media.controls = true; media.preload = 'metadata'; media.src = videoUrls[id]; media.setAttribute('playsinline', ''); }
@@ -1472,7 +1828,7 @@ function slideText(s) {
 }
 function drawSlide() {
   const l = scLesson, m = mod(l.mod), s = slides[si], st = $('#sc-stage'); st.replaceChildren();
-  $('#sc-title').textContent = `${modLabel(m)} · ${l.title}`;
+  $('#sc-title').textContent = `${lessonTag(l)} · ${l.title}`;
   $('#sc-voice').textContent = t(narrate ? 'narrOn' : 'narrOff');
   if (s.kind === 'title') {
     st.append(el('span', 'eyebrow', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`), el('h2', null, l.title), el('p', 'big', videoUrls[l.id] ? t('videoNext') : t('mediaFile')));
@@ -1507,7 +1863,7 @@ document.addEventListener('keydown', (e) => { if ($('#screen').hidden) return; i
 // ---------- Gradebook ----------
 function studentDetail(mid, s) {
   const wrap = el('div', 'stack');
-  LESSONS.filter((l) => l.mod === mid && quizQs(l.id).length).forEach((l) => {
+  LESSONS.filter((l) => l.mod === mid && quizQs(l.id).length && (!l.grade || l.grade === levelIn(s.id, mod(mid).subject) || results[l.id]?.[s.id])).forEach((l) => {
     const u = el('div', 'unit'), sc = scoreOf(l.id, s.id), head = el('div', 'row');
     head.append(el('strong', null, `${t('unit')}: ${l.title}`));
     if (!sc) head.append(el('span', 'chip line', t('notTaken')));
@@ -1523,11 +1879,13 @@ function studentDetail(mid, s) {
   });
   return wrap;
 }
-function renderGradeSelect() { const s = $('#g-module'), v = s.value || 'num'; s.replaceChildren(...MODULES.map((m) => new Option(modLabel(m), m.id))); s.value = v; }
+function renderGradeSelect() { const s = $('#g-module'), v = s.value || 'num'; s.replaceChildren(...MODULES.map((m) => new Option(modLabel(m), m.id))); s.value = v; const gs = $('#g-grade'), gv = gs.value || ''; gs.replaceChildren(new Option(t('allGrades'), ''), ...GRADES.map((g) => new Option(`${t('grade')} ${g}`, String(g)))); gs.value = gv; }
+$('#g-grade').addEventListener('change', renderGrades);
 $('#g-module').addEventListener('change', renderGrades);
 function renderGrades() {
   const mid = $('#g-module').value || 'num', m = mod(mid), head = $('#grade-head'), tb = $('#grade-rows');
   head.replaceChildren(); tb.replaceChildren();
+  $('#g-grade-f').hidden = m.area === 'well';
   const hr = el('tr'); hr.append(el('th', null, t('hName')));
   if (m.area === 'well') {
     hr.append(el('th', 'n', t('attended'))); head.append(hr);
@@ -1539,9 +1897,10 @@ function renderGrades() {
     });
     $('#grade-note').textContent = t('attNote') + (m.minAge ? ' ' + t('ageNote') : '');
   } else {
-    hr.append(el('th', 'n', t('score')), el('th', 'n', t('level')), el('th', 'n', t('quizAvg')), el('th', 'n', t('unitsDone'))); head.append(hr);
-    const units = LESSONS.filter((l) => l.mod === mid && quizQs(l.id).length);
-    STUDENTS.forEach((s) => {
+    hr.append(el('th', 'n', t('grade')), el('th', 'n', t('score')), el('th', 'n', t('level')), el('th', 'n', t('quizAvg')), el('th', 'n', t('unitsDone'))); head.append(hr);
+    const subj = m.subject, gf = +($('#g-grade').value || 0);
+    STUDENTS.filter((s) => !gf || levelIn(s.id, subj) === gf).forEach((s) => {
+      const units = LESSONS.filter((l) => l.mod === mid && quizQs(l.id).length && (!l.grade || l.grade === levelIn(s.id, subj)));
       const tr = el('tr'), td = el('td', 'n'), inp = el('input', 'score'); inp.type = 'number'; inp.min = 0; inp.max = 100; inp.inputMode = 'numeric';
       inp.id = `g-${mid}-${s.id}`; inp.setAttribute('aria-label', `${s.name} ${t('score')}`); inp.value = grades[mid]?.[s.id] ?? '';
       const lvTd = el('td', 'n');
@@ -1559,8 +1918,12 @@ function renderGrades() {
       const done = units.filter((l) => results[l.id]?.[s.id]).length;
       const nameTd = el('td'), nb = el('button', 'linkbtn', '▸ ' + s.name); nb.type = 'button'; nb.setAttribute('aria-expanded', 'false'); nb.id = `gd-${mid}-${s.id}`;
       nameTd.append(nb);
-      tr.append(nameTd, td, lvTd, qaTd, el('td', 'n', `${done} / ${units.length}`)); tb.append(tr);
-      const dr = el('tr', 'detail-row'); dr.hidden = true; const dtd = el('td'); dtd.colSpan = 5; dr.append(dtd); tb.append(dr);
+      const gTd = el('td', 'n'), gsel = el('select', 'lvl-sel'); gsel.id = `lv-${subj}-${s.id}`; gsel.setAttribute('aria-label', `${s.name} ${t('grade')}`);
+      GRADES.forEach((g) => gsel.append(new Option(String(g), String(g)))); gsel.value = String(levelIn(s.id, subj) || '');
+      gsel.addEventListener('change', () => { levels[s.id] = levels[s.id] || {}; levels[s.id][subj] = +gsel.value; save(); toast(`${s.name}: ${subjectOf(m).name[lang]} · ${t('grade')} ${gsel.value}`); renderGrades(); renderClass(); renderModules(); renderPlanForm(); });
+      gTd.append(gsel);
+      tr.append(nameTd, gTd, td, lvTd, qaTd, el('td', 'n', `${done} / ${units.length}`)); tb.append(tr);
+      const dr = el('tr', 'detail-row'); dr.hidden = true; const dtd = el('td'); dtd.colSpan = 6; dr.append(dtd); tb.append(dr);
       nb.addEventListener('click', () => {
         const open = dr.hidden; dr.hidden = !open; nb.setAttribute('aria-expanded', String(open)); nb.textContent = (open ? '▾ ' : '▸ ') + s.name;
         if (open) { dtd.replaceChildren(studentDetail(mid, s)); }
@@ -1573,7 +1936,7 @@ function renderGrades() {
 // ---------- Questions ----------
 function renderQForm() {
   const s = $('#q-lesson'), v = s.value;
-  s.replaceChildren(...MODULES.map((m) => { const g = document.createElement('optgroup'); g.label = modLabel(m); LESSONS.filter((l) => l.mod === m.id).forEach((l) => g.append(new Option(l.title, l.id))); return g; }));
+  s.replaceChildren(...groupOptions());
   if (v) s.value = v;
 }
 $('#q-type').addEventListener('change', () => { $('#q-opts').hidden = $('#q-type').value !== 'mc'; });
@@ -1609,7 +1972,7 @@ function renderBank() {
     const qs = questions.filter((q) => lesson(q.lesson)?.mod === m.id); if (!qs.length) return;
     const c = el('div', 'card' + (m.area === 'well' ? ' well' : ''));
     c.append(el('div', 'row', null)); c.firstChild.append(el('h3', null, modLabel(m)), el('span', 'small muted', `${qs.length} ${t('questionsN')}`));
-    qs.forEach((q) => { const it = qItem(q); it.prepend(el('span', 'label', lesson(q.lesson).title)); c.append(it); });
+    qs.forEach((q) => { const it = qItem(q); it.prepend(el('span', 'label', (lesson(q.lesson).grade ? t('grade') + ' ' + lesson(q.lesson).grade + ' · ' : '') + lesson(q.lesson).title)); c.append(it); });
     box.append(c);
   });
 }
@@ -1868,6 +2231,8 @@ $('#act-full').addEventListener('click', () => { const s = $('#act'); try { docu
 document.querySelectorAll('#act [data-lang]').forEach((b) => b.addEventListener('click', () => { if (act) drawAct(); }));
 document.addEventListener('keydown', (e) => { if (!$('#act').hidden && e.key === 'Escape') closeActivity(); });
 
+Object.assign(T.en, {"grade":"Grade","fGrade":"Grade","allGrades":"All grades","hGradesCol":"Grades","gradesKey":"Grades: M = Maths, E = English, K = Kiswahili, S = Science. Each girl learns at her own grade in each subject; change it in the Gradebook.","modSub":"Choose a subject, then a grade (or a Life Skills topic), then a lesson. Every lesson can be shown on the classroom TV or projector with narration.","allSubjectsH":"All subjects","topicOne":"topic","topicsN":"topics","grades16":"Grades 1–6","pickGrade":"Choose a grade. Each grade shows how many girls learn at that level.","pickTopic":"Choose a topic. Life Skills is open to all girls (reproductive health is for ages 15 and over).","girlOne":"girl","girlsN":"girls","girlsAtGrade":"Girls learning at this grade","noGirlsGrade":"No girls are at this grade yet.","changeGradeNote":"Change a girl's grade in the Gradebook.","noLessonsYet":"No lessons yet.","gradeRegNote":"Only girls learning at this grade are listed.","catchRegNote":"Catch-up class: only the girls who missed this lesson are listed.","catchChip":"Catch-up","catchH":"Catch-up","catchSub":"Girls who missed a lesson in the last 60 days. Run a short catch-up class with only them, or tick a girl when she has caught up on her own (on this device, or by listening on the radio).","toCatchN":"lessons to catch up","noCatch":"No one needs to catch up. Well done!","missedN":"missed","startCatch":"Catch-up class","openLesson":"Open lesson","markCaught":"Tap when she has caught up","caughtUp":"Caught up","caughtLater":"Caught up later","catchHow":"Tap a name when that girl has caught up on her own.","presentL":"Present","missedL":"Missed","hToCatch":"To catch up","histH":"Session history","histSub":"What was taught, when, and to which girls. Choose a week, a subject or a girl.","hRange":"When","rWeek":"This week","rLast":"Last week","rMonth":"This month","rAll":"All","rCustom":"Choose dates","hFrom":"From","hTo":"To","hSubj":"Subject","hGirl":"Girl","dlCsv":"Download CSV","csvDone":"CSV downloaded","allSubjects":"All subjects","allGirls":"All girls","sessionOne":"session","sessionsN":"sessions","noHist":"No sessions in this period.","weekOf":"Week of"});
+Object.assign(T.sw, {"grade":"Darasa","fGrade":"Darasa","allGrades":"Madarasa yote","hGradesCol":"Madarasa","gradesKey":"Madarasa: H = Hisabati, Kg = Kiingereza, Ks = Kiswahili, S = Sayansi. Kila msichana anasoma katika darasa lake kwa kila somo; libadilishe kwenye Daftari la alama.","modSub":"Chagua somo, kisha darasa (au mada ya Stadi za maisha), kisha somo. Kila somo linaweza kuonyeshwa kwenye TV au projekta ya darasa pamoja na sauti.","allSubjectsH":"Masomo yote","topicOne":"mada","topicsN":"mada","grades16":"Darasa 1–6","pickGrade":"Chagua darasa. Kila darasa linaonyesha wasichana wangapi wanasoma katika kiwango hicho.","pickTopic":"Chagua mada. Stadi za maisha ni za wasichana wote (afya ya uzazi ni ya umri wa miaka 15 na zaidi).","girlOne":"msichana","girlsN":"wasichana","girlsAtGrade":"Wasichana wanaosoma darasa hili","noGirlsGrade":"Bado hakuna msichana katika darasa hili.","changeGradeNote":"Badilisha darasa la msichana kwenye Daftari la alama.","noLessonsYet":"Bado hakuna masomo.","gradeRegNote":"Wasichana wanaosoma darasa hili tu ndio wanaoonyeshwa.","catchRegNote":"Darasa la kufidia: wasichana waliokosa somo hili tu ndio wanaoonyeshwa.","catchChip":"Kufidia","catchH":"Kufidia masomo","catchSub":"Wasichana waliokosa somo katika siku 60 zilizopita. Fanya darasa fupi la kufidia nao tu, au weka alama msichana akishafidia mwenyewe (kwenye kifaa hiki, au kwa kusikiliza redio).","toCatchN":"masomo ya kufidia","noCatch":"Hakuna anayehitaji kufidia. Hongera!","missedN":"walikosa","startCatch":"Darasa la kufidia","openLesson":"Fungua somo","markCaught":"Bonyeza akishafidia","caughtUp":"Amefidia","caughtLater":"Walifidia baadaye","catchHow":"Bonyeza jina msichana akishafidia mwenyewe.","presentL":"Walihudhuria","missedL":"Walikosa","hToCatch":"Ya kufidia","histH":"Historia ya vipindi","histSub":"Kilichofundishwa, lini, na kwa wasichana gani. Chagua wiki, somo au msichana.","hRange":"Lini","rWeek":"Wiki hii","rLast":"Wiki iliyopita","rMonth":"Mwezi huu","rAll":"Vyote","rCustom":"Chagua tarehe","hFrom":"Kuanzia","hTo":"Hadi","hSubj":"Somo","hGirl":"Msichana","dlCsv":"Pakua CSV","csvDone":"CSV imepakuliwa","allSubjects":"Masomo yote","allGirls":"Wasichana wote","sessionOne":"kipindi","sessionsN":"vipindi","noHist":"Hakuna vipindi katika muda huu.","weekOf":"Wiki ya"});
 Object.assign(T.en, { lessonOne: 'lesson', lifeNote: 'Not graded · attendance and activities', sWell: 'Attended all Life Skills topics', hWellS: 'Life Skills sessions', girlsLabel: 'Life Skills', attNote: 'Life Skills topics record attendance only. No scores are kept.', girlsText: 'LearnReach clubs serve adolescent girls in marginalised communities. Life Skills covers menstrual health, mental wellbeing, personal safety, confidence and goals, and reproductive health (ages 15 and over). It is taught with video and audio sessions and step-by-step activities, and is not graded. Quiz answers are never recorded; attendance and step-by-step activity results are saved on this device.', wellReport: 'Life Skills sessions are not graded. Quiz answers are never recorded; attendance and step-by-step activity results are kept.' });
 Object.assign(T.sw, { lessonOne: 'somo', lifeNote: 'Hazipewi alama · mahudhurio na shughuli', sWell: 'Wamehudhuria mada zote za Stadi za maisha', hWellS: 'Vipindi vya Stadi za maisha', girlsLabel: 'Stadi za maisha', attNote: 'Mada za Stadi za maisha zinarekodi mahudhurio tu. Hakuna alama zinazohifadhiwa.', girlsText: 'Klabu za LearnReach zinahudumia wasichana balehe katika jamii zilizotengwa. Stadi za maisha zinahusu afya ya hedhi, afya ya akili, usalama binafsi, kujiamini na malengo, na afya ya uzazi (umri wa miaka 15 na zaidi). Zinafundishwa kwa video na sauti pamoja na shughuli za hatua kwa hatua, na hazipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa kwenye kifaa hiki.', wellReport: 'Vipindi vya Stadi za maisha havipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa.' });
 // ---------- Start ----------

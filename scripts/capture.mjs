@@ -49,10 +49,11 @@ try {
   await still(p, 'portal-login');
   await signIn(p);
   await still(p, 'portal-class');
-  await p.click('#tab-modules'); await still(p, 'portal-modules');
+  await p.click('#tab-modules'); await p.click('#subj-maths'); await still(p, 'portal-modules'); await p.click('#tab-class');
   await p.click('#tab-grades'); await still(p, 'portal-gradebook');
   await p.click('#tab-questions'); await still(p, 'portal-questions');
   await p.click('#tab-modules');
+  await p.click('#subj-english'); await p.click('#grade-english-4');
   await p.locator('.lesson-row', { hasText: 'The solar radio' }).locator('.acts .btn').first().click(); // "The solar radio"
   await p.click('#sc-next'); await still(p, 'classroom-screen');
   await p.close();
@@ -73,7 +74,9 @@ try {
   await p.type('#u', 'user1', { delay: 60 }); await g1.step(p, 0.5);
   await p.type('#p', '1234', { delay: 60 }); await g1.step(p, 0.6);
   await p.click('#login-form button[type=submit]'); await g1.step(p, 1.8);
-  await p.click('#tab-modules'); await g1.step(p, 1.6);
+  await p.click('#tab-modules'); await g1.step(p, 1.2);
+  await p.click('#subj-english'); await g1.step(p, 1.2);
+  await p.click('#grade-english-4'); await g1.step(p, 1.4);
   await p.locator('.lesson-row', { hasText: 'The solar radio' }).locator('.acts .btn').first().click(); await g1.step(p, 1.8);
   for (let i = 0; i < 3; i++) { await p.click('#sc-next'); await g1.step(p, 1.8); }
   await p.click('#sc-next'); await g1.step(p, 1.6); // question slide

@@ -211,6 +211,33 @@ td.n, th.n { text-align: center; }
 .kv div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
 .kv b { display: block; font-family: var(--display); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
 .names { display: flex; flex-wrap: wrap; gap: 6px; }
+.namebtn { all: unset; cursor: pointer; font-weight: 700; color: var(--teal); }
+.namebtn:hover { text-decoration: underline; }
+.namebtn:focus-visible { outline: 3px solid var(--sun); border-radius: 4px; }
+.pp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+.pp-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.pp-card.sens { border-left: 4px solid var(--rose); }
+.pp-card h3 { margin: 0; font-size: 1.05rem; }
+.pp-kv { display: grid; grid-template-columns: minmax(110px, 40%) 1fr; gap: 6px 12px; margin: 0; }
+.pp-kv dt { color: var(--muted); font-size: .9rem; }
+.pp-kv dd { margin: 0; font-weight: 600; }
+.pp-form { display: flex; flex-direction: column; gap: 14px; }
+.pp-form fieldset { border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px 14px; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px 14px; background: var(--surface); }
+.pp-form fieldset.wide { grid-template-columns: 1fr; }
+.pp-form legend { font-weight: 800; padding: 0 6px; }
+.pp-form fieldset[disabled] { opacity: .6; }
+.pp-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 6px 12px; }
+.pp-checks label, .pp-check { display: flex; align-items: flex-start; gap: 8px; font-weight: 600; cursor: pointer; }
+.pp-checks input, .pp-check input { margin-top: 3px; width: 18px; height: 18px; flex: none; }
+.pp-months { display: flex; flex-wrap: wrap; gap: 6px; }
+.pp-months label { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; font-size: .9rem; }
+.pp-alert { border: 2px solid var(--bad); background: var(--rose-soft); border-radius: var(--r); padding: 12px 14px; color: var(--ink); }
+.pp-alert b { color: var(--bad); }
+.pp-support { display: flex; flex-direction: column; gap: 6px; }
+.pp-support .row { justify-content: space-between; }
+.pp-sync { font-size: .85rem; color: var(--muted); }
+.update-bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 90; display: flex; gap: 12px; align-items: center; background: var(--ink); color: var(--surface); padding: 10px 12px 10px 18px; border-radius: 999px; box-shadow: 0 6px 24px rgba(0,0,0,.25); font-weight: 700; }
+
 .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: .95rem; }
 .crumbs button { all: unset; cursor: pointer; color: var(--teal); font-weight: 700; }
 .crumbs button:focus-visible { outline: 3px solid var(--sun); }
@@ -434,7 +461,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
         <div class="catch" id="catch-list"></div>
       </div>
       <div class="stack">
-        <h2 data-t="learnersH">Learners</h2>
+        <div class="row"><h2 data-t="learnersH">Learners</h2><div class="row"><span class="pp-sync" id="class-sync"></span><button class="btn sm" id="add-pupil" type="button" data-t="addPupil">＋ Add pupil</button></div></div>
         <div class="tw">
           <table>
             <thead><tr><th data-t="hName">Name</th><th class="n" data-t="hGender">Age</th><th data-t="hGradesCol">Grades</th><th class="n" data-t="hAvg">Average</th><th class="n" data-t="hLevel">Level</th><th class="n" data-t="hAtt">Attendance</th><th class="n" data-t="hWellS">Wellbeing sessions</th></tr></thead>
@@ -447,6 +474,10 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
     </section>
 
     <!-- SESSIONS -->
+    <section class="view" id="view-pupil" hidden>
+      <div class="row"><button class="btn ghost sm" id="pp-back" type="button" data-t="ppBack">← Back to my class</button><span class="pp-sync" id="pp-sync"></span></div>
+      <div id="pupil-body" class="stack"></div>
+    </section>
     <section class="view" id="view-sessions" hidden>
       <div><h2 data-t="tSessions">Sessions</h2><p class="muted" data-t="sesSub">Plan club sessions, take the register, and see who is coming.</p></div>
       <div class="ses-layout">
@@ -629,6 +660,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
 </div>
 <input type="file" id="video-file" accept="video/*" hidden>
 <div class="toast" id="toast" hidden></div>
+<div class="update-bar" id="update-bar" role="status" hidden><span data-t="updReady">A new version of LearnReach is ready.</span><button class="btn sm sun" id="upd-btn" type="button" data-t="updBtn">Refresh</button></div>
 
 <script src="../supabase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
@@ -929,7 +961,8 @@ function biQuestion(q) {
 }
 LESSONS.forEach(biLesson); SEED_Q.forEach(biQuestion);
 const SEED_IDS = new Set(SEED_Q.map((q) => q.id));
-const STUDENTS = [ // sample girls' club members
+const STUDENTS = []; // the class: filled from Supabase (or the sample girls in demo mode), see loadRoster()
+const SAMPLE_LIST = [ // sample girls' club members
   ['s01', 'Akiru Lokol', 12], ['s02', 'Ekal Nakiru', 14], ['s03', 'Nanyang Ewoi', 16], ['s04', 'Achuka Ekiru', 11],
   ['s05', 'Napeyok Loree', 15], ['s06', 'Atabo Lokwang', 13], ['s07', 'Amina Hassan', 17], ['s08', 'Esekon Edome', 10],
   ['s09', 'Nakai Arot', 15], ['s10', 'Ngikwai Lotiir', 13], ['s11', 'Asekon Nawoi', 16], ['s12', 'Lokaale Lomulen', 12],
@@ -948,7 +981,7 @@ const SEED_LEVELS = { // girl -> [maths, english, kiswahili, science]
   s01: [4, 5, 5, 4], s02: [5, 4, 5, 5], s03: [4, 4, 5, 4], s04: [4, 5, 5, 4], s05: [3, 3, 4, 3], s06: [4, 4, 4, 4],
   s07: [6, 6, 6, 6], s08: [2, 2, 3, 2], s09: [4, 4, 5, 4], s10: [2, 2, 3, 3], s11: [4, 5, 5, 4], s12: [4, 4, 4, 4],
 };
-function seedLevels() { const o = {}; Object.entries(SEED_LEVELS).forEach(([id, a]) => { o[id] = {}; GRADED.forEach((g, i) => { o[id][g] = a[i]; }); }); return o; }
+function seedLevels() { if (!STUDENTS.some((s) => s.id === 's01')) return {}; const o = {}; Object.entries(SEED_LEVELS).forEach(([id, a]) => { o[id] = {}; GRADED.forEach((g, i) => { o[id][g] = a[i]; }); }); return o; }
 const levelIn = (sid, subject) => (levels && levels[sid] && levels[sid][subject]) || null;
 const subjOfLesson = (l) => mod(l.mod).subject;
 const SHORT = { en: { maths: 'M', english: 'E', kiswahili: 'K', science: 'S' }, sw: { maths: 'H', english: 'Kg', kiswahili: 'Ks', science: 'S' } };
@@ -987,19 +1020,29 @@ const btn = (label, cls, fn) => { const b = el('button', 'btn ' + (cls || ''), l
 const levelOf = (s) => s == null ? null : s >= 80 ? 'EE' : s >= 50 ? 'ME' : s >= 30 ? 'AE' : 'BE';
 let tt; const toast = (m) => { const n = $('#toast'); n.textContent = m; n.hidden = false; clearTimeout(tt); tt = setTimeout(() => { n.hidden = true; }, 2000); };
 
+// Data on this device is kept per teacher. The first teacher to sign in after this update keeps what was here before.
+const uk = (k) => (user && !DEMO ? k + '@' + user.id : k);
+function claimLegacy() {
+  if (DEMO || !user || store.get('legacyOwner', null) || store.get(uk('sessions'), null)) return;
+  if (!localStorage.getItem('lrg3_sessions')) return;
+  ["grades","attendance","questions","qDeleted","presented","levels","sessions","results"].forEach((k) => { const v = localStorage.getItem('lrg3_' + k); if (v != null) localStorage.setItem('lrg3_' + uk(k), v); });
+  store.set('legacyOwner', user.id);
+}
+function seedGrades() { const g = {}; Object.entries(SEED_GRADES).forEach(([m, arr]) => { g[m] = {}; STUDENTS.forEach((s) => { const i = sIdx(s.id); if (i >= 0 && arr[i] != null) g[m][s.id] = arr[i]; }); }); return g; }
 function loadState() {
-  grades = store.get('grades', null);
-  if (!grades) { grades = {}; Object.entries(SEED_GRADES).forEach(([m, arr]) => { grades[m] = {}; STUDENTS.forEach((s, i) => { if (arr[i] != null) grades[m][s.id] = arr[i]; }); }); }
-  attendance = store.get('attendance', null) || JSON.parse(JSON.stringify(SEED_ATT));
-  const qDel = store.get('qDeleted', []);
-  questions = [...SEED_Q.filter((q) => !qDel.includes(q.id)), ...(store.get('questions', null) || []).filter((q) => !SEED_IDS.has(q.id))];
-  presented = store.get('presented', []);
-  levels = store.get('levels', null) || seedLevels();
-  sessions = store.get('sessions', null) || seedSessions();
-  results = store.get('results', null) || seedResults();
+  claimLegacy();
+  grades = store.get(uk('grades'), null);
+  if (!grades) grades = seedGrades();
+  attendance = store.get(uk('attendance'), null) || JSON.parse(JSON.stringify(SEED_ATT));
+  const qDel = store.get(uk('qDeleted'), []);
+  questions = [...SEED_Q.filter((q) => !qDel.includes(q.id)), ...(store.get(uk('questions'), null) || []).filter((q) => !SEED_IDS.has(q.id))];
+  presented = store.get(uk('presented'), []);
+  levels = store.get(uk('levels'), null) || seedLevels();
+  sessions = store.get(uk('sessions'), null) || seedSessions();
+  results = store.get(uk('results'), null) || seedResults();
   loadVideos();
 }
-const save = () => { store.set('grades', grades); store.set('attendance', attendance); store.set('questions', questions.filter((q) => !SEED_IDS.has(q.id))); store.set('presented', presented); store.set('sessions', sessions); store.set('results', results); store.set('levels', levels); };
+const save = () => { store.set(uk('grades'), grades); store.set(uk('attendance'), attendance); store.set(uk('questions'), questions.filter((q) => !SEED_IDS.has(q.id))); store.set(uk('presented'), presented); store.set(uk('sessions'), sessions); store.set(uk('results'), results); store.set(uk('levels'), levels); };
 
 function applyLang() {
   document.documentElement.lang = lang;
@@ -1072,14 +1115,14 @@ async function afterSignIn(au) {
   enterApp(me, false);
 }
 function enterApp(u, offline) {
-  user = u; loadState(); authMsg('');
+  user = u; loadRoster(); loadState(); mergeLevels(); authMsg('');
   $('#login-screen').hidden = true; $('#app').hidden = false;
   $('#teacher-name').textContent = user.name;
   $('#class-line').textContent = [user.site, `${lang === 'sw' ? 'Umri' : 'Ages'} ${user.ages}`].filter(Boolean).join(' · ');
   $('#who').textContent = user.email || '';
   $('#offline-chip').hidden = !offline;
   $('#admin-link').hidden = user.role !== 'admin';
-  show('class'); renderAll();
+  show('class'); renderAll(); updateSyncLine(); syncPupils();
   if (offline) toast(t('offlineIn'));
 }
 
@@ -1179,8 +1222,8 @@ async function boot() {
 // ---------- Navigation ----------
 function show(view) {
   stopSpeech();
-  ['class', 'sessions', 'register', 'quiz', 'report', 'modules', 'lesson', 'grades', 'questions'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
-  const tab = view === 'lesson' ? 'modules' : ['register', 'quiz', 'report'].includes(view) ? 'sessions' : view;
+  ['class', 'sessions', 'register', 'quiz', 'report', 'modules', 'lesson', 'grades', 'questions', 'pupil'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
+  const tab = view === 'pupil' ? 'class' : view === 'lesson' ? 'modules' : ['register', 'quiz', 'report'].includes(view) ? 'sessions' : view;
   document.querySelectorAll('.tabs [data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === tab)));
   window.scrollTo({ top: 0 });
 }
@@ -1210,7 +1253,8 @@ function renderClass() {
     const mine = wellMods.filter((m) => eligible(s, m));
     const wn = mine.filter((m) => (attendance[m.id] || []).includes(s.id)).length;
     const ar = attStats(s).rate;
-    tr.append(el('td', null, s.name), el('td', 'n', String(s.age)), el('td', null, gradesText(s.id)), el('td', 'n', a == null ? '–' : a + '%'), lvTd, el('td', 'n', ar == null ? '–' : pct(ar)), el('td', 'n', `${wn} / ${mine.length}`));
+    const nameTd = el('td'); const nb = el('button', 'namebtn', s.name); nb.type = 'button'; nb.dataset.pupil = s.id; nb.addEventListener('click', () => openPupil(s.id)); nameTd.append(nb);
+    tr.append(nameTd, el('td', 'n', s.age == null ? '–' : String(s.age)), el('td', null, gradesText(s.id)), el('td', 'n', a == null ? '–' : a + '%'), lvTd, el('td', 'n', ar == null ? '–' : pct(ar)), el('td', 'n', `${wn} / ${mine.length}`));
     tb.append(tr);
   });
 }
@@ -1236,10 +1280,11 @@ const pastList = () => sessions.filter((x) => isDone(x) || x.date < todayIso()).
 const roll = (a, b) => { const x = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return x - Math.floor(x); };
 const hm = (iso) => new Date(iso).toLocaleTimeString(loc(), { hour: '2-digit', minute: '2-digit' });
 function seedSessions() { // sample history so the planner opens in a working state
+  if (!STUDENTS.some((s) => s.id === 's01')) return [];
   const plan = [['kis9', -28], ['men1', -24], ['num7', -21], ['mind1', -17], ['lit2', -14], ['safe1', -10], ['rep1', -7], ['sci1', -3]];
   const likely = [0.95, 0.9, 0.7, 0.85, 0.5, 0.8, 0.95, 0.45, 0.9, 0.55, 0.85, 0.75]; // per girl, sample only
   const past = plan.map(([l, d], i) => {
-    const went = eligibleFor(l).filter((g) => roll(i + 1, STUDENTS.indexOf(g) + 1) < likely[STUDENTS.indexOf(g)]).map((g) => g.id);
+    const went = eligibleFor(l).filter((g) => sIdx(g.id) >= 0 && roll(i + 1, sIdx(g.id) + 1) < likely[sIdx(g.id)]).map((g) => g.id);
     const late = went.filter((id, k) => roll(i + 7, k + 3) < 0.15);
     const start = new Date(addDays(d) + 'T15:3' + (2 + (i % 6)) + ':00'), end = new Date(start.getTime() + (lesson(l).min + 18 + (i * 7) % 20) * 60000);
     return { id: 'ss' + i, girls: eligibleFor(l).map((g) => g.id), date: addDays(d), time: '15:30', lesson: l, place: 'Club room', status: 'done', attendance: went, late, startedAt: start.toISOString(), endedAt: end.toISOString(), notes: '' };
@@ -1252,7 +1297,7 @@ function seedResults() { // sample answers for past learning sessions
   sessions.filter((x) => isDone(x) && mod(lesson(x.lesson).mod).area === 'learn').forEach((x, si) => {
     const qs = quizQs(x.lesson); out[x.lesson] = {};
     x.attendance.forEach((sid) => {
-      const k = STUDENTS.findIndex((g) => g.id === sid), skill = (SEED_GRADES.lit[k] + SEED_GRADES.num[k]) / 200 - 0.05, answers = {};
+      const k = sIdx(sid); if (k < 0) return; const skill = (SEED_GRADES.lit[k] + SEED_GRADES.num[k]) / 200 - 0.05, answers = {};
       const rng = ((n) => () => roll(n++, k + 11))(si * 31 + k); shuffle(qs, rng).slice(0, 3).forEach((q, qi) => { answers[q.id] = roll(si + qi + 2, k + 5) < skill ? q.a : (q.a + 1 + Math.floor(roll(qi, k) * (q.opts.length - 1))) % q.opts.length; });
       out[x.lesson][sid] = { answers, at: x.endedAt, session: x.id };
     });
@@ -1938,7 +1983,7 @@ function renderGrades() {
       nameTd.append(nb);
       const gTd = el('td', 'n'), gsel = el('select', 'lvl-sel'); gsel.id = `lv-${subj}-${s.id}`; gsel.setAttribute('aria-label', `${s.name} ${t('grade')}`);
       GRADES.forEach((g) => gsel.append(new Option(String(g), String(g)))); gsel.value = String(levelIn(s.id, subj) || '');
-      gsel.addEventListener('change', () => { levels[s.id] = levels[s.id] || {}; levels[s.id][subj] = +gsel.value; save(); toast(`${s.name}: ${subjectOf(m).name[lang]} · ${t('grade')} ${gsel.value}`); renderGrades(); renderClass(); renderModules(); renderPlanForm(); });
+      gsel.addEventListener('change', () => { levels[s.id] = levels[s.id] || {}; levels[s.id][subj] = +gsel.value; save(); if (s.uuid) savePupil(s.uuid, { levels: { ...((rowByKey(s.id) || {}).levels || {}), [subj]: +gsel.value } }); toast(`${s.name}: ${subjectOf(m).name[lang]} · ${t('grade')} ${gsel.value}`); renderGrades(); renderClass(); renderModules(); renderPlanForm(); });
       gTd.append(gsel);
       tr.append(nameTd, gTd, td, lvTd, qaTd, el('td', 'n', `${done} / ${units.length}`)); tb.append(tr);
       const dr = el('tr', 'detail-row'); dr.hidden = true; const dtd = el('td'); dtd.colSpan = 6; dr.append(dtd); tb.append(dr);
@@ -1980,7 +2025,7 @@ function qItem(q) {
   if (q.type === 'mc') { const ol = el('ol'); ol.type = 'A'; q.opts.forEach((o, i) => ol.append(el('li', i === q.a ? 'ans' : '', o))); d.append(ol); }
   else d.append(el('span', 'small muted', t('open')));
   const acts = el('div', 'row'); acts.style.justifyContent = 'flex-start';
-  acts.append(btn('▶ ' + t('ask'), 'sm sun', () => askOne(q)), btn(t('del'), 'ghost sm', () => { questions = questions.filter((x) => x.id !== q.id); if (SEED_IDS.has(q.id)) store.set('qDeleted', [...store.get('qDeleted', []), q.id]); save(); toast(t('qDeleted')); renderBank(); if (!$('#view-lesson').hidden) renderLesson(currentLesson); }));
+  acts.append(btn('▶ ' + t('ask'), 'sm sun', () => askOne(q)), btn(t('del'), 'ghost sm', () => { questions = questions.filter((x) => x.id !== q.id); if (SEED_IDS.has(q.id)) store.set(uk('qDeleted'), [...store.get(uk('qDeleted'), []), q.id]); save(); toast(t('qDeleted')); renderBank(); if (!$('#view-lesson').hidden) renderLesson(currentLesson); }));
   d.append(acts); return d;
 }
 function renderBank() {
@@ -2489,6 +2534,238 @@ document.addEventListener('keydown', (e) => { if (!$('#act').hidden && e.key ===
 
 Object.assign(T.en, {"grade":"Grade","fGrade":"Grade","allGrades":"All grades","hGradesCol":"Grades","gradesKey":"Grades: M = Maths, E = English, K = Kiswahili, S = Science. Each girl learns at her own grade in each subject; change it in the Gradebook.","modSub":"Choose a subject, then a grade (or a Life Skills topic), then a lesson. Every lesson can be shown on the classroom TV or projector with narration.","allSubjectsH":"All subjects","topicOne":"topic","topicsN":"topics","grades16":"Grades 1–6","pickGrade":"Choose a grade. Each grade shows how many girls learn at that level.","pickTopic":"Choose a topic. Life Skills is open to all girls (reproductive health is for ages 15 and over).","girlOne":"girl","girlsN":"girls","girlsAtGrade":"Girls learning at this grade","noGirlsGrade":"No girls are at this grade yet.","changeGradeNote":"Change a girl's grade in the Gradebook.","noLessonsYet":"No lessons yet.","gradeRegNote":"Only girls learning at this grade are listed.","catchRegNote":"Catch-up class: only the girls who missed this lesson are listed.","catchChip":"Catch-up","catchH":"Catch-up","catchSub":"Girls who missed a lesson in the last 60 days. Run a short catch-up class with only them, or tick a girl when she has caught up on her own (on this device, or by listening on the radio).","toCatchN":"lessons to catch up","noCatch":"No one needs to catch up. Well done!","missedN":"missed","startCatch":"Catch-up class","openLesson":"Open lesson","markCaught":"Tap when she has caught up","caughtUp":"Caught up","caughtLater":"Caught up later","catchHow":"Tap a name when that girl has caught up on her own.","presentL":"Present","missedL":"Missed","hToCatch":"To catch up","histH":"Session history","histSub":"What was taught, when, and to which girls. Choose a week, a subject or a girl.","hRange":"When","rWeek":"This week","rLast":"Last week","rMonth":"This month","rAll":"All","rCustom":"Choose dates","hFrom":"From","hTo":"To","hSubj":"Subject","hGirl":"Girl","dlCsv":"Download CSV","csvDone":"CSV downloaded","allSubjects":"All subjects","allGirls":"All girls","sessionOne":"session","sessionsN":"sessions","noHist":"No sessions in this period.","weekOf":"Week of"});
 Object.assign(T.sw, {"grade":"Darasa","fGrade":"Darasa","allGrades":"Madarasa yote","hGradesCol":"Madarasa","gradesKey":"Madarasa: H = Hisabati, Kg = Kiingereza, Ks = Kiswahili, S = Sayansi. Kila msichana anasoma katika darasa lake kwa kila somo; libadilishe kwenye Daftari la alama.","modSub":"Chagua somo, kisha darasa (au mada ya Stadi za maisha), kisha somo. Kila somo linaweza kuonyeshwa kwenye TV au projekta ya darasa pamoja na sauti.","allSubjectsH":"Masomo yote","topicOne":"mada","topicsN":"mada","grades16":"Darasa 1–6","pickGrade":"Chagua darasa. Kila darasa linaonyesha wasichana wangapi wanasoma katika kiwango hicho.","pickTopic":"Chagua mada. Stadi za maisha ni za wasichana wote (afya ya uzazi ni ya umri wa miaka 15 na zaidi).","girlOne":"msichana","girlsN":"wasichana","girlsAtGrade":"Wasichana wanaosoma darasa hili","noGirlsGrade":"Bado hakuna msichana katika darasa hili.","changeGradeNote":"Badilisha darasa la msichana kwenye Daftari la alama.","noLessonsYet":"Bado hakuna masomo.","gradeRegNote":"Wasichana wanaosoma darasa hili tu ndio wanaoonyeshwa.","catchRegNote":"Darasa la kufidia: wasichana waliokosa somo hili tu ndio wanaoonyeshwa.","catchChip":"Kufidia","catchH":"Kufidia masomo","catchSub":"Wasichana waliokosa somo katika siku 60 zilizopita. Fanya darasa fupi la kufidia nao tu, au weka alama msichana akishafidia mwenyewe (kwenye kifaa hiki, au kwa kusikiliza redio).","toCatchN":"masomo ya kufidia","noCatch":"Hakuna anayehitaji kufidia. Hongera!","missedN":"walikosa","startCatch":"Darasa la kufidia","openLesson":"Fungua somo","markCaught":"Bonyeza akishafidia","caughtUp":"Amefidia","caughtLater":"Walifidia baadaye","catchHow":"Bonyeza jina msichana akishafidia mwenyewe.","presentL":"Walihudhuria","missedL":"Walikosa","hToCatch":"Ya kufidia","histH":"Historia ya vipindi","histSub":"Kilichofundishwa, lini, na kwa wasichana gani. Chagua wiki, somo au msichana.","hRange":"Lini","rWeek":"Wiki hii","rLast":"Wiki iliyopita","rMonth":"Mwezi huu","rAll":"Vyote","rCustom":"Chagua tarehe","hFrom":"Kuanzia","hTo":"Hadi","hSubj":"Somo","hGirl":"Msichana","dlCsv":"Pakua CSV","csvDone":"CSV imepakuliwa","allSubjects":"Masomo yote","allGirls":"Wasichana wote","sessionOne":"kipindi","sessionsN":"vipindi","noHist":"Hakuna vipindi katika muda huu.","weekOf":"Wiki ya"});
+
+// ---------- Pupils and profiles (Supabase table "pupils") ----------
+// The class list comes from Supabase and is kept on the device, so it opens offline. Changes are saved on the
+// device at once and queued; they are sent to Supabase when there is internet. Each teacher sees only her own
+// pupils; admins see all (enforced by row level security in Supabase). Challenges, notes and support can only be
+// recorded after a parent or guardian has agreed (also enforced in Supabase).
+const SAMPLE_GIRLS = [["s01","Akiru Lokol","2014-03-14","Kanamkemer",2.5,35,"walk","both",false,[]],["s02","Ekal Nakiru","2012-05-02","Napetet",1,15,"walk","one",false,[]],["s03","Nanyang Ewoi","2010-02-20","Nakwamekwi",6,70,"walk","grandparent",true,[1,2,3,8,9]],["s04","Achuka Ekiru","2015-06-11","Kawalase",3,40,"walk","both",false,[]],["s05","Napeyok Loree","2011-01-30","Lokiriama",9,60,"motorbike","relative",true,[1,2,7,8,9,10]],["s06","Atabo Lokwang","2013-04-18","Napetet",1.5,20,"bicycle","both",false,[]],["s07","Amina Hassan","2009-03-05","Lodwar town",0.5,10,"walk","both",false,[]],["s08","Esekon Edome","2016-02-09","Kanamkemer",3.5,45,"walk","one",true,[2,3]],["s09","Nakai Arot","2011-06-25","Nakwamekwi",4,50,"walk","both",false,[]],["s10","Ngikwai Lotiir","2013-01-12","Kalokol road",7,90,"walk","child_headed",true,[1,2,3,9,10]],["s11","Asekon Nawoi","2010-05-19","Kawalase",2,25,"bicycle","grandparent",false,[]],["s12","Lokaale Lomulen","2014-01-08","Napetet",1,15,"walk","both",false,[]]];
+const SAMPLE_LEVELS = SEED_LEVELS;
+const sIdx = (id) => /^s\d\d$/.test(id) ? +id.slice(1) - 1 : -1;
+const CHALLENGES = ['distance', 'herds', 'chores', 'labour', 'marriage_risk', 'married', 'pregnant', 'young_mother', 'fgm_risk', 'fgm', 'period', 'hunger', 'fees', 'disability', 'orphan', 'displaced', 'insecurity', 'health', 'other'];
+const SAFEGUARD = ['marriage_risk', 'married', 'pregnant', 'young_mother', 'fgm_risk', 'fgm'];
+const TRAVEL = ['walk', 'bicycle', 'motorbike', 'vehicle', 'boat', 'other'];
+const LIVES = ['both', 'one', 'grandparent', 'relative', 'child_headed', 'other'];
+const PCOLS = ['full_name', 'dob', 'guardian_name', 'guardian_phone', 'village', 'languages', 'distance_km', 'travel_minutes', 'travel_mode', 'lives_with', 'has_children', 'children_count', 'pastoralist', 'away_months', 'levels', 'consent', 'consent_date', 'consent_by', 'challenges', 'challenge_notes', 'support', 'archived'];
+const ageFrom = (dob) => { if (!dob) return null; const d = new Date(dob + 'T12:00:00'), n = new Date(); if (isNaN(d)) return null; let a = n.getFullYear() - d.getFullYear(); if (n.getMonth() < d.getMonth() || (n.getMonth() === d.getMonth() && n.getDate() < d.getDate())) a--; return a; };
+const newId = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16)));
+const sampleRows = () => SAMPLE_GIRLS.map(([id, full_name, dob, village, distance_km, travel_minutes, travel_mode, lives_with, pastoralist, away_months]) => ({
+  id: 'demo-' + id, local_id: id, is_sample: true, full_name, dob, village, distance_km, travel_minutes, travel_mode, lives_with, pastoralist, away_months,
+  levels: Object.fromEntries(GRADED.map((g, i) => [g, SAMPLE_LEVELS[id][i]])), languages: [], consent: false, challenges: [], support: [], archived: false }));
+let rosterRows = [];
+const rosterKey = () => 'pupils_' + (DEMO ? 'demo' : (user && user.id));
+const queueKey = () => 'pupilQueue_' + (user && user.id);
+const toPupil = (r) => ({ ...r, id: r.local_id || r.id, uuid: r.id, name: r.full_name, age: ageFrom(r.dob) });
+function applyRoster() {
+  const list = rosterRows.filter((r) => !r.archived).map(toPupil)
+    .sort((a, b) => (a.local_id || 'z' + a.name).localeCompare(b.local_id || 'z' + b.name));
+  STUDENTS.splice(0, STUDENTS.length, ...list);
+}
+function mergeLevels() { // grades per subject come from the pupil records
+  if (!levels) return;
+  STUDENTS.forEach((p) => { if (p.levels && Object.keys(p.levels).length) levels[p.id] = { ...(levels[p.id] || {}), ...p.levels }; });
+}
+function loadRoster() {
+  rosterRows = store.get(rosterKey(), null) || (DEMO ? sampleRows() : []);
+  for (const q of (DEMO ? [] : store.get(queueKey(), []))) { const i = rosterRows.findIndex((r) => r.id === q.id); if (i >= 0) rosterRows[i] = { ...rosterRows[i], ...q.row }; else rosterRows.push({ id: q.id, ...q.row }); }
+  applyRoster();
+}
+const pupilByKey = (key) => STUDENTS.find((s) => s.id === key) || null;
+const rowByKey = (key) => { const p = pupilByKey(key); return p ? rosterRows.find((r) => r.id === p.uuid) : null; };
+let pupilSyncing = false, pupilSyncedAt = null;
+function savePupil(uuid, fields) {
+  const clean = Object.fromEntries(Object.entries(fields).filter(([k]) => PCOLS.includes(k)));
+  const i = rosterRows.findIndex((r) => r.id === uuid);
+  if (i >= 0) rosterRows[i] = { ...rosterRows[i], ...clean }; else rosterRows.push({ id: uuid, ...clean });
+  store.set(rosterKey(), rosterRows);
+  if (!DEMO) { const q = store.get(queueKey(), []); const j = q.findIndex((x) => x.id === uuid); if (j >= 0) q[j].row = { ...q[j].row, ...clean }; else q.push({ id: uuid, row: clean }); store.set(queueKey(), q); }
+  applyRoster(); mergeLevels();
+  syncPupils();
+}
+async function syncPupils() {
+  if (DEMO || !sb || !user || pupilSyncing) return;
+  if (!online()) { updateSyncLine(); return; }
+  pupilSyncing = true;
+  try {
+    const q = store.get(queueKey(), []), keep = [];
+    for (const item of q) {
+      const { error } = await sb.from('pupils').upsert({ id: item.id, ...item.row }, { onConflict: 'id' });
+      if (error) { if (/fetch|network|timeout/i.test(error.message || '')) keep.push(item); else toast(t('ppSyncErr')); }
+    }
+    store.set(queueKey(), keep.concat(store.get(queueKey(), []).filter((x) => !q.some((y) => y.id === x.id))));
+    const { data, error } = await sb.from('pupils').select('*').order('created_at');
+    if (!error && Array.isArray(data)) {
+      rosterRows = data;
+      for (const item of store.get(queueKey(), [])) { const i = rosterRows.findIndex((r) => r.id === item.id); if (i >= 0) rosterRows[i] = { ...rosterRows[i], ...item.row }; else rosterRows.push({ id: item.id, ...item.row }); }
+      store.set(rosterKey(), rosterRows); pupilSyncedAt = new Date();
+      applyRoster(); mergeLevels(); reseedIfFresh(); if (user) renderAll();
+    }
+  } catch { /* try again when online */ } finally { pupilSyncing = false; updateSyncLine(); }
+}
+function reseedIfFresh() { // sample history appears only when the sample girls are in the class
+  if (!store.get(uk('sessions'), null) && STUDENTS.some((s) => s.id === 's01') && !sessions.length) { sessions = seedSessions(); results = seedResults(); grades = seedGrades(); }
+}
+function updateSyncLine() {
+  const n = DEMO ? 0 : store.get(queueKey(), []).length, el2 = $('#pp-sync');
+  const txt = DEMO ? t('ppDemo') : n ? t('ppPending').replace('{n}', n) : pupilSyncedAt ? t('ppSynced') : '';
+  if (el2) el2.textContent = txt; const c = $('#class-sync'); if (c) c.textContent = txt;
+}
+window.addEventListener('online', () => syncPupils());
+
+// ---------- Profile page ----------
+let pupilKey = null, pupilEdit = false;
+function openPupil(key, edit) { pupilKey = key; pupilEdit = !!edit; show('pupil'); renderPupil(); }
+function newPupil() { pupilKey = null; pupilEdit = true; show('pupil'); renderPupil(); }
+$('#pp-back').addEventListener('click', () => { show('class'); renderClass(); });
+const yesNo = (v) => v == null ? '–' : t(v ? 'yes' : 'no');
+const optLabel = (group, v) => v ? t(group + '_' + v) : '–';
+const monthName = (m) => new Date(2026, m - 1, 1).toLocaleDateString(loc(), { month: 'short' });
+const safeguardHit = (r, age) => age != null && age < 18 && (r.challenges || []).some((c) => SAFEGUARD.includes(c));
+function safeguardBox() { const d = el('div', 'pp-alert'); d.setAttribute('role', 'alert'); d.append(el('b', null, t('sgTitle') + ' '), document.createTextNode(t('sgText'))); return d; }
+function renderPupil() {
+  const box = $('#pupil-body'); box.replaceChildren(); updateSyncLine();
+  const p = pupilKey ? pupilByKey(pupilKey) : null; const r = pupilKey ? rowByKey(pupilKey) : null;
+  if (pupilKey && !p) { box.append(el('p', 'empty muted', t('ppMissing'))); return; }
+  if (pupilEdit) { box.append(pupilForm(r)); return; }
+  const head = el('div', 'stack'); const h = el('div', 'row');
+  const ht = el('div'); ht.append(el('h1', null, p.name), el('p', 'muted', [p.age != null ? p.age + ' ' + t('yrs') : null, r.village, gradesText(p.id)].filter(Boolean).join(' · ')));
+  const acts = el('div', 'row'); const ed = btn('✎ ' + t('ppEdit'), '', () => { pupilEdit = true; renderPupil(); }); ed.id = 'pp-edit'; acts.append(ed);
+  h.append(ht, acts); head.append(h);
+  const chips = el('div', 'chips'); if (r.is_sample) chips.append(el('span', 'chip line', t('ppSample'))); if (r.pastoralist) chips.append(el('span', 'chip av', t('ppPastoralist'))); if (!r.consent) chips.append(el('span', 'chip warn', t('ppNoConsent')));
+  head.append(chips); box.append(head);
+  if (r.consent && safeguardHit(r, p.age)) box.append(safeguardBox());
+  const grid = el('div', 'pp-grid');
+  const card = (title, rows, cls) => { const c = el('div', 'pp-card' + (cls ? ' ' + cls : '')); c.append(el('h3', null, title)); const dl = el('dl', 'pp-kv'); rows.forEach(([k, v]) => { dl.append(el('dt', null, k), el('dd', null, v == null || v === '' ? '–' : String(v))); }); c.append(dl); return c; };
+  grid.append(card(t('ppAbout'), [[t('ppDob'), r.dob ? fmtDate(r.dob, { day: 'numeric', month: 'long', year: 'numeric' }) + (p.age != null ? ' (' + p.age + ' ' + t('yrs') + ')' : '') : null], [t('ppGuardian'), r.guardian_name], [t('ppPhone'), r.guardian_phone], [t('ppVillage'), r.village], [t('ppLangs'), (r.languages || []).join(', ')]]));
+  grid.append(card(t('ppSchoolWay'), [[t('ppDistance'), r.distance_km != null ? r.distance_km + ' km' : null], [t('ppMinutes'), r.travel_minutes != null ? r.travel_minutes + ' ' + t('min') : null], [t('ppTravel'), optLabel('tr', r.travel_mode)]]));
+  grid.append(card(t('ppHome'), [[t('ppLivesWith'), optLabel('lw', r.lives_with)], [t('ppHasChildren'), r.has_children ? t('yes') + (r.children_count ? ' (' + r.children_count + ')' : '') : yesNo(r.has_children)], [t('ppPastoral'), yesNo(r.pastoralist)], [t('ppAway'), (r.away_months || []).length ? r.away_months.map(monthName).join(', ') : null]]));
+  const a = attStats(p), avg = avgFor(p.id);
+  grid.append(card(t('ppLearning'), [...GRADED.map((g) => [SUBJECTS.find((s) => s.id === g).name[lang], levelIn(p.id, g) ? t('grade') + ' ' + levelIn(p.id, g) : null]), [t('hAvg'), avg != null ? avg + '%' : null], [t('hAtt'), a.rate != null ? pct(a.rate) + ' (' + a.attended + ' / ' + a.eligible + ')' : null], [t('hToCatch'), String(toCatchFor(p.id))]]));
+  const sc = el('div', 'pp-card sens'); sc.append(el('h3', null, t('ppChallenges')));
+  if (!r.consent) sc.append(el('p', 'muted', t('ppConsentFirst')));
+  else {
+    sc.append(el('p', 'small muted', t('ppConsentGiven').replace('{who}', r.consent_by || '–').replace('{date}', r.consent_date ? fmtDate(r.consent_date, { day: 'numeric', month: 'short', year: 'numeric' }) : '–')));
+    const ch = el('div', 'chips'); (r.challenges || []).forEach((c) => ch.append(el('span', 'chip ' + (SAFEGUARD.includes(c) ? 'bad' : 'line'), t('ch_' + c)))); if (!(r.challenges || []).length) ch.append(el('span', 'small muted', t('ppNone')));
+    sc.append(ch); if (r.challenge_notes) sc.append(el('p', null, r.challenge_notes));
+    sc.append(el('span', 'label', t('ppSupport')));
+    const sl = el('div', 'pp-support'); (r.support || []).slice().sort((x, y) => (y.date || '').localeCompare(x.date || '')).forEach((s) => { const rr = el('div', 'row'); rr.append(el('span', null, s.what), el('span', 'small muted', s.date ? fmtDate(s.date, { day: 'numeric', month: 'short', year: 'numeric' }) : '')); sl.append(rr); });
+    if (!(r.support || []).length) sl.append(el('span', 'small muted', t('ppNone')));
+    sc.append(sl);
+  }
+  grid.append(sc); box.append(grid);
+}
+function pupilForm(r) {
+  const isNew = !r; r = r || { languages: [], away_months: [], challenges: [], support: [], levels: {}, consent: false };
+  const f = el('form', 'pp-form'); f.id = 'pp-form'; f.noValidate = true;
+  f.append(el('h1', null, isNew ? t('ppAddTitle') : t('ppEditTitle')));
+  const fs = (legend, cls) => { const x = el('fieldset', cls || ''); x.append(el('legend', null, legend)); f.append(x); return x; };
+  const field = (parent, id, label, input) => { const d = el('div', 'field'); const l = el('label', null, label); l.htmlFor = id; input.id = id; d.append(l, input); parent.append(d); return input; };
+  const inp = (type, v, extra = {}) => { const i = el('input'); i.type = type; if (v != null) i.value = v; Object.assign(i, extra); return i; };
+  const sel = (opts, v, group) => { const s = el('select'); s.append(new Option('–', '')); opts.forEach((o) => s.append(new Option(group ? t(group + '_' + o) : o, o))); s.value = v == null ? '' : String(v); return s; };
+  const yn = (v) => { const s = el('select'); [['', '–'], ['true', t('yes')], ['false', t('no')]].forEach(([a, b]) => s.append(new Option(b, a))); s.value = v == null ? '' : String(v); return s; };
+  const a1 = fs(t('ppAbout'));
+  field(a1, 'pf-name', t('ppName') + ' *', inp('text', r.full_name, { required: true, maxLength: 120, autocomplete: 'off' }));
+  field(a1, 'pf-dob', t('ppDob'), inp('date', r.dob, { max: todayIso(), min: '1995-01-01' }));
+  field(a1, 'pf-guardian', t('ppGuardian'), inp('text', r.guardian_name, { maxLength: 120 }));
+  field(a1, 'pf-phone', t('ppPhone'), inp('tel', r.guardian_phone, { maxLength: 40 }));
+  field(a1, 'pf-village', t('ppVillage'), inp('text', r.village, { maxLength: 120 }));
+  field(a1, 'pf-langs', t('ppLangs') + ' (' + t('ppComma') + ')', inp('text', (r.languages || []).join(', ')));
+  const a2 = fs(t('ppSchoolWay'));
+  field(a2, 'pf-km', t('ppDistance') + ' (km)', inp('number', r.distance_km, { min: 0, max: 499, step: 0.5, inputMode: 'decimal' }));
+  field(a2, 'pf-mins', t('ppMinutes'), inp('number', r.travel_minutes, { min: 0, max: 600, step: 5, inputMode: 'numeric' }));
+  field(a2, 'pf-travel', t('ppTravel'), sel(TRAVEL, r.travel_mode, 'tr'));
+  const a3 = fs(t('ppHome'));
+  field(a3, 'pf-lives', t('ppLivesWith'), sel(LIVES, r.lives_with, 'lw'));
+  const hc = field(a3, 'pf-haschildren', t('ppHasChildren'), yn(r.has_children));
+  const cc = field(a3, 'pf-children', t('ppHowMany'), inp('number', r.children_count, { min: 0, max: 19, step: 1 }));
+  const past = field(a3, 'pf-pastoral', t('ppPastoral'), yn(r.pastoralist));
+  const mWrap = el('div', 'field'); mWrap.append(el('span', 'label', t('ppAway'))); const months = el('div', 'pp-months');
+  for (let m = 1; m <= 12; m++) { const l = el('label'); const c = el('input'); c.type = 'checkbox'; c.value = m; c.name = 'pf-month'; c.checked = (r.away_months || []).includes(m); l.append(c, document.createTextNode(monthName(m))); months.append(l); }
+  mWrap.append(months); a3.append(mWrap);
+  const showHide = () => { cc.closest('.field').hidden = hc.value !== 'true'; mWrap.hidden = past.value !== 'true'; };
+  hc.addEventListener('change', showHide); past.addEventListener('change', showHide); showHide();
+  const a4 = fs(t('ppGrades'));
+  GRADED.forEach((g) => field(a4, 'pf-lv-' + g, SUBJECTS.find((s) => s.id === g).name[lang], sel(GRADES.map(String), (r.levels || {})[g] || (pupilKey && levelIn(pupilKey, g)))));
+  // consent, then challenges
+  const a5 = fs(t('ppConsentH'), 'wide');
+  const cl = el('label', 'pp-check'); const cbox = el('input'); cbox.type = 'checkbox'; cbox.id = 'pf-consent'; cbox.checked = !!r.consent; cl.append(cbox, document.createTextNode(t('ppConsentText'))); a5.append(cl);
+  const crow = el('div', 'pp-grid'); a5.append(crow);
+  field(crow, 'pf-consent-by', t('ppConsentBy'), inp('text', r.consent_by, { maxLength: 120 }));
+  field(crow, 'pf-consent-date', t('ppConsentDate'), inp('date', r.consent_date || todayIso(), { max: todayIso() }));
+  const a6 = fs(t('ppChallenges'), 'wide'); a6.id = 'pf-challenges';
+  a6.append(el('p', 'small muted', t('ppChallengesSub')));
+  const checks = el('div', 'pp-checks');
+  CHALLENGES.forEach((c) => { const l = el('label'); const i = el('input'); i.type = 'checkbox'; i.name = 'pf-ch'; i.value = c; i.checked = (r.challenges || []).includes(c); l.append(i, document.createTextNode(t('ch_' + c))); checks.append(l); });
+  a6.append(checks);
+  const sgSlot = el('div'); a6.append(sgSlot);
+  const notes = el('textarea'); notes.rows = 3; notes.maxLength = 4000; notes.value = r.challenge_notes || ''; field(a6, 'pf-notes', t('ppNotes'), notes);
+  a6.append(el('span', 'label', t('ppSupport')));
+  let support = (r.support || []).slice();
+  const sList = el('div', 'pp-support'); a6.append(sList);
+  const drawSupport = () => { sList.replaceChildren(); support.forEach((s, k) => { const rr = el('div', 'row'); rr.append(el('span', null, (s.date ? fmtDate(s.date, { day: 'numeric', month: 'short', year: 'numeric' }) + ' · ' : '') + s.what)); rr.append(btn('✕', 'ghost sm', () => { support.splice(k, 1); drawSupport(); })); sList.append(rr); }); };
+  drawSupport();
+  const addRow = el('div', 'row'); addRow.style.alignItems = 'flex-end';
+  const sw = field(addRow, 'pf-sup-what', t('ppSupportWhat'), inp('text', '', { maxLength: 200, placeholder: t('ppSupportEg') }));
+  const sd = field(addRow, 'pf-sup-date', t('fDate'), inp('date', todayIso(), { max: todayIso() }));
+  const addB = btn('＋ ' + t('ppAddSupport'), 'ghost sm', () => { if (!sw.value.trim()) { sw.focus(); return; } support.push({ date: sd.value || todayIso(), what: sw.value.trim() }); sw.value = ''; drawSupport(); }); addB.id = 'pf-sup-add';
+  addRow.append(addB); a6.append(addRow);
+  const ageNow = () => ageFrom($('#pf-dob') ? $('#pf-dob').value : r.dob);
+  const gate = () => {
+    a6.disabled = !cbox.checked; crow.hidden = !cbox.checked;
+    const hit = cbox.checked && ageNow() != null && ageNow() < 18 && [...checks.querySelectorAll('input:checked')].some((i) => SAFEGUARD.includes(i.value));
+    sgSlot.replaceChildren(); if (hit) sgSlot.append(safeguardBox());
+  };
+  cbox.addEventListener('change', gate); checks.addEventListener('change', gate); f.addEventListener('change', (e) => { if (e.target.id === 'pf-dob') gate(); }); setTimeout(gate);
+  const err = el('p', 'err'); err.id = 'pf-err'; err.setAttribute('role', 'alert'); f.append(err); f.addEventListener('input', () => { err.textContent = ''; });
+  const bar = el('div', 'row'); bar.style.justifyContent = 'flex-start';
+  const saveB = el('button', 'btn', t('ppSave')); saveB.type = 'submit'; saveB.id = 'pf-save';
+  bar.append(saveB, btn(t('cancel'), 'ghost', () => { if (isNew) { show('class'); renderClass(); } else { pupilEdit = false; renderPupil(); } }));
+  if (!isNew) { const del = btn(t('ppRemove'), 'ghost'); del.id = 'pf-remove'; del.addEventListener('click', () => {
+    if (!del.dataset.armed) { del.dataset.armed = '1'; del.textContent = t('ppRemoveConfirm'); return; }
+    savePupil(r.id, { archived: true }); toast(t('ppRemoved')); show('class'); renderAll(); }); bar.append(del); }
+  f.append(bar);
+  f.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = $('#pf-name').value.trim(), dob = $('#pf-dob').value || null;
+    if (!name) { err.textContent = t('ppNeedName'); $('#pf-name').focus(); return; }
+    const age = ageFrom(dob); if (dob && (age == null || age < 3 || age > 30)) { err.textContent = t('ppBadDob'); $('#pf-dob').focus(); return; }
+    const num = (v) => v === '' || v == null ? null : Number(v);
+    const consent = cbox.checked;
+    const fields = {
+      full_name: name, dob, guardian_name: $('#pf-guardian').value.trim() || null, guardian_phone: $('#pf-phone').value.trim() || null,
+      village: $('#pf-village').value.trim() || null, languages: $('#pf-langs').value.split(',').map((x) => x.trim()).filter(Boolean),
+      distance_km: num($('#pf-km').value), travel_minutes: num($('#pf-mins').value), travel_mode: $('#pf-travel').value || null,
+      lives_with: $('#pf-lives').value || null, has_children: hc.value === '' ? null : hc.value === 'true', children_count: hc.value === 'true' ? num(cc.value) : null,
+      pastoralist: past.value === '' ? null : past.value === 'true', away_months: past.value === 'true' ? [...months.querySelectorAll('input:checked')].map((i) => +i.value) : [],
+      levels: Object.fromEntries(GRADED.map((g) => [g, +$('#pf-lv-' + g).value || null]).filter(([, v]) => v)),
+      consent, consent_by: consent ? ($('#pf-consent-by').value.trim() || null) : null, consent_date: consent ? ($('#pf-consent-date').value || todayIso()) : null,
+      challenges: consent ? [...checks.querySelectorAll('input:checked')].map((i) => i.value) : [], challenge_notes: consent ? (notes.value.trim() || null) : null,
+      support: consent ? support : [],
+    };
+    if (!consent && (r.challenges || []).length && !confirm(t('ppConsentOff'))) return;
+    const uuid = isNew ? newId() : r.id;
+    savePupil(uuid, fields);
+    const key = (rosterRows.find((x) => x.id === uuid) || {}).local_id || uuid;
+    Object.entries(fields.levels).forEach(([g, v]) => { levels[key] = levels[key] || {}; levels[key][g] = v; }); save();
+    toast(DEMO || online() ? t('ppSaved') : t('ppSavedOffline'));
+    pupilKey = key; pupilEdit = false; renderAll(); renderPupil();
+  });
+  return f;
+}
+$('#add-pupil').addEventListener('click', () => newPupil());
+
+// ---------- Offline helper (service worker): opens from the device, updates in the background ----------
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || (location.hostname === 'localhost' && window.LR_SW_TEST))) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.addEventListener('message', (e) => { if (e.data && e.data.type === 'lr-update') $('#update-bar').hidden = false; });
+  const ask = () => { if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({ type: 'lr-check' }); };
+  [1500, 5000].forEach((ms) => setTimeout(ask, ms)); // the background check may finish just after the page opens
+}
+$('#upd-btn').addEventListener('click', () => location.reload());
+
+Object.assign(T.en, {"addPupil":"＋ Add pupil","ppBack":"← Back to my class","ppEdit":"Edit profile","ppAddTitle":"Add a pupil","ppEditTitle":"Edit profile","ppSave":"Save","ppName":"Full name","ppDob":"Date of birth","yrs":"years","ppGuardian":"Parent or guardian","ppPhone":"Guardian's phone","ppVillage":"Village or area","ppLangs":"Languages she speaks","ppComma":"separate with commas","ppAbout":"About her","ppSchoolWay":"Getting to school","ppDistance":"Distance from school","ppMinutes":"Time to get to school (minutes)","ppTravel":"How she travels","ppHome":"Home","ppLivesWith":"Lives with","ppHasChildren":"Has children of her own","ppHowMany":"How many","ppPastoral":"Pastoralist family (moves with the herds)","ppAway":"Months usually away with the herds","ppGrades":"Grade in each subject","ppLearning":"Learning","ppChallenges":"Challenges and support","ppChallengesSub":"Tick everything that applies. Only you and the programme admin can see this.","ppNotes":"Notes","ppSupport":"Support and referrals","ppSupportWhat":"What was done","ppSupportEg":"e.g. pads given; referred to health worker","ppAddSupport":"Add","ppNone":"None recorded.","ppConsentH":"Consent","ppConsentText":"A parent or guardian has agreed that the club can record her challenges and the support she gets.","ppConsentBy":"Who agreed","ppConsentDate":"Date","ppConsentFirst":"No consent yet. Challenges can be recorded after a parent or guardian agrees (edit the profile and tick consent).","ppConsentGiven":"Consent given by {who} on {date}.","ppConsentOff":"Without consent, her challenges, notes and support records will be removed. Continue?","ppNoConsent":"No consent yet","sgTitle":"Child protection:","sgText":"this girl is under 18. Early marriage, pregnancy and FGM are child protection matters. Talk to your head teacher and refer her to the local children's officer or Childline Kenya (116, free, 24 hours). If she is in danger now, call 999 or 112.","ppSample":"Sample","ppPastoralist":"Pastoralist family","ppMissing":"This pupil is no longer in your class.","ppRemove":"Remove from class","ppRemoveConfirm":"Tap again to remove","ppRemoved":"Pupil removed from your class","ppNeedName":"Enter her full name.","ppBadDob":"Check the date of birth.","ppSaved":"Profile saved","ppSavedOffline":"Saved on this device. It will upload when there is internet.","ppSyncErr":"A pupil could not be saved to the server. Check the details and try again.","ppPending":"{n} change(s) waiting for internet","ppSynced":"Saved to the server","ppDemo":"Demo mode: pupils are kept on this device only","yes":"Yes","no":"No","cancel":"Cancel","updReady":"A new version of LearnReach is ready.","updBtn":"Refresh","tr_walk":"Walking","tr_bicycle":"Bicycle","tr_motorbike":"Motorbike","tr_vehicle":"Car or bus","tr_boat":"Boat","tr_other":"Other","lw_both":"Both parents","lw_one":"One parent","lw_grandparent":"Grandparent","lw_relative":"Another relative","lw_child_headed":"Child-headed home","lw_other":"Other","ch_distance":"Lives far from school","ch_herds":"Moves with the herds","ch_chores":"Heavy chores or fetching water","ch_labour":"Child labour","ch_marriage_risk":"At risk of early marriage","ch_married":"Married","ch_pregnant":"Pregnant","ch_young_mother":"Young mother","ch_fgm_risk":"At risk of FGM","ch_fgm":"Affected by FGM","ch_period":"No pads (period poverty)","ch_hunger":"Hunger","ch_fees":"No school fees or uniform","ch_disability":"Disability","ch_orphan":"Orphan","ch_displaced":"Displaced or refugee","ch_insecurity":"Insecurity or conflict","ch_health":"Health condition","ch_other":"Other"});
+Object.assign(T.sw, {"addPupil":"＋ Ongeza mwanafunzi","ppBack":"← Rudi kwenye darasa langu","ppEdit":"Hariri wasifu","ppAddTitle":"Ongeza mwanafunzi","ppEditTitle":"Hariri wasifu","ppSave":"Hifadhi","ppName":"Jina kamili","ppDob":"Tarehe ya kuzaliwa","yrs":"miaka","ppGuardian":"Mzazi au mlezi","ppPhone":"Simu ya mlezi","ppVillage":"Kijiji au eneo","ppLangs":"Lugha anazozungumza","ppComma":"tenganisha kwa koma","ppAbout":"Kumhusu","ppSchoolWay":"Kufika shuleni","ppDistance":"Umbali kutoka shuleni","ppMinutes":"Muda wa kufika shuleni (dakika)","ppTravel":"Anavyosafiri","ppHome":"Nyumbani","ppLivesWith":"Anaishi na","ppHasChildren":"Ana watoto wake","ppHowMany":"Wangapi","ppPastoral":"Familia ya wafugaji (huhamahama na mifugo)","ppAway":"Miezi ambayo kwa kawaida huwa mbali na mifugo","ppGrades":"Darasa katika kila somo","ppLearning":"Masomo","ppChallenges":"Changamoto na msaada","ppChallengesSub":"Weka alama kwa yote yanayohusika. Ni wewe na msimamizi wa mpango tu mnaoweza kuona haya.","ppNotes":"Maelezo","ppSupport":"Msaada na rufaa","ppSupportWhat":"Kilichofanyika","ppSupportEg":"mf. alipewa pedi; alipelekwa kwa mhudumu wa afya","ppAddSupport":"Ongeza","ppNone":"Hakuna kilichorekodiwa.","ppConsentH":"Ridhaa","ppConsentText":"Mzazi au mlezi amekubali klabu irekodi changamoto zake na msaada anaopata.","ppConsentBy":"Aliyekubali","ppConsentDate":"Tarehe","ppConsentFirst":"Bado hakuna ridhaa. Changamoto zinaweza kurekodiwa mzazi au mlezi akikubali (hariri wasifu na uweke alama ya ridhaa).","ppConsentGiven":"Ridhaa ilitolewa na {who} tarehe {date}.","ppConsentOff":"Bila ridhaa, changamoto, maelezo na rekodi za msaada zitaondolewa. Endelea?","ppNoConsent":"Bado hakuna ridhaa","sgTitle":"Ulinzi wa mtoto:","sgText":"msichana huyu ana umri chini ya miaka 18. Ndoa za mapema, mimba na ukeketaji ni masuala ya ulinzi wa mtoto. Zungumza na mwalimu mkuu na umpeleke kwa afisa wa watoto wa eneo au Childline Kenya (116, bure, saa 24). Akiwa hatarini sasa, piga 999 au 112.","ppSample":"Mfano","ppPastoralist":"Familia ya wafugaji","ppMissing":"Mwanafunzi huyu hayupo tena kwenye darasa lako.","ppRemove":"Ondoa darasani","ppRemoveConfirm":"Bonyeza tena kuondoa","ppRemoved":"Mwanafunzi ameondolewa darasani","ppNeedName":"Andika jina lake kamili.","ppBadDob":"Angalia tarehe ya kuzaliwa.","ppSaved":"Wasifu umehifadhiwa","ppSavedOffline":"Imehifadhiwa kwenye kifaa hiki. Itapakiwa kukiwa na intaneti.","ppSyncErr":"Mwanafunzi hakuweza kuhifadhiwa kwenye seva. Angalia taarifa na ujaribu tena.","ppPending":"Mabadiliko {n} yanasubiri intaneti","ppSynced":"Imehifadhiwa kwenye seva","ppDemo":"Hali ya majaribio: wanafunzi wanahifadhiwa kwenye kifaa hiki tu","yes":"Ndiyo","no":"Hapana","cancel":"Ghairi","updReady":"Toleo jipya la LearnReach liko tayari.","updBtn":"Onyesha upya","tr_walk":"Kutembea","tr_bicycle":"Baiskeli","tr_motorbike":"Pikipiki","tr_vehicle":"Gari au basi","tr_boat":"Mashua","tr_other":"Nyingine","lw_both":"Wazazi wote wawili","lw_one":"Mzazi mmoja","lw_grandparent":"Bibi au babu","lw_relative":"Ndugu mwingine","lw_child_headed":"Nyumba inayoongozwa na mtoto","lw_other":"Nyingine","ch_distance":"Anaishi mbali na shule","ch_herds":"Huhamahama na mifugo","ch_chores":"Kazi nzito za nyumbani au kuchota maji","ch_labour":"Ajira ya watoto","ch_marriage_risk":"Yuko hatarini kuolewa mapema","ch_married":"Ameolewa","ch_pregnant":"Ni mjamzito","ch_young_mother":"Ni mama mchanga","ch_fgm_risk":"Yuko hatarini kukeketwa","ch_fgm":"Ameathiriwa na ukeketaji","ch_period":"Hana pedi","ch_hunger":"Njaa","ch_fees":"Hana karo au sare","ch_disability":"Ulemavu","ch_orphan":"Yatima","ch_displaced":"Mkimbizi au amehamishwa","ch_insecurity":"Ukosefu wa usalama au vita","ch_health":"Tatizo la kiafya","ch_other":"Nyingine"});
 Object.assign(T.en, { lessonOne: 'lesson', lifeNote: 'Not graded · attendance and activities', sWell: 'Attended all Life Skills topics', hWellS: 'Life Skills sessions', girlsLabel: 'Life Skills', attNote: 'Life Skills topics record attendance only. No scores are kept.', girlsText: 'LearnReach clubs serve adolescent girls in marginalised communities. Life Skills covers menstrual health, mental wellbeing, personal safety, confidence and goals, and reproductive health (ages 15 and over). It is taught with video and audio sessions and step-by-step activities, and is not graded. Quiz answers are never recorded; attendance and step-by-step activity results are saved on this device.', wellReport: 'Life Skills sessions are not graded. Quiz answers are never recorded; attendance and step-by-step activity results are kept.' });
 Object.assign(T.sw, { lessonOne: 'somo', lifeNote: 'Hazipewi alama · mahudhurio na shughuli', sWell: 'Wamehudhuria mada zote za Stadi za maisha', hWellS: 'Vipindi vya Stadi za maisha', girlsLabel: 'Stadi za maisha', attNote: 'Mada za Stadi za maisha zinarekodi mahudhurio tu. Hakuna alama zinazohifadhiwa.', girlsText: 'Klabu za LearnReach zinahudumia wasichana balehe katika jamii zilizotengwa. Stadi za maisha zinahusu afya ya hedhi, afya ya akili, usalama binafsi, kujiamini na malengo, na afya ya uzazi (umri wa miaka 15 na zaidi). Zinafundishwa kwa video na sauti pamoja na shughuli za hatua kwa hatua, na hazipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa kwenye kifaa hiki.', wellReport: 'Vipindi vya Stadi za maisha havipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa.' });
 // ---------- Start ----------

@@ -2590,7 +2590,13 @@ async function syncPupils() {
   try {
     const q = store.get(queueKey(), []), keep = [];
     for (const item of q) {
-      const { error } = await sb.from('pupils').upsert({ id: item.id, ...item.row }, { onConflict: 'id' });
+      // existing pupil: change only the edited fields; new pupil: send her whole profile
+      let { data: hit, error } = await sb.from('pupils').update(item.row).eq('id', item.id).select('id');
+      if (!error && (!hit || !hit.length)) {
+        const local = rosterRows.find((r) => r.id === item.id) || {};
+        const full = Object.fromEntries(Object.entries({ ...local, ...item.row }).filter(([k]) => PCOLS.includes(k)));
+        ({ error } = await sb.from('pupils').upsert({ id: item.id, ...full }, { onConflict: 'id' }));
+      }
       if (error) { if (/fetch|network|timeout/i.test(error.message || '')) keep.push(item); else toast(t('ppSyncErr')); }
     }
     store.set(queueKey(), keep.concat(store.get(queueKey(), []).filter((x) => !q.some((y) => y.id === x.id))));
@@ -2604,7 +2610,7 @@ async function syncPupils() {
   } catch { /* try again when online */ } finally { pupilSyncing = false; updateSyncLine(); }
 }
 function reseedIfFresh() { // sample history appears only when the sample girls are in the class
-  if (!store.get(uk('sessions'), null) && STUDENTS.some((s) => s.id === 's01') && !sessions.length) { sessions = seedSessions(); results = seedResults(); grades = seedGrades(); }
+  if (!store.get(uk('sessions'), null) && !sessions.length && (DEMO ? STUDENTS.some((s) => s.id === 's01') : rosterRows.some((r) => r.local_id === 's01' && user && r.teacher_id === user.id))) { sessions = seedSessions(); results = seedResults(); grades = seedGrades(); }
 }
 function updateSyncLine() {
   const n = DEMO ? 0 : store.get(queueKey(), []).length, el2 = $('#pp-sync');

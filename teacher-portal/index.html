@@ -280,6 +280,24 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
 .act-scene .k-wing-t { transform-origin: center bottom; }
 .act-scene .k-wing-b { transform-origin: center top; }
 .act-scene .k-flap { transform-origin: center bottom; }
+.act-opt.txt { justify-content: center; min-height: 110px; font-size: clamp(1.1rem, 2.2vw, 1.5rem); font-family: var(--display); }
+.act-scene .k-draw { stroke-dasharray: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .act-scene.a .k-pop { animation: actPop .55s ease both; }
+  .act-scene.a .k-fade { animation: actFade .7s ease both; }
+  .act-scene.a .k-dropin { animation: actDropIn .9s ease both; }
+  .act-scene.a .k-slidel { animation: actSlideL 1.1s ease both; }
+  .act-scene.a .k-slider { animation: actSlideR 1.1s ease both; }
+  .act-scene.a .k-draw { stroke-dasharray: 600; animation: actDraw 1.2s ease both; }
+  .act-scene.a .k-apart { animation: actApart 1s ease both; }
+  @keyframes actPop { from { opacity: 0; transform: scale(.2); } 70% { opacity: 1; transform: scale(1.15); } to { opacity: 1; transform: none; } }
+  @keyframes actDropIn { from { opacity: 0; transform: translateY(-110px); } 50% { opacity: 1; } to { opacity: 1; transform: none; } }
+  @keyframes actSlideL { from { transform: translateX(70px); } to { transform: none; } }
+  @keyframes actSlideR { from { transform: translateX(-70px); } to { transform: none; } }
+  @keyframes actDraw { from { stroke-dashoffset: 600; } to { stroke-dashoffset: 0; } }
+  @keyframes actApart { from { transform: translate(0, 0); } }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .act-opt.shake { animation: actShake .4s; }
   @keyframes actShake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
@@ -2071,6 +2089,244 @@ const ACTIVITIES = [{
       cap: { en: 'Wrap it, put it in the bin, and wash your hands again.', sw: 'Ifunge, itupe kwenye pipa, na unawe mikono tena.' } },
   ],
 }];
+
+// ---------- Maths activities (one per grade) ----------
+const MF = 'Nunito, Segoe UI, sans-serif';
+const TXT = (x, y, s, size = 28, fill = '#14302b') => '<text x="' + x + '" y="' + y + '" font-size="' + size + '" font-weight="800" text-anchor="middle" dominant-baseline="middle" font-family="' + MF + '" fill="' + fill + '">' + s + '</text>';
+const POP = (inner, d = 0) => '<g class="k k-pop" style="animation-delay:' + d + 's">' + inner + '</g>';
+const FADE = (inner, d = 0) => '<g class="k k-fade" style="animation-delay:' + d + 's">' + inner + '</g>';
+const MOVE = (cls, inner, d = 0) => '<g class="k ' + cls + '" style="animation-delay:' + d + 's">' + inner + '</g>';
+const range = (n) => Array.from({ length: n }, (_, i) => i);
+// Mangoes and baskets
+const MANGO = (x, y, r = 13) => '<ellipse cx="' + x + '" cy="' + y + '" rx="' + r + '" ry="' + (r * .82) + '" fill="#f2a93b" stroke="#b8741a" stroke-width="2"/><path d="M' + x + ',' + (y - r * .8) + ' q6,-9 13,-5 q-6,7 -13,5z" fill="#4c9a2a"/>';
+const BASKET = (x, y, w = 160) => '<path d="M' + (x - w / 2) + ',' + y + ' H' + (x + w / 2) + ' L' + (x + w / 2 - 16) + ',' + (y + 54) + ' H' + (x - w / 2 + 16) + 'Z" fill="#c98b4f" stroke="#7a4d24" stroke-width="3" stroke-linejoin="round"/><path d="M' + (x - w / 2 + 8) + ',' + (y + 18) + ' H' + (x + w / 2 - 8) + ' M' + (x - w / 2 + 12) + ',' + (y + 36) + ' H' + (x + w / 2 - 12) + '" stroke="#7a4d24" stroke-width="2" opacity=".55"/>';
+const mangoSpots = (x, y, n, gap = 30) => { const front = Math.min(n, 4), back = n - front; const pts = range(front).map((i) => [x - (front - 1) * gap / 2 + i * gap, y]); range(back).forEach((i) => pts.push([x - (back - 1) * gap / 2 + i * gap, y - 22])); return pts; };
+const basketOf = (x, y, n, w = 160) => mangoSpots(x, y - 4, n).map(([a, b]) => MANGO(a, b)).join('') + BASKET(x, y, w);
+// Number cards with dots
+const NUMCARD = (n) => range(+n).map((i) => '<circle cx="' + (60 - (Math.min(+n, 4) - 1) * 13 + (i % 4) * 26) + '" cy="' + (45 - (Math.ceil(+n / 4) - 1) * 12 + Math.floor(i / 4) * 24) + '" r="10" fill="#f2a93b" stroke="#b8741a" stroke-width="2"/>').join('');
+const WORDCARD = (s, size = 22) => TXT(60, 46, s, size);
+// Shapes
+const SHAPE = { circle: '<circle cx="60" cy="45" r="30" fill="#bfe3f0" stroke="#2a6f8f" stroke-width="3"/>', triangle: '<path d="M60,12 L94,76 H26Z" fill="#f6d28b" stroke="#c9963b" stroke-width="3" stroke-linejoin="round"/>', square: '<rect x="30" y="15" width="60" height="60" fill="#cfe8b9" stroke="#6f8f3a" stroke-width="3"/>' };
+// Sticks and bundles of ten
+const STICK = (x, y, h = 44) => '<rect x="' + (x - 2.5) + '" y="' + (y - h / 2) + '" width="5" height="' + h + '" rx="2" fill="#e3b06a" stroke="#8a5a26" stroke-width="1.2"/>';
+const BUNDLE = (x, y, h = 44) => range(10).map((i) => STICK(x - 18 + i * 4, y, h)).join('') + '<rect x="' + (x - 22) + '" y="' + (y - 5) + '" width="44" height="10" rx="3" fill="#d1495b"/>';
+const tensOnes = (x, y, t, o, s = 1) => '<g transform="translate(' + x + ',' + y + ') scale(' + s + ')">' + range(t).map((i) => BUNDLE(i * 52, 0)).join('') + range(o).map((i) => STICK(t * 52 + (i % 5) * 11, (Math.floor(i / 5) - (o > 5 ? .5 : 0)) * 50)).join('') + '</g>';
+const toW = (t, o) => t * 52 + (o ? Math.min(o, 5) * 11 + (t ? 6 : 0) : 0) - 8;
+const tensOnesC = (cx, cy, t, o, s = 1) => tensOnes(cx - toW(t, o) * s / 2 + 22 * s, cy, t, o, s);
+// Eggs in small baskets
+const EGG = (x, y) => '<ellipse cx="' + x + '" cy="' + y + '" rx="8" ry="10.5" fill="#fdf3e1" stroke="#b8956a" stroke-width="1.8"/>';
+const SBASKET = (x, y, n) => range(n).map((i) => EGG(x - (n - 1) * 9 + i * 18, y - 8)).join('') + '<path d="M' + (x - 32) + ',' + y + ' H' + (x + 32) + ' L' + (x + 25) + ',' + (y + 24) + ' H' + (x - 25) + 'Z" fill="#c98b4f" stroke="#7a4d24" stroke-width="2.5" stroke-linejoin="round"/>';
+const BASKETS = (counts, y, w = 320) => counts.map((n, i) => SBASKET((i + .5) * w / counts.length, y, n)).join('');
+const ICONB = (counts) => counts.map((n, i) => svgG('translate(' + (20 + i * 40) + ',58) scale(.58)', SBASKET(0, 0, n))).join('');
+// Chapati
+const CHAP = (x, y, r) => '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#e8bf73" stroke="#a8762f" stroke-width="3"/>' + [[-.4, -.3], [.3, -.45], [.45, .2], [-.2, .45], [0, 0]].map(([a, b]) => '<circle cx="' + (x + a * r) + '" cy="' + (y + b * r) + '" r="' + (r * .07) + '" fill="#b98236"/>').join('');
+const CUT = (x1, y1, x2, y2, cls = '') => '<path class="' + cls + '" d="M' + x1 + ',' + y1 + ' L' + x2 + ',' + y2 + '" stroke="#7a3b1b" stroke-width="3.5" stroke-linecap="round"/>';
+const GIRL = (x, y, c = '#136f63') => '<circle cx="' + x + '" cy="' + (y - 16) + '" r="9" fill="#a86e47"/><path d="M' + (x - 13) + ',' + (y + 14) + ' Q' + x + ',' + (y - 14) + ' ' + (x + 13) + ',' + (y + 14) + 'Z" fill="' + c + '"/>';
+const halfPiece = (x, y, r, side) => '<path d="M' + x + ',' + (y - r) + ' A' + r + ',' + r + ' 0 0 ' + (side < 0 ? 0 : 1) + ' ' + x + ',' + (y + r) + 'Z" fill="#e8bf73" stroke="#a8762f" stroke-width="3"/>';
+const quarterPiece = (x, y, r, q) => { const a = [[0, -1, 1, 0], [1, 0, 0, 1], [0, 1, -1, 0], [-1, 0, 0, -1]][q]; return '<path d="M' + x + ',' + y + ' L' + (x + a[0] * r) + ',' + (y + a[1] * r) + ' A' + r + ',' + r + ' 0 0 1 ' + (x + a[2] * r) + ',' + (y + a[3] * r) + 'Z" fill="#e8bf73" stroke="#a8762f" stroke-width="3"/>'; };
+// Garden
+const PLANTS = (x, y, w, h) => range(6).map((i) => '<circle cx="' + (x + w * (.15 + (i % 3) * .35)) + '" cy="' + (y + h * (.3 + Math.floor(i / 3) * .4)) + '" r="' + (Math.min(w, h) * .09) + '" fill="#4c9a2a"/>').join('');
+const GARDEN = (x, y, w, h) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="#cfe8b9" stroke="#6f8f3a" stroke-width="3"/>' + PLANTS(x, y, w, h);
+const SIDE = (x1, y1, x2, y2, cls = 'k k-draw', d = 0) => '<path class="' + cls + '" style="animation-delay:' + d + 's" d="M' + x1 + ',' + y1 + ' L' + x2 + ',' + y2 + '" stroke="#d1495b" stroke-width="7" stroke-linecap="round"/>';
+// Floor tiles
+const TILE = (x, y, s) => '<rect x="' + x + '" y="' + y + '" width="' + s + '" height="' + s + '" fill="#f6d28b" stroke="#c9963b" stroke-width="1.5"/>';
+const FLOOR = (x, y, cols, rows, s) => '<rect x="' + x + '" y="' + y + '" width="' + (cols * s) + '" height="' + (rows * s) + '" fill="#f4efe6" stroke="#566b68" stroke-width="3"/>';
+const tileRows = (x, y, cols, rows, s, delay = 0, per = .08) => range(rows).map((r) => range(cols).map((c) => POP(TILE(x + c * s, y + r * s, s), delay + (r * cols + c) * per)).join('')).join('');
+
+Object.assign(ACT_ICONS, {
+  // Grade 1
+  m1n4: NUMCARD(4), m1n3: NUMCARD(3), m1n6: NUMCARD(6), m1n5: NUMCARD(5), m1n7: NUMCARD(7),
+  m1b6: svgG('translate(60,52) scale(.55)', basketOf(0, 0, 6)), m1b4: svgG('translate(60,52) scale(.55)', basketOf(0, 0, 4)), m1b2: svgG('translate(60,52) scale(.55)', basketOf(0, 0, 2)),
+  m1circle: SHAPE.circle, m1triangle: SHAPE.triangle, m1square: SHAPE.square,
+  // Grade 2
+  m2a25: tensOnesC(60, 45, 2, 5, .62), m2a52: tensOnesC(60, 45, 5, 2, .37), m2a23: tensOnesC(60, 45, 2, 3, .68),
+  m2b14: tensOnesC(60, 45, 1, 4, .9), m2b41: tensOnesC(60, 45, 4, 1, .46), m2b12: tensOnesC(60, 45, 1, 2, .95),
+  m2t3: tensOnesC(60, 45, 3, 0, .62), m2t2: tensOnesC(60, 45, 2, 0, .8), m2t5: tensOnesC(60, 45, 5, 0, .4),
+  m2o9: tensOnesC(60, 45, 0, 9, .8), m2o7: tensOnesC(60, 45, 0, 7, .8), m2o1: tensOnesC(60, 45, 0, 1, .9),
+  // Grade 3
+  m3eq: ICONB([3, 3, 3]), m3neq: ICONB([3, 1, 4]), m3neq2: ICONB([2, 4, 1]),
+  // Grade 4
+  m4half: CHAP(60, 45, 34) + CUT(60, 9, 60, 81), m4uneven: CHAP(60, 45, 34) + CUT(36, 15, 30, 75), m4none: CHAP(60, 45, 34),
+  m4quarters: CHAP(60, 45, 34) + CUT(60, 9, 60, 81) + CUT(24, 45, 96, 45), m4thirds: CHAP(60, 45, 34) + CUT(60, 45, 60, 11) + CUT(60, 45, 31, 62) + CUT(60, 45, 89, 62), m4unq: CHAP(60, 45, 34) + CUT(46, 11, 46, 79) + CUT(26, 34, 94, 34),
+  m4q: quarterPiece(24, 62, 40, 0) + TXT(94, 46, '1/4', 24), m4h: halfPiece(30, 45, 36, 1) + TXT(96, 46, '1/2', 24), m4f: [24, 60, 96].map((x) => CHAP(x, 30, 15)).join('') + CHAP(60, 66, 15),
+  m4two: halfPiece(30, 45, 36, 1) + TXT(96, 46, '1/2', 24), m4one: quarterPiece(24, 62, 40, 0) + TXT(94, 46, '1/4', 24), m4whole: CHAP(60, 45, 34),
+  // Grade 5
+  m5per: '<rect x="22" y="18" width="76" height="54" fill="#cfe8b9" stroke="#d1495b" stroke-width="5" stroke-dasharray="8 5"/>', m5area: '<rect x="22" y="18" width="76" height="54" fill="#8fc46a" stroke="#6f8f3a" stroke-width="3"/>' + TXT(60, 45, '?', 30, '#fff'), m5tall: '<path d="M60,80 V20" stroke="#4c9a2a" stroke-width="6"/><circle cx="60" cy="18" r="12" fill="#4c9a2a"/>' + TXT(92, 30, '?', 26),
+  // Grade 6
+  });
+
+const L = (en, sw) => ({ en, sw });
+const O = (k, en, sw, ok) => ({ k, en, sw, ok: !!ok });
+// Grade 1 scenes: 4 mangoes in a basket, then 2 more, then counting, then a round plate.
+const G1_BASKET = (n) => basketOf(160, 130, n, 190);
+const countUp = (pts, d0 = .2, step = .55, dy = -26) => pts.map(([x, y], i) => POP('<circle cx="' + x + '" cy="' + (y + dy) + '" r="12" fill="#136f63"/>' + TXT(x, y + dy + 1, String(i + 1), 15, '#fff'), d0 + i * step)).join('');
+const M1 = [
+  () => G1_BASKET(4) + countUp(mangoSpots(160, 126, 4)) + POP(TXT(160, 205, '4', 28), 2.6),
+  () => mangoSpots(160, 126, 6).map(([x, y], i) => i < 4 ? MANGO(x, y) : MOVE('k-dropin', MANGO(x, y), .2 + (i - 4) * .5)).join('') + BASKET(160, 130, 190) + POP(TXT(160, 205, '4 + 2 = 6', 24), 1.6),
+  () => G1_BASKET(6) + countUp(mangoSpots(160, 126, 6), .2, .45, -24) + POP(TXT(160, 205, '6', 28), 3.1),
+  () => MOVE('k-slidel', '<circle cx="160" cy="112" r="78" fill="#bfe3f0" stroke="#2a6f8f" stroke-width="4"/>' + mangoSpots(160, 118, 6, 34).map(([x, y]) => MANGO(x, y, 14)).join(''), .1) + POP(TXT(160, 206, L('circle', 'duara')[lang], 24, '#2a6f8f'), 1.2),
+];
+// Grade 2 scenes: 25 + 14 with bundles of ten.
+const M2 = [
+  () => POP(tensOnesC(160, 96, 2, 5, 1.5), .1) + POP(TXT(160, 190, L('2 tens, 5 ones = 25', 'makumi 2, mamoja 5 = 25')[lang], 22), 1),
+  () => tensOnesC(84, 90, 2, 5, .95) + POP(tensOnesC(244, 90, 1, 4, .95), .2) + FADE(TXT(84, 168, '25', 30) + TXT(164, 168, '+', 30) + TXT(244, 168, '14', 30), .9),
+  () => MOVE('k-slider', tensOnesC(130, 90, 2, 0, 1.5), 0) + MOVE('k-slidel', tensOnesC(238, 90, 1, 0, 1.5), 0) + POP(TXT(160, 180, L('3 tens = 30', 'makumi 3 = 30')[lang], 26), 1.1),
+  () => tensOnesC(84, 84, 3, 0, 1) + MOVE('k-slidel', tensOnesC(196, 84, 0, 5, 1.1), 0) + MOVE('k-slidel', tensOnesC(270, 84, 0, 4, 1.1), .3) + POP(TXT(232, 160, L('5 + 4 = 9 ones', 'mamoja 5 + 4 = 9')[lang], 20), 1.2),
+  () => tensOnesC(160, 84, 3, 9, 1.15) + POP(TXT(160, 180, '25 + 14 = 39', 32), .4),
+];
+// Grade 3 scenes: 4 baskets of 3 eggs.
+const M3_B = BASKETS([3, 3, 3, 3], 110);
+const M3 = [
+  () => M3_B + range(4).map((i) => POP(TXT((i + .5) * 80, 70, '3', 22, '#136f63'), .2 + i * .4)).join('') + POP(TXT(160, 180, L('3 in every basket', '3 katika kila kikapu')[lang], 22), 1.9),
+  () => M3_B + range(4).map((i) => POP('<circle cx="' + ((i + .5) * 80) + '" cy="168" r="14" fill="#136f63"/>' + TXT((i + .5) * 80, 169, String(i + 1), 16, '#fff'), .2 + i * .45)).join('') + POP(TXT(160, 205, L('4 groups', 'makundi 4')[lang], 22), 2.1),
+  () => M3_B + range(4).map((i) => POP(TXT((i + .5) * 80, 70, String((i + 1) * 3), 26, '#d1495b'), .2 + i * .6)).join('') + POP(TXT(160, 180, '3, 6, 9, 12', 24), 2.8),
+  () => M3_B + POP(TXT(160, 180, '4 × 3 = 12', 34), .3),
+];
+// Grade 4 scenes: sharing a chapati.
+const M4 = [
+  () => MOVE('k-slider', halfPiece(158, 104, 70, -1), .9) + MOVE('k-slidel', halfPiece(162, 104, 70, 1), .9) + FADE(TXT(118, 196, '1/2', 22) + TXT(202, 196, '1/2', 22), 1.6) + '<g class="k k-fade" style="animation-delay:0s">' + CUT(160, 30, 160, 178, 'k k-draw') + '</g>',
+  () => range(4).map((q) => MOVE(q % 3 === 0 ? 'k-slider' : 'k-slidel', quarterPiece(160 + ([0, 3].includes(q) ? 0 : 0), 104, 70, q), .8)).join('') + CUT(160, 30, 160, 178, 'k k-draw') + CUT(86, 104, 234, 104, 'k k-draw') + POP(TXT(160, 200, L('4 equal parts', 'sehemu 4 sawa')[lang], 20), 1.6),
+  () => range(4).map((q) => quarterPiece(160, 104, 64, q)).join('') + [[60, 50], [260, 50], [260, 170], [60, 170]].map(([x, y], i) => POP(GIRL(x, y) + TXT(x, y + 30, '1/4', 18), .3 + i * .4)).join(''),
+  () => quarterPiece(70, 110, 72, 0) + MOVE('k-slidel', quarterPiece(70, 110, 72, 1), .2) + POP(TXT(230, 84, '1/4 + 1/4', 26) + TXT(230, 134, '= 1/2', 34, '#d1495b'), 1.2),
+];
+// Grade 5 scenes: fencing a 6 m by 4 m garden.
+const GX = 70, GY = 40, GW = 180, GH = 120;
+const GBASE = () => GARDEN(GX, GY, GW, GH);
+const M5 = [
+  () => GBASE() + SIDE(GX, GY, GX + GW, GY, 'k k-draw', 0) + SIDE(GX + GW, GY, GX + GW, GY + GH, 'k k-draw', .5) + SIDE(GX + GW, GY + GH, GX, GY + GH, 'k k-draw', 1) + SIDE(GX, GY + GH, GX, GY, 'k k-draw', 1.5) + POP(TXT(160, 196, L('the distance around', 'umbali wa kuzunguka')[lang], 20), 2),
+  () => GBASE() + SIDE(GX, GY, GX + GW, GY) + SIDE(GX + GW, GY + GH, GX, GY + GH, 'k k-draw', .5) + POP(TXT(160, 24, '6 m', 20), .4) + POP(TXT(160, 182, '6 m', 20), .9) + POP(TXT(160, 208, '6 + 6 = 12 m', 20), 1.4),
+  () => GBASE() + SIDE(GX + GW, GY, GX + GW, GY + GH) + SIDE(GX, GY + GH, GX, GY, 'k k-draw', .5) + POP(TXT(GX + GW + 26, GY + GH / 2, '4 m', 18), .4) + POP(TXT(GX - 26, GY + GH / 2, '4 m', 18), .9) + POP(TXT(160, 196, '4 + 4 = 8 m', 20), 1.4),
+  () => GBASE() + '<rect x="' + GX + '" y="' + GY + '" width="' + GW + '" height="' + GH + '" fill="none" stroke="#d1495b" stroke-width="7" class="k k-draw"/>' + TXT(160, 24, '6 m', 18) + TXT(GX + GW + 26, GY + GH / 2, '4 m', 18) + POP(TXT(160, 196, '12 + 8 = 20 m', 24), 1.3),
+];
+// Grade 6 scenes: tiling an 8 m by 6 m floor with 1 m tiles.
+const FX = 56, FY = 22, S = 26;
+const FBASE = () => FLOOR(FX, FY, 8, 6, S);
+const M6 = [
+  () => FBASE() + tileRows(FX, FY, 8, 1, S, .1, .2) + POP(TXT(FX + 4 * S, FY + 6 * S + 26, L('8 tiles in a row', 'vigae 8 katika mstari')[lang], 18), 1.9),
+  () => FBASE() + tileRows(FX, FY, 8, 1, S, 0, 0) + range(5).map((r) => POP(range(8).map((c) => TILE(FX + c * S, FY + (r + 1) * S, S)).join(''), .2 + r * .35)).join('') + range(6).map((r) => POP(TXT(FX + 8 * S + 16, FY + r * S + S / 2, String(r + 1), 14, '#136f63'), .2 + r * .35)).join(''),
+  () => FBASE() + tileRows(FX, FY, 8, 6, S, 0, 0) + POP(TXT(FX + 4 * S, FY + 6 * S + 26, L('8 tiles × 6 rows', 'vigae 8 × mistari 6')[lang], 18), .4),
+  () => FBASE() + tileRows(FX, FY, 8, 6, S, 0, 0) + POP('<rect x="62" y="72" width="196" height="54" rx="10" fill="#fff" stroke="#d1495b" stroke-width="3"/>' + TXT(160, 100, '8 × 6 = 48 m²', 24, '#d1495b'), .3),
+];
+
+ACTIVITIES.push(
+  { id: 'm-count', lessons: ['num4', 'num5'],
+    title: L('Counting mangoes at the market', 'Kuhesabu maembe sokoni'),
+    intro: L('Mama Wanjiru sells mangoes. Let us count them, step by step.', 'Mama Wanjiru anauza maembe. Tuyahesabu hatua kwa hatua.'),
+    done: L('Well done! You counted the mangoes and found the circle.', 'Hongera! Umehesabu maembe na kupata duara.'),
+    start: () => G1_BASKET(4), scenes: M1,
+    steps: [
+      { q: L('How many mangoes are in the basket?', 'Kuna maembe mangapi kwenye kikapu?'),
+        opts: [O('m1n4', '4', '4', 1), O('m1n3', '3', '3'), O('m1n6', '6', '6')],
+        hint: L('Touch each mango as you count: 1, 2, 3, 4.', 'Gusa kila embe unapohesabu: 1, 2, 3, 4.'), cap: L('There are 4 mangoes.', 'Kuna maembe 4.') },
+      { q: L('Mama adds 2 more mangoes. Which basket shows this?', 'Mama anaongeza maembe 2. Kikapu kipi kinaonyesha hivyo?'),
+        opts: [O('m1b6', 'The basket with more mangoes', 'Kikapu chenye maembe zaidi', 1), O('m1b4', 'The same basket as before', 'Kikapu kile kile cha mwanzo'), O('m1b2', 'The basket with fewer mangoes', 'Kikapu chenye maembe machache')],
+        hint: L('4 mangoes and 2 more make more than 4.', 'Maembe 4 na mengine 2 ni zaidi ya 4.'), cap: L('4 and 2 more make 6.', '4 na 2 zaidi ni 6.') },
+      { q: L('Count all the mangoes again. How many now?', 'Hesabu maembe yote tena. Ni mangapi sasa?'),
+        opts: [O('m1n6', '6', '6', 1), O('m1n5', '5', '5'), O('m1n7', '7', '7')],
+        hint: L('Start again from 1 and touch each mango once.', 'Anza tena kutoka 1 na gusa kila embe mara moja.'), cap: L('There are 6 mangoes now.', 'Sasa kuna maembe 6.') },
+      { q: L('Mama puts them on a round plate with no corners. Which shape is the plate?', 'Mama anayaweka kwenye sahani ya duara isiyo na pembe. Sahani ni umbo gani?'),
+        opts: [O('m1circle', 'Circle', 'Duara', 1), O('m1triangle', 'Triangle', 'Pembetatu'), O('m1square', 'Square', 'Mraba')],
+        hint: L('A plate is round. Which shape has no corners?', 'Sahani ni ya mviringo. Umbo lipi halina pembe?'), cap: L('The plate is a circle.', 'Sahani ni duara.') },
+    ] },
+  { id: 'm-bundles', lessons: ['num1', 'num2'],
+    title: L('Adding 25 + 14 with bundles of ten', 'Kujumlisha 25 + 14 kwa vifurushi vya kumi'),
+    intro: L('Mama sold 25 tomatoes in the morning and 14 in the evening. Let us add them with bundles of ten.', 'Mama aliuza nyanya 25 asubuhi na 14 jioni. Tujumlishe kwa vifurushi vya kumi.'),
+    done: L('Well done! 25 + 14 = 39.', 'Hongera! 25 + 14 = 39.'),
+    start: () => TXT(160, 50, '25 + 14 = ?', 40) + tensOnesC(90, 140, 2, 5, .9) + tensOnesC(246, 140, 1, 4, .9), scenes: M2,
+    steps: [
+      { q: L('Which picture shows 25?', 'Picha ipi inaonyesha 25?'),
+        opts: [O('m2a25', '2 bundles and 5 sticks', 'Vifurushi 2 na vijiti 5', 1), O('m2a52', '5 bundles and 2 sticks', 'Vifurushi 5 na vijiti 2'), O('m2a23', '2 bundles and 3 sticks', 'Vifurushi 2 na vijiti 3')],
+        hint: L('25 is 2 tens and 5 ones.', '25 ni makumi 2 na mamoja 5.'), cap: L('2 bundles of ten and 5 sticks make 25.', 'Vifurushi 2 vya kumi na vijiti 5 ni 25.') },
+      { q: L('Which picture shows 14?', 'Picha ipi inaonyesha 14?'),
+        opts: [O('m2b14', '1 bundle and 4 sticks', 'Kifurushi 1 na vijiti 4', 1), O('m2b41', '4 bundles and 1 stick', 'Vifurushi 4 na kijiti 1'), O('m2b12', '1 bundle and 2 sticks', 'Kifurushi 1 na vijiti 2')],
+        hint: L('14 is 1 ten and 4 ones.', '14 ni kumi 1 na mamoja 4.'), cap: L('1 bundle of ten and 4 sticks make 14.', 'Kifurushi 1 cha kumi na vijiti 4 ni 14.') },
+      { q: L('Put the tens together. How many tens?', 'Weka makumi pamoja. Ni makumi mangapi?'),
+        opts: [O('m2t3', '3 tens', 'Makumi 3', 1), O('m2t2', '2 tens', 'Makumi 2'), O('m2t5', '5 tens', 'Makumi 5')],
+        hint: L('2 tens and 1 ten.', 'Makumi 2 na kumi 1.'), cap: L('2 tens and 1 ten make 3 tens, which is 30.', 'Makumi 2 na kumi 1 ni makumi 3, yaani 30.') },
+      { q: L('Now put the ones together. How many ones?', 'Sasa weka mamoja pamoja. Ni mamoja mangapi?'),
+        opts: [O('m2o9', '9 ones', 'Mamoja 9', 1), O('m2o7', '7 ones', 'Mamoja 7'), O('m2o1', '1 one', 'Moja 1')],
+        hint: L('5 sticks and 4 sticks.', 'Vijiti 5 na vijiti 4.'), cap: L('5 ones and 4 ones make 9 ones.', 'Mamoja 5 na mamoja 4 ni mamoja 9.') },
+      { q: L('So what is 25 + 14?', 'Basi 25 + 14 ni ngapi?'),
+        opts: [O('m2s39', '39', '39', 1), O('m2s93', '93', '93'), O('m2s311', '311', '311')],
+        hint: L('3 tens and 9 ones. Tens are written first.', 'Makumi 3 na mamoja 9. Makumi yanaandikwa kwanza.'), cap: L('25 + 14 = 39 tomatoes.', '25 + 14 = nyanya 39.') },
+    ] },
+  { id: 'm-eggs', lessons: ['num3', 'num6'],
+    title: L('Eggs in baskets: equal groups', 'Mayai vikapuni: makundi sawa'),
+    intro: L('Mama Akai puts eggs into baskets. Let us find how many eggs there are, step by step.', 'Mama Akai anaweka mayai vikapuni. Tutafute mayai ni mangapi, hatua kwa hatua.'),
+    done: L('Well done! 4 groups of 3 make 12.', 'Hongera! Makundi 4 ya 3 ni 12.'),
+    start: () => M3_B, scenes: M3,
+    steps: [
+      { q: L('Which picture shows equal groups?', 'Picha ipi inaonyesha makundi sawa?'),
+        opts: [O('m3eq', 'The same number in every basket', 'Idadi sawa katika kila kikapu', 1), O('m3neq', '3, 1 and 4 eggs', 'Mayai 3, 1 na 4'), O('m3neq2', '2, 4 and 1 eggs', 'Mayai 2, 4 na 1')],
+        hint: L('Equal groups have the same number in each group.', 'Makundi sawa yana idadi sawa katika kila kundi.'), cap: L('Every basket has 3 eggs. These are equal groups.', 'Kila kikapu kina mayai 3. Haya ni makundi sawa.') },
+      { q: L('How many baskets (groups) are there?', 'Kuna vikapu (makundi) vingapi?'),
+        opts: [O('m3g4', '4', '4', 1), O('m3g3', '3', '3'), O('m3g12', '12', '12')],
+        hint: L('Count the baskets, not the eggs.', 'Hesabu vikapu, si mayai.'), cap: L('There are 4 groups.', 'Kuna makundi 4.') },
+      { q: L('Count the eggs in 3s. Which is right?', 'Hesabu mayai kwa tatu-tatu. Lipi ni sahihi?'),
+        opts: [O('m3c3', '3, 6, 9, 12', '3, 6, 9, 12', 1), O('m3c1', '3, 4, 5, 6', '3, 4, 5, 6'), O('m3c0', '1, 2, 3, 4', '1, 2, 3, 4')],
+        hint: L('Add 3 for each basket: 3, then 3 more…', 'Ongeza 3 kwa kila kikapu: 3, kisha 3 zaidi…'), cap: L('3, 6, 9, 12. There are 12 eggs.', '3, 6, 9, 12. Kuna mayai 12.') },
+      { q: L('How do we write 4 groups of 3?', 'Tunaandikaje makundi 4 ya 3?'),
+        opts: [O('m3x', '4 × 3 = 12', '4 × 3 = 12', 1), O('m3p', '4 + 3 = 7', '4 + 3 = 7'), O('m3w', '4 × 3 = 43', '4 × 3 = 43')],
+        hint: L('"Groups of" means times (×).', '"Makundi ya" maana yake ni mara (×).'), cap: L('4 × 3 = 12 eggs.', '4 × 3 = mayai 12.') },
+    ] },
+  { id: 'm-chapati', lessons: ['num7', 'num8'],
+    title: L('Sharing a chapati fairly', 'Kugawana chapati kwa haki'),
+    intro: L('Girls in the club want to share a chapati fairly. Let us cut it into equal parts.', 'Wasichana klabuni wanataka kugawana chapati kwa haki. Tuikate vipande sawa.'),
+    done: L('Well done! Two quarters make one half.', 'Hongera! Robo mbili ni nusu moja.'),
+    start: () => CHAP(160, 104, 70) + GIRL(40, 70) + GIRL(280, 70, '#d1495b'), scenes: M4,
+    steps: [
+      { q: L('Two girls share one chapati fairly. How should we cut it?', 'Wasichana wawili wanagawana chapati moja kwa haki. Tuikate vipi?'),
+        opts: [O('m4half', 'Into 2 equal halves', 'Nusu 2 zilizo sawa', 1), O('m4uneven', 'One big and one small piece', 'Kipande kikubwa na kidogo'), O('m4none', 'Do not cut it', 'Usiikate')],
+        hint: L('Fair shares are equal.', 'Mgao wa haki ni sawa.'), cap: L('Cut it down the middle: each girl gets one half, 1/2.', 'Ikate katikati: kila msichana anapata nusu, 1/2.') },
+      { q: L('Now 4 girls share a chapati. How should we cut it?', 'Sasa wasichana 4 wanagawana chapati. Tuikate vipi?'),
+        opts: [O('m4quarters', 'Into 4 equal parts', 'Vipande 4 vilivyo sawa', 1), O('m4thirds', 'Into 3 parts', 'Vipande 3'), O('m4unq', 'Into 4 parts that are not equal', 'Vipande 4 visivyo sawa')],
+        hint: L('There are 4 girls, and every part must be the same size.', 'Kuna wasichana 4, na kila kipande kiwe sawa.'), cap: L('Cut it into 4 equal quarters.', 'Ikate robo 4 zilizo sawa.') },
+      { q: L('What part of the chapati does each girl get?', 'Kila msichana anapata sehemu gani ya chapati?'),
+        opts: [O('m4q', 'One quarter', 'Robo moja', 1), O('m4h', 'One half', 'Nusu moja'), O('m4f', 'Four chapatis', 'Chapati nne')],
+        hint: L('Each girl gets 1 of the 4 equal parts.', 'Kila msichana anapata kipande 1 kati ya 4 vilivyo sawa.'), cap: L('Each girl gets one quarter, 1/4.', 'Kila msichana anapata robo moja, 1/4.') },
+      { q: L('Two girls put their quarters together. What do they have?', 'Wasichana wawili wanaweka robo zao pamoja. Wana nini?'),
+        opts: [O('m4two', 'One half', 'Nusu moja', 1), O('m4one', 'One quarter', 'Robo moja'), O('m4whole', 'The whole chapati', 'Chapati nzima')],
+        hint: L('2 quarters out of 4 is the same as half.', 'Robo 2 kati ya 4 ni sawa na nusu.'), cap: L('1/4 + 1/4 = 1/2. Two quarters make one half.', '1/4 + 1/4 = 1/2. Robo mbili ni nusu moja.') },
+    ] },
+  { id: 'm-fence', lessons: ['num9', 'num10'],
+    title: L('Fencing the school garden', 'Kuweka uzio kwenye bustani ya shule'),
+    intro: L('The school garden is 6 m long and 4 m wide. How much fence do we need?', 'Bustani ya shule ina urefu wa mita 6 na upana wa mita 4. Tunahitaji uzio kiasi gani?'),
+    done: L('Well done! The perimeter is 20 m, so we need 20 m of fence.', 'Hongera! Mzingo ni mita 20, kwa hiyo tunahitaji uzio wa mita 20.'),
+    start: () => GBASE() + TXT(160, 24, '6 m', 18) + TXT(GX + GW + 26, GY + GH / 2, '4 m', 18), scenes: M5,
+    steps: [
+      { q: L('A fence goes around the garden. What do we need to find?', 'Uzio unazunguka bustani. Tunahitaji kutafuta nini?'),
+        opts: [O('m5per', 'The distance all around (perimeter)', 'Umbali wa kuzunguka (mzingo)', 1), O('m5area', 'The space inside', 'Nafasi iliyo ndani'), O('m5tall', 'How tall the plants are', 'Urefu wa mimea')],
+        hint: L('A fence goes along the edges, not inside.', 'Uzio unapita kando kando, si ndani.'), cap: L('We need the perimeter: the distance all around.', 'Tunahitaji mzingo: umbali wote wa kuzunguka.') },
+      { q: L('First add the two long sides.', 'Kwanza jumlisha pande mbili ndefu.'),
+        opts: [O('m5l12', '6 + 6 = 12 m', '6 + 6 = mita 12', 1), O('m5l10', '6 + 4 = 10 m', '6 + 4 = mita 10'), O('m5l36', '6 × 6 = 36 m', '6 × 6 = mita 36')],
+        hint: L('Both long sides are 6 m.', 'Pande zote ndefu ni mita 6.'), cap: L('The long sides are 6 + 6 = 12 m.', 'Pande ndefu ni 6 + 6 = mita 12.') },
+      { q: L('Now add the two short sides.', 'Sasa jumlisha pande mbili fupi.'),
+        opts: [O('m5s8', '4 + 4 = 8 m', '4 + 4 = mita 8', 1), O('m5s10', '4 + 6 = 10 m', '4 + 6 = mita 10'), O('m5s16', '4 × 4 = 16 m', '4 × 4 = mita 16')],
+        hint: L('Both short sides are 4 m.', 'Pande zote fupi ni mita 4.'), cap: L('The short sides are 4 + 4 = 8 m.', 'Pande fupi ni 4 + 4 = mita 8.') },
+      { q: L('How much fence do we need altogether?', 'Tunahitaji uzio kiasi gani kwa jumla?'),
+        opts: [O('m5t20', '12 + 8 = 20 m', '12 + 8 = mita 20', 1), O('m5t24', '24 m', 'Mita 24'), O('m5t10', '10 m', 'Mita 10')],
+        hint: L('Add the long sides and the short sides.', 'Jumlisha pande ndefu na pande fupi.'), cap: L('The perimeter is 20 m.', 'Mzingo ni mita 20.') },
+    ] },
+  { id: 'm-tiles', lessons: ['num11', 'num12'],
+    title: L('Tiling the classroom floor', 'Kuweka vigae sakafuni darasani'),
+    intro: L('The classroom floor is 8 m long and 6 m wide. Each tile is 1 m by 1 m. How many tiles do we need?', 'Sakafu ya darasa ina urefu wa mita 8 na upana wa mita 6. Kila kigae ni mita 1 kwa 1. Tunahitaji vigae vingapi?'),
+    done: L('Well done! The area of the floor is 48 square metres.', 'Hongera! Eneo la sakafu ni mita za mraba 48.'),
+    start: () => FBASE() + TXT(FX + 4 * S, FY + 6 * S + 26, '8 m × 6 m', 18), scenes: M6,
+    steps: [
+      { q: L('How many tiles fit in one row along the 8 m side?', 'Vigae vingapi vinatosha katika mstari mmoja upande wa mita 8?'),
+        opts: [O('m6r8', '8', '8', 1), O('m6r6', '6', '6'), O('m6r14', '14', '14')],
+        hint: L('Each tile is 1 m, and the side is 8 m.', 'Kila kigae ni mita 1, na upande ni mita 8.'), cap: L('8 tiles fit in one row.', 'Vigae 8 vinatosha katika mstari mmoja.') },
+      { q: L('How many rows fill the floor?', 'Mistari mingapi inajaza sakafu?'),
+        opts: [O('m6w6', '6', '6', 1), O('m6w8', '8', '8'), O('m6w2', '2', '2')],
+        hint: L('The floor is 6 m wide.', 'Sakafu ina upana wa mita 6.'), cap: L('6 rows fill the floor.', 'Mistari 6 inajaza sakafu.') },
+      { q: L('What is the quickest way to find all the tiles?', 'Njia ya haraka ya kupata vigae vyote ni ipi?'),
+        opts: [O('m6mul', 'Multiply', 'Zidisha', 1), O('m6add', 'Add', 'Jumlisha'), O('m6sub', 'Take away', 'Toa')],
+        hint: L('There are 6 equal rows of 8: that is groups of 8.', 'Kuna mistari 6 sawa ya 8: hayo ni makundi ya 8.'), cap: L('Area = length × width = 8 × 6.', 'Eneo = urefu × upana = 8 × 6.') },
+      { q: L('What is the area of the floor?', 'Eneo la sakafu ni kiasi gani?'),
+        opts: [O('m6a48', '48 square metres', 'Mita za mraba 48', 1), O('m6a14', '14 square metres', 'Mita za mraba 14'), O('m6a28', '28 square metres', 'Mita za mraba 28')],
+        hint: L('8 × 6 is 6 eights: 8, 16, 24, 32, 40, 48.', '8 × 6 ni nane mara sita: 8, 16, 24, 32, 40, 48.'), cap: L('8 × 6 = 48. We need 48 tiles.', '8 × 6 = 48. Tunahitaji vigae 48.') },
+    ] },
+);
 Object.assign(T.en, { actBtn: 'Step-by-step activity', actShort: 'Activity', actWho: 'Who is doing this activity?', wholeClass: 'Whole class', orGirl: 'Or choose one girl', step: 'Step', actRight: 'Correct!', actWrong: 'Wrong, try again.', actNext: 'Next step →', actFinish: 'Finish', actAgain: '↻ Watch again', actRestart: 'Do it again', actStepsDone: 'Steps done', actFirstTry: 'Right first time', actWrongTries: 'Wrong tries', actWhen: 'When', actWhoH: 'Who', actResultsH: 'Step-by-step activity results', actNone: 'No one has done this activity yet.', actStepVideos: 'Step videos (optional)', actVideoNote: 'Each step plays a drawing of the step being done. Add your own short video for a step to play it instead. Videos stay on this device.', actSaved: 'Activity results saved', actStartSlide: 'Now let us practise, step by step.', actStart: '★ Start the activity', actPartial: 'not finished', actPick: 'Choose the right answer.', girlsText: "LearnReach clubs serve adolescent girls in marginalised communities. Wellbeing modules are delivered as video and audio sessions, with step-by-step activities. They are not graded. Quiz answers are never recorded; attendance and step-by-step activity results are saved on this device. Reproductive health is for ages 15 and over.", wellReport: 'Wellbeing sessions are not graded. Quiz answers are never recorded; attendance and step-by-step activity results are kept.' });
 Object.assign(T.sw, { actBtn: 'Shughuli ya hatua kwa hatua', actShort: 'Shughuli', actWho: 'Nani anafanya shughuli hii?', wholeClass: 'Darasa zima', orGirl: 'Au chagua msichana mmoja', step: 'Hatua', actRight: 'Sahihi!', actWrong: 'Si sahihi, jaribu tena.', actNext: 'Hatua inayofuata →', actFinish: 'Maliza', actAgain: '↻ Tazama tena', actRestart: 'Fanya tena', actStepsDone: 'Hatua zilizofanywa', actFirstTry: 'Sahihi mara ya kwanza', actWrongTries: 'Majaribio yasiyo sahihi', actWhen: 'Lini', actWhoH: 'Nani', actResultsH: 'Matokeo ya shughuli ya hatua kwa hatua', actNone: 'Bado hakuna aliyefanya shughuli hii.', actStepVideos: 'Video za hatua (si lazima)', actVideoNote: 'Kila hatua inaonyesha mchoro wa hatua ikifanywa. Ongeza video yako fupi ya hatua ili ionyeshwe badala yake. Video zinabaki kwenye kifaa hiki.', actSaved: 'Matokeo ya shughuli yamehifadhiwa', actStartSlide: 'Sasa tufanye mazoezi, hatua kwa hatua.', actStart: '★ Anza shughuli', actPartial: 'haijakamilika', actPick: 'Chagua jibu sahihi.', girlsText: 'Klabu za LearnReach zinahudumia wasichana balehe katika jamii zilizotengwa. Moduli za ustawi zinatolewa kwa video na sauti, pamoja na shughuli za hatua kwa hatua. Hazipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa kwenye kifaa hiki. Afya ya uzazi ni ya umri wa miaka 15 na zaidi.', wellReport: 'Vipindi vya ustawi havipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa.' });
 
@@ -2155,7 +2411,7 @@ function drawAct() {
     act.order.forEach((o) => {
       const tried = act.run.steps[act.i].wrong.includes(o.k);
       const b = el('button', 'act-opt' + (tried ? ' no' : '')); b.type = 'button'; b.id = 'act-o-' + o.k; b.disabled = tried; b.dataset.ok = o.ok ? '1' : '';
-      const ico = el('span', 'act-ico'); ico.innerHTML = actIcon(o.k); b.append(ico, el('span', null, tx(o)));
+      if (ACT_ICONS[o.k]) { const ico = el('span', 'act-ico'); ico.innerHTML = actIcon(o.k); b.append(ico); } else b.classList.add('txt'); b.append(el('span', null, tx(o)));
       b.addEventListener('click', () => pickOption(o, b)); opts.append(b);
     });
     const fb = el('p', 'act-fb'); fb.id = 'act-fb'; fb.setAttribute('role', 'status');

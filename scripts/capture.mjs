@@ -53,7 +53,7 @@ try {
   await p.click('#tab-grades'); await still(p, 'portal-gradebook');
   await p.click('#tab-questions'); await still(p, 'portal-questions');
   await p.click('#tab-modules');
-  await p.locator('.lesson-row .acts .btn').nth(1).click(); // "The solar radio"
+  await p.locator('.lesson-row', { hasText: 'The solar radio' }).locator('.acts .btn').first().click(); // "The solar radio"
   await p.click('#sc-next'); await still(p, 'classroom-screen');
   await p.close();
 
@@ -74,7 +74,7 @@ try {
   await p.type('#p', '1234', { delay: 60 }); await g1.step(p, 0.6);
   await p.click('#login-form button[type=submit]'); await g1.step(p, 1.8);
   await p.click('#tab-modules'); await g1.step(p, 1.6);
-  await p.locator('.lesson-row .acts .btn').nth(1).click(); await g1.step(p, 1.8);
+  await p.locator('.lesson-row', { hasText: 'The solar radio' }).locator('.acts .btn').first().click(); await g1.step(p, 1.8);
   for (let i = 0; i < 3; i++) { await p.click('#sc-next'); await g1.step(p, 1.8); }
   await p.click('#sc-next'); await g1.step(p, 1.6); // question slide
   const reveal = p.locator('#sc-stage .btn');

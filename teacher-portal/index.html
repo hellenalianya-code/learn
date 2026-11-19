@@ -97,6 +97,7 @@ section.view { display: flex; flex-direction: column; gap: 22px; }
 .lesson-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
 .lesson-row .ttl { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 200px; }
 .lesson-row .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.subj-h { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
 .banner { background: var(--rose-soft); border-radius: var(--r); padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
 .empty { padding: 24px; text-align: center; border: 1.5px dashed var(--line); border-radius: var(--r); }
 
@@ -383,7 +384,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
         <div class="stat"><span class="muted small" data-t="sAvg">Class average</span><b id="st-avg">0</b></div>
         <div class="stat"><span class="muted small" data-t="sSupport">Need support (below 50%)</span><b id="st-support">0</b></div>
         <div class="stat"><span class="muted small" data-t="sAtt">Attendance, last 4 weeks</span><b id="st-att">0</b></div>
-        <div class="stat"><span class="muted small" data-t="sWell">Attended all wellbeing modules</span><b id="st-well">0</b></div>
+        <div class="stat"><span class="muted small" data-t="sWell">Attended all Life Skills topics</span><b id="st-well">0</b></div>
       </div>
       <div class="stack">
         <h2 data-t="learnersH">Learners</h2>
@@ -484,7 +485,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
     <section class="view" id="view-modules" hidden>
       <div><h2 data-t="tModules">Modules</h2><p class="muted" data-t="modSub">Every lesson can be shown on the classroom TV or projector with narration. Reading lessons have a Listen button so they can be heard on the radio or a speaker.</p></div>
       <div class="banner">
-        <span class="label" style="color: var(--rose)" data-t="girlsLabel">Girls' wellbeing</span>
+        <span class="label" style="color: var(--rose)" data-t="girlsLabel">Life Skills</span>
         <p data-t="girlsText">LearnReach clubs serve adolescent girls in marginalised communities.</p>
       </div>
       <div class="cards" id="module-cards"></div>
@@ -573,17 +574,29 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script>
 // ---------- Sample content and class (placeholders for the pilot) ----------
-const MODULES = [
-  { id: 'lit', name: { en: 'Foundational literacy', sw: 'Kusoma na kuandika' }, area: 'learn' },
-  { id: 'num', name: { en: 'Numeracy basics', sw: 'Hesabu za msingi' }, area: 'learn' },
-  { id: 'sci', name: { en: 'Science through stories', sw: 'Sayansi kwa hadithi' }, area: 'learn' },
-  { id: 'men', name: { en: 'Menstrual health', sw: 'Afya ya hedhi' }, area: 'well' },
-  { id: 'mind', name: { en: 'Mental wellbeing', sw: 'Afya ya akili' }, area: 'well' },
-  { id: 'safe', name: { en: 'Personal safety', sw: 'Usalama binafsi' }, area: 'well' },
-  { id: 'repro', name: { en: 'Reproductive health', sw: 'Afya ya uzazi' }, area: 'well', minAge: 15 },
+// Subjects. Maths, English, Kiswahili and Science are graded; Life Skills topics record attendance only.
+const SUBJECTS = [
+  { id: 'maths', name: { en: 'Maths', sw: 'Hisabati' } },
+  { id: 'english', name: { en: 'English', sw: 'Kiingereza' } },
+  { id: 'kiswahili', name: { en: 'Kiswahili', sw: 'Kiswahili' } },
+  { id: 'science', name: { en: 'Science', sw: 'Sayansi' } },
+  { id: 'life', name: { en: 'Life Skills', sw: 'Stadi za maisha' } },
 ];
+const MODULES = [
+  { id: 'num', subject: 'maths', name: { en: 'Maths', sw: 'Hisabati' }, area: 'learn' },
+  { id: 'lit', subject: 'english', name: { en: 'English', sw: 'Kiingereza' }, area: 'learn' },
+  { id: 'kis', subject: 'kiswahili', name: { en: 'Kiswahili', sw: 'Kiswahili' }, area: 'learn' },
+  { id: 'sci', subject: 'science', name: { en: 'Science', sw: 'Sayansi' }, area: 'learn' },
+  { id: 'men', subject: 'life', name: { en: 'Menstrual health', sw: 'Afya ya hedhi' }, area: 'well' },
+  { id: 'mind', subject: 'life', name: { en: 'Mental wellbeing', sw: 'Afya ya akili' }, area: 'well' },
+  { id: 'safe', subject: 'life', name: { en: 'Personal safety', sw: 'Usalama binafsi' }, area: 'well' },
+  { id: 'self', subject: 'life', name: { en: 'Confidence and goals', sw: 'Kujiamini na malengo' }, area: 'well' },
+  { id: 'repro', subject: 'life', name: { en: 'Reproductive health', sw: 'Afya ya uzazi' }, area: 'well', minAge: 15 },
+];
+const subjectOf = (m) => SUBJECTS.find((x) => x.id === m.subject);
+const modLabel = (m) => (m.subject === 'life' ? subjectOf(m).name[lang] + ' · ' : '') + (m.name)[lang];
 const LESSONS = [
-  { id: 'lit1', mod: 'lit', format: 'Audio', lang: 'Swahili', min: 20, title: 'Sauti za herufi: a, e, i, o, u',
+  { id: 'lit1', mod: 'kis', format: 'Audio', lang: 'Swahili', min: 20, title: 'Sauti za herufi: a, e, i, o, u',
     body: ['Karibu kwenye somo la sauti za herufi. Leo tutajifunza irabu tano za Kiswahili: a, e, i, o na u.',
       'Sikiliza kila sauti kisha uirudie mara tatu kwa sauti kubwa: a, a, a. E, e, e. I, i, i. O, o, o. U, u, u.',
       'Kila neno la Kiswahili lina angalau irabu moja. Kwa mfano, neno "maji" lina irabu a na i. Neno "kuku" lina irabu u mara mbili.',
@@ -685,6 +698,78 @@ const LESSONS = [
       'Unaweza kupata ushauri kuhusu hedhi, mahusiano, mimba na jinsi ya kujikinga na maambukizi.',
       'Ukienda, unaweza kwenda na rafiki au mtu mzima unayemwamini.',
       'Ukiwa na swali, muulize mhudumu wa afya au mwalimu unayemwamini. Hakuna swali la aibu kuhusu afya yako.'] },
+  { id: 'num3', mod: 'num', format: 'Reading', lang: 'English', min: 25, title: 'Taking away: subtraction at the water point',
+    body: ['Subtraction means taking away. When we take some things away from a group, we find out how many are left.',
+      'Ekiru carries 10 litres of water from the borehole. She pours 3 litres into the cooking pot. How many litres are left in the jerrican? 10 take away 3 is 7. We write 10 − 3 = 7.',
+      'The sign − is called minus. The answer to a subtraction is called the difference.',
+      'You can use stones to subtract. Put down 10 stones, move 3 of them away, and count the stones that are left.',
+      'Subtraction is the opposite of addition. If 7 + 3 = 10, then 10 − 3 = 7 and 10 − 7 = 3.',
+      'Practise: 9 − 4, 12 − 5 and 20 − 8. Check each answer by adding back.',
+      'Challenge: Nakai had 15 sweets and gave 6 to her friends. How many does she have now?'] },
+  { id: 'num4', mod: 'num', format: 'Video', lang: 'Swahili', min: 20, title: 'Maumbo yanayotuzunguka',
+    body: ['Leo tutajifunza maumbo. Maumbo yako kila mahali: nyumbani, shuleni na sokoni.',
+      'Duara halina pembe. Mfano wa duara ni sahani, gurudumu la baiskeli na jua.',
+      'Pembetatu ina pande tatu na pembe tatu. Mfano ni paa la nyumba na kipande cha chapati.',
+      'Mraba una pande nne zilizo sawa. Mstatili una pande nne, mbili ndefu na mbili fupi, kama mlango au kitabu.',
+      'Tembea darasani na utafute vitu vitatu vyenye umbo la duara, na vitatu vyenye umbo la mstatili.',
+      'Chora maumbo manne kwenye daftari lako na uandike jina la kila umbo chini yake.'] },
+  { id: 'lit4', mod: 'lit', format: 'Audio', lang: 'English', min: 20, title: 'Greetings and introducing yourself',
+    body: ['Good morning! Today we will learn how to greet people and introduce ourselves in English.',
+      'We say "Good morning" before midday, "Good afternoon" after midday and "Good evening" at night.',
+      'To introduce yourself, say: "My name is Akiru. I am twelve years old. I live in Lodwar."',
+      'When you meet someone new, you can ask: "What is your name?" and "How old are you?"',
+      'It is polite to say "Nice to meet you", and to say "Thank you" when someone helps you.',
+      'Practise with a partner: greet her, say your name, your age and where you live. Then swap.'] },
+  { id: 'lit5', mod: 'lit', format: 'Reading', lang: 'English', min: 25, title: 'Asking and answering questions',
+    body: ['A question asks for information. Question words help us: who, what, where, when, why and how.',
+      '"Who" asks about a person: "Who is your teacher?" "What" asks about a thing: "What is in your bag?"',
+      '"Where" asks about a place: "Where is the borehole?" "When" asks about time: "When does the club start?"',
+      '"Why" asks for a reason: "Why is the radio quiet?" "How" asks about the way something happens: "How do you get to school?"',
+      'A question starts with a capital letter and ends with a question mark.',
+      'Game: one girl thinks of an animal. The others ask questions to guess it: "Where does it live?" "What does it eat?"'] },
+  { id: 'kis2', mod: 'kis', format: 'Audio', lang: 'Swahili', min: 20, title: 'Salamu na adabu',
+    body: ['Karibu! Leo tutajifunza salamu za Kiswahili na jinsi ya kuonyesha adabu.',
+      'Asubuhi tunasema "Habari za asubuhi?" na jibu ni "Nzuri" au "Salama".',
+      'Kwa mtu mzima tunasema "Shikamoo", naye anajibu "Marahaba".',
+      'Kwa rafiki tunaweza kusema "Mambo?" na jibu ni "Poa" au "Safi".',
+      'Maneno ya adabu ni muhimu: "Tafadhali" unapoomba kitu, "Asante" unaposaidiwa, na "Samahani" unapokosea.',
+      'Zoezi: salimiana na wenzako watatu kwa salamu tofauti, kisha mwambie mmoja wao asante.'] },
+  { id: 'kis3', mod: 'kis', format: 'Reading', lang: 'Swahili', min: 25, title: 'Hadithi fupi: Kuku na mayai yake',
+    body: ['Hapo zamani, katika kijiji cha Kakuma, aliishi kuku mmoja mweupe aliyeitwa Tiba.',
+      'Kila asubuhi Tiba alitaga yai moja chini ya kichaka karibu na nyumba ya Mama Akai.',
+      'Siku moja, mbwa mwizi alikuja kunusa karibu na kichaka. Tiba aliogopa sana.',
+      'Tiba alipiga kelele kubwa: "Kokoriko! Kokoriko!" Watoto walikimbia kuja, na mbwa akakimbia mbali.',
+      'Mama Akai alihamishia mayai ndani ya kikapu salama. Baada ya siku ishirini na moja, vifaranga sita walitoka.',
+      'Soma hadithi hii kwa sauti na mwenzako. Kisha jibu: Kuku aliitwa nani? Nani alimsaidia?'] },
+  { id: 'sci2', mod: 'sci', format: 'Video', lang: 'English', min: 20, title: 'Germs and clean water',
+    body: ['Germs are tiny living things. They are too small to see, but some of them can make us sick.',
+      'Germs can live in dirty water, on unwashed hands and on food that flies have touched.',
+      'Drinking dirty water can cause diarrhoea and stomach pain. Young children are most at risk.',
+      'We can make water safe by boiling it for one minute, or by using water treatment tablets the way a health worker shows us.',
+      'Keep drinking water in a clean container with a lid, and use a clean cup to take water out.',
+      'Wash your hands with soap after using the toilet and before eating or cooking.',
+      'Activity: look at how your family stores drinking water. Is the container covered? Share one idea to keep it cleaner.'] },
+  { id: 'sci3', mod: 'sci', format: 'Reading', lang: 'Swahili', min: 25, title: 'Mimea inahitaji nini?',
+    body: ['Mimea ni viumbe hai. Kama sisi, inahitaji vitu fulani ili ikue.',
+      'Mimea inahitaji maji. Mvua au kumwagilia husaidia mizizi kunyonya maji kutoka ardhini.',
+      'Mimea inahitaji mwanga wa jua. Majani hutumia mwanga wa jua kutengeneza chakula cha mmea.',
+      'Mimea inahitaji hewa na udongo wenye rutuba. Samadi husaidia udongo kuwa na rutuba.',
+      'Mizizi hushika mmea ardhini na kunyonya maji. Shina hubeba maji hadi kwenye majani.',
+      'Jaribio: panda mbegu mbili za maharagwe. Moja iwekwe juani na kumwagiliwa maji, nyingine iwekwe gizani. Angalia kwa wiki moja: ipi inakua vizuri?'] },
+  { id: 'self1', mod: 'self', format: 'Audio', lang: 'English', min: 15, title: 'Believing in yourself',
+    body: ['Self-confidence means believing that you can learn, try new things and make good choices.',
+      'Everyone is good at something. Think of one thing you do well: maybe singing, running, helping at home or explaining sums to a friend.',
+      'Mistakes are part of learning. When something goes wrong, say "I can try again" instead of "I am stupid".',
+      'Kind words to yourself make you stronger. Kind words to others help them grow too.',
+      'Stand tall, look people in the eye and speak clearly. Practising this helps you feel brave.',
+      'Activity: tell a partner one thing you like about yourself and one thing you like about her.'] },
+  { id: 'self2', mod: 'self', format: 'Video', lang: 'Swahili', min: 20, title: 'Malengo yangu',
+    body: ['Lengo ni kitu unachotaka kufikia, kama kumaliza shule, kuwa mwalimu, muuguzi au mfanyabiashara.',
+      'Malengo makubwa hufikiwa kwa hatua ndogo. Kwa mfano, kusoma kurasa mbili kila siku kunakusaidia kufaulu mtihani.',
+      'Andika lengo lako, kisha andika hatua tatu ndogo unazoweza kuanza nazo wiki hii.',
+      'Kuna changamoto njiani, kama kazi nyingi nyumbani au ukosefu wa karo. Zungumza na mtu mzima unayemwamini ili akusaidie.',
+      'Kubaki shuleni na kuepuka ndoa na mimba za mapema kunakusaidia kufikia malengo yako.',
+      'Zoezi: mwambie mwenzako lengo lako moja na hatua moja utakayochukua kesho.'] },
 ];
 const SEED_Q = [
   { id: 'q1', lesson: 'lit1', text: 'Ni herufi gani ni irabu?', type: 'mc', opts: ['b', 'o', 't'], a: 1 },
@@ -741,6 +826,42 @@ const SEED_Q = [
   { id: 'w4', lesson: 'safe1', text: 'If someone asks you to keep a secret about touching, what should you do?', type: 'mc', opts: ['Keep the secret', 'Tell a trusted adult'], a: 1 },
   { id: 'w5', lesson: 'safe2', text: 'Namba ya msaada kwa watoto Kenya ni ipi?', type: 'mc', opts: ['116', '999', '100'], a: 0 },
   { id: 'w6', lesson: 'rep1', text: 'Can a girl get pregnant the first time she has sex?', type: 'mc', opts: ['Yes', 'No'], a: 0 },
+  { id: 'm1', lesson: 'num3', text: '10 − 3 = ?', type: 'mc', opts: ['13', '7', '6'], a: 1 },
+  { id: 'm2', lesson: 'num3', text: 'What does the sign − mean?', type: 'mc', opts: ['Take away', 'Add', 'Share'], a: 0 },
+  { id: 'm3', lesson: 'num3', text: '12 − 5 = ?', type: 'mc', opts: ['17', '6', '7'], a: 2 },
+  { id: 'm4', lesson: 'num3', text: 'Nakai had 15 sweets and gave away 6. How many are left?', type: 'mc', opts: ['9', '21', '8'], a: 0 },
+  { id: 'm5', lesson: 'num4', text: 'Pembetatu ina pande ngapi?', type: 'mc', opts: ['Nne', 'Tatu', 'Tano'], a: 1 },
+  { id: 'm6', lesson: 'num4', text: 'Ni kitu kipi kina umbo la duara?', type: 'mc', opts: ['Sahani', 'Mlango', 'Kitabu'], a: 0 },
+  { id: 'm7', lesson: 'num4', text: 'Umbo lipi lina pande nne zilizo sawa?', type: 'mc', opts: ['Mstatili', 'Pembetatu', 'Mraba'], a: 2 },
+  { id: 'm8', lesson: 'num4', text: 'Duara lina pembe ngapi?', type: 'mc', opts: ['Mbili', 'Hakuna', 'Nne'], a: 1 },
+  { id: 'e1', lesson: 'lit4', text: 'What do you say in the morning?', type: 'mc', opts: ['Good night', 'Good morning', 'Goodbye'], a: 1 },
+  { id: 'e2', lesson: 'lit4', text: 'Which sentence introduces you correctly?', type: 'mc', opts: ['My name is Akiru.', 'Name my is Akiru.', 'Akiru is name.'], a: 0 },
+  { id: 'e3', lesson: 'lit4', text: "How do you ask someone's name?", type: 'mc', opts: ['Where is your name?', 'Who your name?', 'What is your name?'], a: 2 },
+  { id: 'e4', lesson: 'lit4', text: 'What do you say when someone helps you?', type: 'mc', opts: ['Thank you', 'Good evening', 'How old are you?'], a: 0 },
+  { id: 'e5', lesson: 'lit5', text: 'Which word asks about a place?', type: 'mc', opts: ['Who', 'Where', 'When'], a: 1 },
+  { id: 'e6', lesson: 'lit5', text: 'Which word asks about time?', type: 'mc', opts: ['When', 'Why', 'What'], a: 0 },
+  { id: 'e7', lesson: 'lit5', text: 'How does a question end?', type: 'mc', opts: ['With a full stop', 'With a comma', 'With a question mark'], a: 2 },
+  { id: 'e8', lesson: 'lit5', text: 'Which word asks for a reason?', type: 'mc', opts: ['How', 'Why', 'Who'], a: 1 },
+  { id: 'k1', lesson: 'kis2', text: 'Ukisalimia mtu mzima "Shikamoo", anajibu nini?', type: 'mc', opts: ['Marahaba', 'Poa', 'Asante'], a: 0 },
+  { id: 'k2', lesson: 'kis2', text: 'Unasema nini unapoomba kitu?', type: 'mc', opts: ['Samahani', 'Tafadhali', 'Kwaheri'], a: 1 },
+  { id: 'k3', lesson: 'kis2', text: 'Jibu la "Habari za asubuhi?" ni lipi?', type: 'mc', opts: ['Shikamoo', 'Tafadhali', 'Nzuri'], a: 2 },
+  { id: 'k4', lesson: 'kis2', text: 'Unasema nini unapokosea?', type: 'mc', opts: ['Samahani', 'Asante', 'Marahaba'], a: 0 },
+  { id: 'k5', lesson: 'kis3', text: 'Kuku aliitwa nani?', type: 'mc', opts: ['Akai', 'Tiba', 'Kakuma'], a: 1 },
+  { id: 'k6', lesson: 'kis3', text: 'Nani alikuja kunusa karibu na kichaka?', type: 'mc', opts: ['Mbwa', 'Paka', 'Mbuzi'], a: 0 },
+  { id: 'k7', lesson: 'kis3', text: 'Vifaranga wangapi walitoka?', type: 'mc', opts: ['Watatu', 'Kumi', 'Sita'], a: 2 },
+  { id: 'k8', lesson: 'kis3', text: 'Mama Akai aliweka mayai wapi?', type: 'mc', opts: ['Kichakani', 'Ndani ya kikapu', 'Mtoni'], a: 1 },
+  { id: 's1', lesson: 'sci2', text: 'What are germs?', type: 'mc', opts: ['Tiny living things that can make us sick', 'Small stones in water', 'A kind of food'], a: 0 },
+  { id: 's2', lesson: 'sci2', text: 'How can we make water safe to drink?', type: 'mc', opts: ['Add sugar', 'Boil it', 'Leave it uncovered'], a: 1 },
+  { id: 's3', lesson: 'sci2', text: 'When should you wash your hands with soap?', type: 'mc', opts: ['Only once a week', 'Never', 'Before eating and after the toilet'], a: 2 },
+  { id: 's4', lesson: 'sci2', text: 'How should drinking water be kept?', type: 'mc', opts: ['In a clean container with a lid', 'In an open bucket', 'On the floor'], a: 0 },
+  { id: 's5', lesson: 'sci3', text: 'Mimea hutumia nini kutengeneza chakula?', type: 'mc', opts: ['Mawe', 'Mwanga wa jua', 'Plastiki'], a: 1 },
+  { id: 's6', lesson: 'sci3', text: 'Kazi ya mizizi ni ipi?', type: 'mc', opts: ['Kunyonya maji', 'Kutoa maua', 'Kutengeneza mbegu'], a: 0 },
+  { id: 's7', lesson: 'sci3', text: 'Ni kitu kipi kinasaidia udongo kuwa na rutuba?', type: 'mc', opts: ['Chumvi', 'Mafuta', 'Samadi'], a: 2 },
+  { id: 's8', lesson: 'sci3', text: 'Shina hubeba nini hadi kwenye majani?', type: 'mc', opts: ['Mchanga', 'Maji', 'Mawe'], a: 1 },
+  { id: 'w7', lesson: 'self1', text: 'Name one thing you are good at.', type: 'open', opts: [], a: null },
+  { id: 'w8', lesson: 'self1', text: 'What can you say to yourself after a mistake?', type: 'mc', opts: ['I am stupid', 'I can try again', 'I will never learn'], a: 1 },
+  { id: 'w9', lesson: 'self2', text: 'Lengo kubwa hufikiwaje?', type: 'mc', opts: ['Kwa hatua ndogo kila siku', 'Kwa kusubiri tu', 'Kwa kuacha shule'], a: 0 },
+  { id: 'w10', lesson: 'self2', text: 'Ukipata changamoto, unaweza kufanya nini?', type: 'mc', opts: ['Kukata tamaa', 'Kuficha tatizo', 'Kuzungumza na mtu mzima unayemwamini'], a: 2 },
 ];
 const STUDENTS = [ // sample girls' club members
   ['s01', 'Akiru Lokol', 12], ['s02', 'Ekal Nakiru', 14], ['s03', 'Nanyang Ewoi', 16], ['s04', 'Achuka Ekiru', 11],
@@ -751,8 +872,9 @@ const SEED_GRADES = { // module -> student -> score (sample)
   lit: [82, 74, 61, 90, 45, 68, 88, 52, 71, 39, 77, 64],
   num: [70, 81, 58, 76, 42, 73, 92, 47, 65, 28, 69, 80],
   sci: [75, 66, 72, 84, 51, 60, 79, null, 58, 44, 71, 67],
+  kis: [78, 85, 70, 88, 55, 74, 90, 60, 76, 48, 80, 71],
 };
-const SEED_ATT = { men: ['s01', 's02', 's03', 's04', 's05', 's07', 's09', 's10', 's11'], mind: ['s01', 's02', 's03', 's04', 's05', 's07', 's08', 's09', 's11', 's12'], safe: ['s01', 's02', 's04', 's05', 's06', 's07', 's09', 's11'], repro: ['s03', 's07', 's09'] };
+const SEED_ATT = { men: ['s01', 's02', 's03', 's04', 's05', 's07', 's09', 's10', 's11'], mind: ['s01', 's02', 's03', 's04', 's05', 's07', 's08', 's09', 's11', 's12'], safe: ['s01', 's02', 's04', 's05', 's06', 's07', 's09', 's11'], repro: ['s03', 's07', 's09'], self: ['s01', 's02', 's03', 's04', 's05', 's07', 's09', 's11', 's12'] };
 const DEMO_USERS = { user1: { pass: '1234', name: 'Ms Nakiru', site: "Lodwar Girls' Club", ages: '10–17' } }; // used only in demo mode (no Supabase configured)
 
 // ---------- Two languages for the interface ----------
@@ -988,7 +1110,7 @@ $('#back').addEventListener('click', () => show('modules'));
 function renderAll() { renderClass(); renderPlanForm(); renderSessions(); if (!$('#view-register').hidden && regId) renderRegister(); if (!$('#view-quiz').hidden && regId) renderQuizList(); if (!$('#view-report').hidden && repId) renderReport(); renderModules(); renderGradeSelect(); renderGrades(); renderQForm(); renderBank(); if (!$('#view-lesson').hidden && currentLesson) renderLesson(currentLesson); }
 
 // ---------- Class ----------
-function avgFor(sid) { const v = ['lit', 'num', 'sci'].map((m) => grades[m]?.[sid]).filter((x) => x != null); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null; }
+function avgFor(sid) { const v = MODULES.filter((m) => m.area === 'learn').map((m) => grades[m.id]?.[sid]).filter((x) => x != null); return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null; }
 function renderClass() {
   const wellMods = MODULES.filter((m) => m.area === 'well');
   const eligible = (s, m) => !m.minAge || s.age >= m.minAge;
@@ -1081,7 +1203,7 @@ function classRate(days) {
 
 function renderPlanForm() {
   const sel = $('#ps-lesson'), v = sel.value;
-  sel.replaceChildren(...MODULES.map((m) => { const g = document.createElement('optgroup'); g.label = m.name[lang] + (m.minAge ? ` (${t('age15')})` : ''); LESSONS.filter((l) => l.mod === m.id).forEach((l) => g.append(new Option(l.title, l.id))); return g; }));
+  sel.replaceChildren(...MODULES.map((m) => { const g = document.createElement('optgroup'); g.label = modLabel(m) + (m.minAge ? ` (${t('age15')})` : ''); LESSONS.filter((l) => l.mod === m.id).forEach((l) => g.append(new Option(l.title, l.id))); return g; }));
   if (v) sel.value = v;
   if (!$('#ps-date').value) $('#ps-date').value = addDays(1);
 }
@@ -1100,7 +1222,7 @@ function sessionCard(x) {
   const when = el('div', 'when'); when.append(el('span', null, fmtDate(x.date, { weekday: 'short' })), el('b', null, fmtDate(x.date, { day: 'numeric' })), el('span', null, fmtDate(x.date, { month: 'short' })));
   const what = el('div', 'what'); what.append(el('strong', null, l.title));
   const chips = el('div', 'chips');
-  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang]), el('span', 'chip line', [x.time, x.place].filter(Boolean).join(' · ')));
+  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), modLabel(m)), el('span', 'chip line', [x.time, x.place].filter(Boolean).join(' · ')));
   if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
   if (isDone(x)) {
     const r = x.attendance.length / n; chips.append(el('span', 'chip ' + (r >= 0.6 ? 'ok' : 'warn'), `${x.attendance.length} / ${n} ${t('nPresent')}`));
@@ -1192,7 +1314,7 @@ function renderRegister() {
   const l = lesson(x.lesson), m = mod(l.mod), girls = eligibleFor(x.lesson);
   const head = $('#reg-head'); head.replaceChildren();
   head.append(el('span', 'label', fmtDate(x.date, { weekday: 'long', day: 'numeric', month: 'long' }) + (x.time ? ' · ' + x.time : '')), el('h2', null, l.title));
-  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang])); if (m.minAge) chips.append(el('span', 'chip line', t('age15'))); head.append(chips);
+  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), modLabel(m))); if (m.minAge) chips.append(el('span', 'chip line', t('age15'))); head.append(chips);
   if (m.minAge) head.append(el('p', 'small muted', t('ageNote')));
   const list = $('#reg-list'); list.replaceChildren();
   const count = () => { const v = Object.values(regState); $('#reg-count').textContent = `${v.filter((s) => s === 'p').length} ${t('onTime')} · ${v.filter((s) => s === 'l').length} ${t('nLate')} · ${v.filter((s) => s === 'a').length} ${t('absent')}`; };
@@ -1314,7 +1436,7 @@ function renderReport() {
   const late = x.late || [], onTime = x.attendance.filter((id) => !late.includes(id)), absent = girls.filter((g) => !x.attendance.includes(g.id));
   const head = el('div', 'reg-head');
   head.append(el('span', 'label', `${t('sessionReport')} · ${fmtDate(x.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`), el('h1', null, l.title));
-  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang]), el('span', 'chip line', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', x.place || '')); head.append(chips);
+  const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), modLabel(m)), el('span', 'chip line', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', x.place || '')); head.append(chips);
   box.append(head);
   const kv = el('div', 'kv'), add = (label, value, sub) => { const d = el('div'); d.append(el('span', 'small muted', label), el('b', null, value)); if (sub) d.append(el('span', 'small muted', sub)); kv.append(d); };
   const d = durationMin(x);
@@ -1358,10 +1480,11 @@ $('#rep-back').addEventListener('click', () => { repId = null; show('sessions');
 function renderModules() {
   const box = $('#module-cards'); box.replaceChildren();
   MODULES.forEach((m) => {
+    if (m.subject === 'life' && !box.querySelector('.subj-h')) { const h = el('div', 'subj-h'); h.append(el('h2', null, subjectOf(m).name[lang]), el('span', 'chip well', t('lifeNote'))); box.append(h); }
     const ls = LESSONS.filter((l) => l.mod === m.id);
     const c = el('div', 'card' + (m.area === 'well' ? ' well' : ''));
     const chips = el('div', 'chips');
-    chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.area === 'well' ? t('attendance') : t('graded')), el('span', 'chip line', `${ls.length} ${t('lessons')}`));
+    chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.area === 'well' ? t('attendance') : t('graded')), el('span', 'chip line', `${ls.length} ${t(ls.length === 1 ? 'lessonOne' : 'lessons')}`));
     if (m.area === 'well') chips.append(el('span', 'chip av', t('avA')));
     if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
     c.append(el('h3', null, m.name[lang]), chips);
@@ -1409,7 +1532,7 @@ function openLesson(id) { currentLesson = id; renderLesson(id); show('lesson'); 
 function renderLesson(id) {
   const l = lesson(id), m = mod(l.mod), box = $('#lesson-detail'); box.replaceChildren();
   const chips = el('div', 'chips');
-  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), m.name[lang]), el('span', 'chip', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', `${l.min} ${t('min')}`));
+  chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), modLabel(m)), el('span', 'chip', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', `${l.min} ${t('min')}`));
   if (videoUrls[id]) chips.append(el('span', 'chip av', '▶ ' + t('hasVideo')));
   let media;
   if (videoUrls[id]) { media = el('video', 'lesson-video'); media.controls = true; media.preload = 'metadata'; media.src = videoUrls[id]; media.setAttribute('playsinline', ''); }
@@ -1478,7 +1601,7 @@ function slideText(s) {
 }
 function drawSlide() {
   const l = scLesson, m = mod(l.mod), s = slides[si], st = $('#sc-stage'); st.replaceChildren();
-  $('#sc-title').textContent = `${m.name[lang]} · ${l.title}`;
+  $('#sc-title').textContent = `${modLabel(m)} · ${l.title}`;
   $('#sc-voice').textContent = t(narrate ? 'narrOn' : 'narrOff');
   if (s.kind === 'title') {
     st.append(el('span', 'eyebrow', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`), el('h2', null, l.title), el('p', 'big', videoUrls[l.id] ? t('videoNext') : t('mediaFile')));
@@ -1488,7 +1611,7 @@ function drawSlide() {
     const a = actFor(l.id), sid = regId && regSession() && regSession().lesson === l.id ? regId : null;
     st.append(el('span', 'eyebrow', '★ ' + t('actBtn')), el('h2', null, tx(a.title)), el('p', 'big', t('actStartSlide')), btn(t('actStart'), 'sun', () => openActivity(a.id, l.id, sid, sid ? eligibleFor(l.id).filter((g) => regState[g.id] && regState[g.id] !== 'a') : null)));
   } else if (s.kind === 'text') {
-    st.append(el('span', 'eyebrow', m.name[lang]), el('p', 'big', s.p));
+    st.append(el('span', 'eyebrow', modLabel(m)), el('p', 'big', s.p));
   } else {
     st.append(el('span', 'eyebrow', t('question')), el('h2', null, s.q.text));
     if (s.q.type === 'mc') {
@@ -1529,10 +1652,10 @@ function studentDetail(mid, s) {
   });
   return wrap;
 }
-function renderGradeSelect() { const s = $('#g-module'), v = s.value || 'lit'; s.replaceChildren(...MODULES.map((m) => new Option(m.name[lang], m.id))); s.value = v; }
+function renderGradeSelect() { const s = $('#g-module'), v = s.value || 'num'; s.replaceChildren(...MODULES.map((m) => new Option(modLabel(m), m.id))); s.value = v; }
 $('#g-module').addEventListener('change', renderGrades);
 function renderGrades() {
-  const mid = $('#g-module').value || 'lit', m = mod(mid), head = $('#grade-head'), tb = $('#grade-rows');
+  const mid = $('#g-module').value || 'num', m = mod(mid), head = $('#grade-head'), tb = $('#grade-rows');
   head.replaceChildren(); tb.replaceChildren();
   const hr = el('tr'); hr.append(el('th', null, t('hName')));
   if (m.area === 'well') {
@@ -1579,7 +1702,7 @@ function renderGrades() {
 // ---------- Questions ----------
 function renderQForm() {
   const s = $('#q-lesson'), v = s.value;
-  s.replaceChildren(...MODULES.map((m) => { const g = document.createElement('optgroup'); g.label = m.name[lang]; LESSONS.filter((l) => l.mod === m.id).forEach((l) => g.append(new Option(l.title, l.id))); return g; }));
+  s.replaceChildren(...MODULES.map((m) => { const g = document.createElement('optgroup'); g.label = modLabel(m); LESSONS.filter((l) => l.mod === m.id).forEach((l) => g.append(new Option(l.title, l.id))); return g; }));
   if (v) s.value = v;
 }
 $('#q-type').addEventListener('change', () => { $('#q-opts').hidden = $('#q-type').value !== 'mc'; });
@@ -1614,7 +1737,7 @@ function renderBank() {
   MODULES.forEach((m) => {
     const qs = questions.filter((q) => lesson(q.lesson)?.mod === m.id); if (!qs.length) return;
     const c = el('div', 'card' + (m.area === 'well' ? ' well' : ''));
-    c.append(el('div', 'row', null)); c.firstChild.append(el('h3', null, m.name[lang]), el('span', 'small muted', `${qs.length} ${t('questionsN')}`));
+    c.append(el('div', 'row', null)); c.firstChild.append(el('h3', null, modLabel(m)), el('span', 'small muted', `${qs.length} ${t('questionsN')}`));
     qs.forEach((q) => { const it = qItem(q); it.prepend(el('span', 'label', lesson(q.lesson).title)); c.append(it); });
     box.append(c);
   });
@@ -1874,6 +1997,8 @@ $('#act-full').addEventListener('click', () => { const s = $('#act'); try { docu
 document.querySelectorAll('#act [data-lang]').forEach((b) => b.addEventListener('click', () => { if (act) drawAct(); }));
 document.addEventListener('keydown', (e) => { if (!$('#act').hidden && e.key === 'Escape') closeActivity(); });
 
+Object.assign(T.en, { lessonOne: 'lesson', lifeNote: 'Not graded · attendance and activities', sWell: 'Attended all Life Skills topics', hWellS: 'Life Skills sessions', girlsLabel: 'Life Skills', attNote: 'Life Skills topics record attendance only. No scores are kept.', girlsText: 'LearnReach clubs serve adolescent girls in marginalised communities. Life Skills covers menstrual health, mental wellbeing, personal safety, confidence and goals, and reproductive health (ages 15 and over). It is taught with video and audio sessions and step-by-step activities, and is not graded. Quiz answers are never recorded; attendance and step-by-step activity results are saved on this device.', wellReport: 'Life Skills sessions are not graded. Quiz answers are never recorded; attendance and step-by-step activity results are kept.' });
+Object.assign(T.sw, { lessonOne: 'somo', lifeNote: 'Hazipewi alama · mahudhurio na shughuli', sWell: 'Wamehudhuria mada zote za Stadi za maisha', hWellS: 'Vipindi vya Stadi za maisha', girlsLabel: 'Stadi za maisha', attNote: 'Mada za Stadi za maisha zinarekodi mahudhurio tu. Hakuna alama zinazohifadhiwa.', girlsText: 'Klabu za LearnReach zinahudumia wasichana balehe katika jamii zilizotengwa. Stadi za maisha zinahusu afya ya hedhi, afya ya akili, usalama binafsi, kujiamini na malengo, na afya ya uzazi (umri wa miaka 15 na zaidi). Zinafundishwa kwa video na sauti pamoja na shughuli za hatua kwa hatua, na hazipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa kwenye kifaa hiki.', wellReport: 'Vipindi vya Stadi za maisha havipewi alama. Majibu ya maswali hayahifadhiwi; mahudhurio na matokeo ya shughuli za hatua kwa hatua yanahifadhiwa.' });
 // ---------- Start ----------
 if (synth) { try { synth.getVoices(); synth.onvoiceschanged = () => {}; } catch {} }
 applyLang();

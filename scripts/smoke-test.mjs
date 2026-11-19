@@ -30,7 +30,11 @@ try {
     check(await p.isVisible('#app'), 'portal: test account signs in');
     check((await p.locator('#class-rows tr').count()) > 0, 'portal: class list has learners');
     await p.click('#tab-modules');
-    check((await p.locator('#module-cards .card').count()) >= 6, 'portal: modules are listed');
+    check((await p.locator('#module-cards .tile').count()) >= 5, 'portal: subjects are listed');
+    await p.click('#subj-maths');
+    check((await p.locator('#module-cards .tile').count()) === 6, 'portal: grades 1-6 are listed');
+    await p.click('#grade-maths-4');
+    check((await p.locator('.lesson-row').count()) >= 1, 'portal: lessons for the grade are listed');
     await p.locator('.lesson-row .acts .btn').first().click();
     check(await p.isVisible('#screen'), 'portal: classroom screen opens');
     await p.click('#sc-next');

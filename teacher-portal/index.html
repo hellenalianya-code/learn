@@ -220,6 +220,35 @@ td.n, th.n { text-align: center; }
 .namebtn { all: unset; cursor: pointer; font-weight: 700; color: var(--teal); }
 .namebtn:hover { text-decoration: underline; }
 .namebtn:focus-visible { outline: 3px solid var(--sun); border-radius: 4px; }
+
+.pp-report { grid-column: 1 / -1; min-width: 0; }
+.pp-report .tw { max-width: 100%; }
+.rc-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.rc-head h3 { margin: 0; }
+.rc-head .row { gap: 8px; }
+.rc-printhead { display: none; }
+.rc-table td.rc-sub { font-weight: 700; }
+.rc-table .rc-cats { font-size: .85rem; color: var(--muted); }
+.rc-table tr.rc-total td { font-weight: 800; border-top: 2px solid var(--line); }
+.rc-foot { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 10px 0 4px; font-size: .9rem; }
+.rc-note { font-size: .82rem; color: var(--muted); margin: 4px 0 12px; }
+.rc-remark textarea { width: 100%; min-height: 70px; }
+.rc-remark > button { width: auto; align-self: flex-start; justify-self: start; margin-top: 6px; }
+.rc-form .field { margin: 0; }
+.rc-add { margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.rc-add summary { cursor: pointer; font-weight: 700; color: var(--teal); }
+.rc-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px 12px; align-items: end; margin-top: 10px; }
+.rc-list { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.rc-list .row { justify-content: space-between; border-bottom: 1px solid var(--line); padding: 4px 0; }
+.rc-x { all: unset; cursor: pointer; color: var(--bad); font-weight: 800; padding: 0 8px; }
+.rc-x:focus-visible { outline: 3px solid var(--sun); border-radius: 4px; }
+@media print {
+  body.printing-rc * { visibility: hidden !important; }
+  body.printing-rc #pp-report, body.printing-rc #pp-report * { visibility: visible !important; }
+  body.printing-rc #pp-report { position: absolute; left: 0; top: 0; width: 100%; border: 0; box-shadow: none; }
+  body.printing-rc .rc-noprint { display: none !important; }
+  body.printing-rc .rc-printhead { display: block; margin-bottom: 12px; }
+}
 .pp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px; }
 .pp-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 8px; }
 .pp-card.sens { border-left: 4px solid var(--rose); }
@@ -1054,6 +1083,7 @@ function applyLang() {
   document.querySelectorAll('[data-t]').forEach((n) => { n.textContent = t(n.dataset.t); });
   document.querySelectorAll('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
   if (user) renderAll();
+  if (user && !$('#view-pupil').hidden && !pupilEdit) renderPupil();
 }
 document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('click', () => { lang = b.dataset.lang; store.set('lang', lang); applyLang(); }));
 
@@ -2558,12 +2588,12 @@ const CHALLENGES = ['distance', 'herds', 'chores', 'labour', 'marriage_risk', 'm
 const SAFEGUARD = ['marriage_risk', 'married', 'pregnant', 'young_mother', 'fgm_risk', 'fgm'];
 const TRAVEL = ['walk', 'bicycle', 'motorbike', 'vehicle', 'boat', 'other'];
 const LIVES = ['both', 'one', 'grandparent', 'relative', 'child_headed', 'other'];
-const PCOLS = ['full_name', 'dob', 'guardian_name', 'guardian_phone', 'village', 'languages', 'distance_km', 'travel_minutes', 'travel_mode', 'lives_with', 'has_children', 'children_count', 'pastoralist', 'away_months', 'levels', 'consent', 'consent_date', 'consent_by', 'challenges', 'challenge_notes', 'support', 'archived'];
+const PCOLS = ['marks', 'remarks', 'full_name', 'dob', 'guardian_name', 'guardian_phone', 'village', 'languages', 'distance_km', 'travel_minutes', 'travel_mode', 'lives_with', 'has_children', 'children_count', 'pastoralist', 'away_months', 'levels', 'consent', 'consent_date', 'consent_by', 'challenges', 'challenge_notes', 'support', 'archived'];
 const ageFrom = (dob) => { if (!dob) return null; const d = new Date(dob + 'T12:00:00'), n = new Date(); if (isNaN(d)) return null; let a = n.getFullYear() - d.getFullYear(); if (n.getMonth() < d.getMonth() || (n.getMonth() === d.getMonth() && n.getDate() < d.getDate())) a--; return a; };
 const newId = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, () => (Math.random() * 16 | 0).toString(16)));
 const sampleRows = () => SAMPLE_GIRLS.map(([id, full_name, dob, village, distance_km, travel_minutes, travel_mode, lives_with, pastoralist, away_months]) => ({
   id: 'demo-' + id, local_id: id, is_sample: true, full_name, dob, village, distance_km, travel_minutes, travel_mode, lives_with, pastoralist, away_months,
-  levels: Object.fromEntries(GRADED.map((g, i) => [g, SAMPLE_LEVELS[id][i]])), languages: [], consent: false, challenges: [], support: [], archived: false }));
+  levels: Object.fromEntries(GRADED.map((g, i) => [g, SAMPLE_LEVELS[id][i]])), languages: [], consent: false, challenges: [], support: [], archived: false, marks: SAMPLE_MARKS[id] || [], remarks: {} }));
 let rosterRows = [];
 const rosterKey = () => 'pupils_' + (DEMO ? 'demo' : (user && user.id));
 const queueKey = () => 'pupilQueue_' + (user && user.id);
@@ -2640,6 +2670,99 @@ const optLabel = (group, v) => v ? t(group + '_' + v) : '–';
 const monthName = (m) => new Date(2026, m - 1, 1).toLocaleDateString(loc(), { month: 'short' });
 const safeguardHit = (r, age) => age != null && age < 18 && (r.challenges || []).some((c) => SAFEGUARD.includes(c));
 function safeguardBox() { const d = el('div', 'pp-alert'); d.setAttribute('role', 'alert'); d.append(el('b', null, t('sgTitle') + ' '), document.createTextNode(t('sgText'))); return d; }
+
+// ---- report card ----
+const SAMPLE_MARKS = {"s01":[{"id":"cat-s01-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":14},{"id":"cat-s01-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":19},{"id":"cat-s01-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":17},{"id":"cat-s01-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":18}],"s02":[{"id":"cat-s02-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":15},{"id":"cat-s02-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":16},{"id":"cat-s02-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":16},{"id":"cat-s02-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":19}],"s03":[{"id":"cat-s03-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":12},{"id":"cat-s03-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":15},{"id":"cat-s03-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":15},{"id":"cat-s03-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":16}],"s04":[{"id":"cat-s04-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":14},{"id":"cat-s04-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":19},{"id":"cat-s04-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":17},{"id":"cat-s04-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":18}],"s05":[{"id":"cat-s05-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":11},{"id":"cat-s05-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":14},{"id":"cat-s05-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":14},{"id":"cat-s05-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":15}],"s06":[{"id":"cat-s06-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":12},{"id":"cat-s06-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":15},{"id":"cat-s06-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":13},{"id":"cat-s06-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":16}],"s07":[{"id":"cat-s07-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":18},{"id":"cat-s07-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":20},{"id":"cat-s07-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":19},{"id":"cat-s07-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":20}],"s08":[{"id":"cat-s08-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":9},{"id":"cat-s08-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":12},{"id":"cat-s08-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":12},{"id":"cat-s08-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":13}],"s09":[{"id":"cat-s09-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":12},{"id":"cat-s09-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":15},{"id":"cat-s09-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":15},{"id":"cat-s09-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":16}],"s10":[{"id":"cat-s10-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":10},{"id":"cat-s10-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":13},{"id":"cat-s10-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":13},{"id":"cat-s10-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":16}],"s11":[{"id":"cat-s11-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":13},{"id":"cat-s11-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":18},{"id":"cat-s11-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":16},{"id":"cat-s11-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":17}],"s12":[{"id":"cat-s12-maths","kind":"cat","subject":"maths","name":"CAT 1","out_of":20,"date":"2026-10-16","score":12},{"id":"cat-s12-english","kind":"cat","subject":"english","name":"CAT 1","out_of":20,"date":"2026-10-16","score":15},{"id":"cat-s12-kiswahili","kind":"cat","subject":"kiswahili","name":"CAT 1","out_of":20,"date":"2026-10-16","score":13},{"id":"cat-s12-science","kind":"cat","subject":"science","name":"CAT 1","out_of":20,"date":"2026-10-16","score":16}]};
+let rcTerm = null;
+// Kenyan school terms (approximate): Term 1 to 20 April, Term 2 to 15 August, Term 3 to December
+function termOf(d) { const s = String(d || '').slice(0, 10); if (!s) return null; const md = s.slice(5); return s.slice(0, 4) + '-' + (md <= '04-20' ? 1 : md <= '08-15' ? 2 : 3); }
+const termLabel = (k) => t('rcTerm').replace('{n}', k.split('-')[1]) + ' ' + k.split('-')[0];
+function rcData(p, r, term) {
+  const marks = (r.marks || []).filter((m) => termOf(m.date) === term);
+  const rows = GRADED.map((g) => {
+    let right = 0, total = 0;
+    LESSONS.filter((l) => mod(l.mod).subject === g).forEach((l) => { const res = results[l.id]?.[p.id]; if (!res || termOf(res.at) !== term) return; const sc = scoreOf(l.id, p.id); if (sc) { right += sc.right; total += sc.total; } });
+    const part = (kind) => { const ms = marks.filter((m) => m.kind === kind && m.subject === g); const o = ms.reduce((a, m) => a + m.out_of, 0); return { ms, rate: o ? ms.reduce((a, m) => a + m.score, 0) / o : null }; };
+    const cat = part('cat'), exam = part('exam'), q = total ? right / total : null;
+    const parts = [q, cat.rate, exam.rate].filter((x) => x != null);
+    const score = parts.length ? Math.round(100 * parts.reduce((a, b) => a + b, 0) / parts.length) : null;
+    return { g, right, total, q, cat, exam, score };
+  });
+  const sc = rows.map((x) => x.score).filter((x) => x != null);
+  const mine = sessions.filter((x) => isDone(x) && termOf(x.date) === term && eligibleOf(x).some((s) => s.id === p.id));
+  const went = mine.filter((x) => x.attendance.includes(p.id)).length;
+  return { rows, overall: sc.length ? Math.round(sc.reduce((a, b) => a + b, 0) / sc.length) : null, att: { went, of: mine.length }, marks };
+}
+function reportCard(p, r) {
+  const cur = termOf(todayIso());
+  const terms = [...new Set([cur, ...(r.marks || []).map((m) => termOf(m.date)), ...Object.values(results).map((o) => o[p.id] && termOf(o[p.id].at)), ...Object.keys(r.remarks || {})].filter(Boolean))].sort().reverse();
+  if (!rcTerm || !terms.includes(rcTerm)) rcTerm = cur;
+  const d = rcData(p, r, rcTerm);
+  const box = el('div', 'pp-card pp-report'); box.id = 'pp-report';
+  const ph = el('div', 'rc-printhead'); ph.append(el('h2', null, 'LearnReach · ' + t('rcTitle')), el('p', null, [p.name, p.age != null ? p.age + ' ' + t('yrs') : null, r.village, termLabel(rcTerm)].filter(Boolean).join(' · ')));
+  const head = el('div', 'rc-head'); head.append(el('h3', null, t('rcTitle')));
+  const ctr = el('div', 'row rc-noprint'); const sel = el('select'); sel.id = 'rc-term'; sel.setAttribute('aria-label', t('rcTermPick'));
+  terms.forEach((k) => { const o = el('option', null, termLabel(k)); o.value = k; o.selected = k === rcTerm; sel.append(o); });
+  sel.addEventListener('change', () => { rcTerm = sel.value; renderPupil(); });
+  const pr = btn('🖨 ' + t('rcPrint'), '', () => { document.body.classList.add('printing-rc'); window.print(); }); pr.id = 'rc-print';
+  ctr.append(sel, pr); head.append(ctr); box.append(ph, head);
+  const wrap = el('div', 'tw'); const tb = el('table', 'rc-table'); tb.id = 'rc-table';
+  const th = el('tr'); [t('rcSubject'), t('grade'), t('rcQuestions'), t('rcCats'), t('rcExam'), t('rcScore'), t('hLevel')].forEach((x, i) => th.append(el('th', i > 0 && i !== 3 ? 'n' : null, x)));
+  const thead = el('thead'); thead.append(th); const body = el('tbody');
+  const lvl = (s) => { const td = el('td', 'n'); const L = levelOf(s); if (L) td.append(el('span', 'lvl ' + L, L)); else td.textContent = '–'; return td; };
+  d.rows.forEach((x) => {
+    const tr = el('tr'); tr.dataset.subject = x.g;
+    const cats = el('td'); if (x.cat.ms.length) { cats.append(el('div', null, pct(x.cat.rate))); cats.append(el('div', 'rc-cats', x.cat.ms.map((m) => m.name + ': ' + m.score + '/' + m.out_of).join(' · '))); } else cats.textContent = '–';
+    tr.append(el('td', 'rc-sub', SUBJECTS.find((s) => s.id === x.g).name[lang]), el('td', 'n', levelIn(p.id, x.g) ? String(levelIn(p.id, x.g)) : '–'),
+      el('td', 'n', x.total ? x.right + ' / ' + x.total + ' (' + pct(x.q) + ')' : '–'), cats,
+      el('td', 'n', x.exam.ms.length ? pct(x.exam.rate) : '–'), el('td', 'n', x.score != null ? x.score + '%' : '–'), lvl(x.score));
+    body.append(tr);
+  });
+  const tt = el('tr', 'rc-total'); tt.append(el('td', null, t('rcOverall')), el('td'), el('td'), el('td'), el('td'), el('td', 'n', d.overall != null ? d.overall + '%' : '–'), lvl(d.overall)); body.append(tt);
+  tb.append(thead, body); wrap.append(tb); box.append(wrap);
+  const foot = el('div', 'rc-foot'); foot.append(el('span', null, t('rcAtt') + ': ' + (d.att.of ? d.att.went + ' / ' + d.att.of + ' (' + pct(d.att.went / d.att.of) + ')' : '–')));
+  box.append(foot, el('p', 'rc-note', t('rcHow')));
+  // teacher's remark for this term
+  const rm = el('div', 'rc-remark field'); const lab = el('label', null, t('rcRemark')); const ta = el('textarea'); ta.id = 'rc-remark'; ta.maxLength = 1000; ta.value = (r.remarks || {})[rcTerm] || ''; lab.htmlFor = 'rc-remark';
+  const sv = btn(t('ppSave'), 'rc-noprint', () => { savePupil(r.id, { remarks: { ...(r.remarks || {}), [rcTerm]: ta.value.trim() } }); toast(t('rcSaved')); }); sv.id = 'rc-remark-save';
+  rm.append(lab, ta, sv); box.append(rm);
+  // add a CAT mark
+  const add = el('details', 'rc-add rc-noprint'); add.id = 'rc-add'; add.append(el('summary', null, '＋ ' + t('rcAddCat')));
+  const f = el('div', 'rc-form');
+  const fld = (labelText, input) => { const d = el('div', 'field'); const l = el('label', null, labelText); l.htmlFor = input.id; d.append(l, input); return d; };
+  const sSel = el('select'); sSel.id = 'rc-sub'; GRADED.forEach((g) => { const o = el('option', null, SUBJECTS.find((s) => s.id === g).name[lang]); o.value = g; sSel.append(o); });
+  const nIn = el('input'); nIn.id = 'rc-name'; nIn.maxLength = 40; const nCat = (r.marks || []).filter((m) => m.kind === 'cat' && termOf(m.date) === rcTerm).length; nIn.placeholder = 'CAT ' + (nCat ? 2 : 1);
+  sSel.addEventListener('change', () => { const k = (r.marks || []).filter((m) => m.kind === 'cat' && m.subject === sSel.value && termOf(m.date) === rcTerm).length; nIn.placeholder = 'CAT ' + (k + 1); });
+  sSel.dispatchEvent(new Event('change'));
+  const scIn = el('input'); scIn.id = 'rc-score'; scIn.type = 'number'; scIn.min = '0'; scIn.step = '0.5'; scIn.inputMode = 'decimal';
+  const ofIn = el('input'); ofIn.id = 'rc-outof'; ofIn.type = 'number'; ofIn.min = '1'; ofIn.step = '1'; ofIn.value = '20';
+  const dIn = el('input'); dIn.id = 'rc-date'; dIn.type = 'date'; dIn.value = todayIso(); dIn.max = todayIso();
+  const err = el('p', 'err'); err.setAttribute('role', 'alert');
+  const go = btn(t('ppAddSupport'), 'primary', () => {
+    const score = parseFloat(scIn.value), out = parseFloat(ofIn.value);
+    if (!Number.isFinite(out) || out <= 0 || out > 1000) { err.textContent = t('rcBadOut'); ofIn.focus(); return; }
+    if (!Number.isFinite(score) || score < 0 || score > out) { err.textContent = t('rcBadScore'); scIn.focus(); return; }
+    if (!dIn.value) { err.textContent = t('rcBadDate'); dIn.focus(); return; }
+    const m = { id: newId(), kind: 'cat', subject: sSel.value, name: nIn.value.trim() || nIn.placeholder, score, out_of: out, date: dIn.value };
+    rcTerm = termOf(m.date); savePupil(r.id, { marks: [...(r.marks || []), m] }); toast(t('rcAdded')); rcOpen = true; renderPupil();
+  }); go.id = 'rc-save';
+  f.append(fld(t('rcSubject'), sSel), fld(t('rcName'), nIn), fld(t('rcMark'), scIn), fld(t('rcOutOf'), ofIn), fld(t('ppConsentDate'), dIn), go);
+  f.addEventListener('input', () => { err.textContent = ''; });
+  add.append(f, err);
+  const list = el('div', 'rc-list'); list.id = 'rc-list';
+  d.marks.slice().sort((a, b) => (b.date || '').localeCompare(a.date || '')).forEach((m) => {
+    const row = el('div', 'row'); row.append(el('span', null, SUBJECTS.find((s) => s.id === m.subject).name[lang] + ' · ' + m.name + ' · ' + m.score + ' / ' + m.out_of + ' · ' + fmtDate(m.date, { day: 'numeric', month: 'short', year: 'numeric' })));
+    const x = el('button', 'rc-x', '×'); x.type = 'button'; x.setAttribute('aria-label', t('rcRemove') + ' ' + m.name);
+    let armed = false; x.addEventListener('click', () => { if (!armed) { armed = true; x.textContent = t('rcRemoveConfirm'); return; } savePupil(r.id, { marks: (r.marks || []).filter((y) => y.id !== m.id) }); rcOpen = true; renderPupil(); });
+    row.append(x); list.append(row);
+  });
+  if (!d.marks.length) list.append(el('span', 'small muted', t('rcNoMarks')));
+  add.append(list); if (rcOpen) { add.open = true; rcOpen = false; }
+  box.append(add);
+  return box;
+}
+let rcOpen = false;
+window.addEventListener('afterprint', () => document.body.classList.remove('printing-rc'));
 function renderPupil() {
   const box = $('#pupil-body'); box.replaceChildren(); updateSyncLine();
   const p = pupilKey ? pupilByKey(pupilKey) : null; const r = pupilKey ? rowByKey(pupilKey) : null;
@@ -2671,6 +2794,7 @@ function renderPupil() {
     sc.append(sl);
   }
   grid.append(sc); box.append(grid);
+  box.append(reportCard(p, r));
 }
 function pupilForm(r) {
   const isNew = !r; r = r || { languages: [], away_months: [], challenges: [], support: [], levels: {}, consent: false };
@@ -2781,6 +2905,8 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || (location
 }
 $('#upd-btn').addEventListener('click', () => location.reload());
 
+Object.assign(T.en, {"rcTitle":"Report card","rcTerm":"Term {n}","rcTermPick":"Choose the term","rcPrint":"Print","rcSubject":"Subject","rcQuestions":"Class questions correct","rcCats":"CATs","rcExam":"Exam","rcScore":"Score","rcOverall":"Overall","rcAtt":"Attendance this term","rcHow":"Score = average of class questions, CATs and the exam (when there is one). Levels follow the CBC rubric. Exams will be added later.","rcRemark":"Teacher's remark","rcSaved":"Remark saved","rcAddCat":"Add a CAT mark","rcName":"Name of the test","rcMark":"Her mark","rcOutOf":"Out of","rcAdded":"CAT mark added","rcRemove":"Remove","rcRemoveConfirm":"Remove?","rcNoMarks":"No CAT marks for this term yet.","rcBadScore":"Enter her mark (0 up to the \"out of\" number).","rcBadOut":"Enter what the test is out of.","rcBadDate":"Enter the date of the test."});
+Object.assign(T.sw, {"rcTitle":"Ripoti ya maendeleo","rcTerm":"Muhula {n}","rcTermPick":"Chagua muhula","rcPrint":"Chapisha","rcSubject":"Somo","rcQuestions":"Maswali ya darasani aliyopata","rcCats":"CAT","rcExam":"Mtihani","rcScore":"Alama","rcOverall":"Jumla","rcAtt":"Mahudhurio muhula huu","rcHow":"Alama = wastani wa maswali ya darasani, CAT na mtihani (ukiwepo). Viwango vinafuata kipimo cha CBC. Mitihani itaongezwa baadaye.","rcRemark":"Maoni ya mwalimu","rcSaved":"Maoni yamehifadhiwa","rcAddCat":"Ongeza alama ya CAT","rcName":"Jina la jaribio","rcMark":"Alama zake","rcOutOf":"Kati ya","rcAdded":"Alama ya CAT imeongezwa","rcRemove":"Ondoa","rcRemoveConfirm":"Ondoa?","rcNoMarks":"Bado hakuna alama za CAT muhula huu.","rcBadScore":"Andika alama zake (0 hadi idadi ya \"kati ya\").","rcBadOut":"Andika jaribio ni kati ya ngapi.","rcBadDate":"Andika tarehe ya jaribio."});
 Object.assign(T.en, {"addPupil":"＋ Add pupil","ppBack":"← Back to my class","ppEdit":"Edit profile","ppAddTitle":"Add a pupil","ppEditTitle":"Edit profile","ppSave":"Save","ppName":"Full name","ppDob":"Date of birth","yrs":"years","ppGuardian":"Parent or guardian","ppPhone":"Guardian's phone","ppVillage":"Village or area","ppLangs":"Languages she speaks","ppComma":"separate with commas","ppAbout":"About her","ppSchoolWay":"Getting to school","ppDistance":"Distance from school","ppMinutes":"Time to get to school (minutes)","ppTravel":"How she travels","ppHome":"Home","ppLivesWith":"Lives with","ppHasChildren":"Has children of her own","ppHowMany":"How many","ppPastoral":"Pastoralist family (moves with the herds)","ppAway":"Months usually away with the herds","ppGrades":"Grade in each subject","ppLearning":"Learning","ppChallenges":"Challenges and support","ppChallengesSub":"Tick everything that applies. Only you and the programme admin can see this.","ppNotes":"Notes","ppSupport":"Support and referrals","ppSupportWhat":"What was done","ppSupportEg":"e.g. pads given; referred to health worker","ppAddSupport":"Add","ppNone":"None recorded.","ppConsentH":"Consent","ppConsentText":"A parent or guardian has agreed that the club can record her challenges and the support she gets.","ppConsentBy":"Who agreed","ppConsentDate":"Date","ppConsentFirst":"No consent yet. Challenges can be recorded after a parent or guardian agrees (edit the profile and tick consent).","ppConsentGiven":"Consent given by {who} on {date}.","ppConsentOff":"Without consent, her challenges, notes and support records will be removed. Continue?","ppNoConsent":"No consent yet","sgTitle":"Child protection:","sgText":"this girl is under 18. Early marriage, pregnancy and FGM are child protection matters. Talk to your head teacher and refer her to the local children's officer or Childline Kenya (116, free, 24 hours). If she is in danger now, call 999 or 112.","ppSample":"Sample","ppPastoralist":"Pastoralist family","ppMissing":"This pupil is no longer in your class.","ppRemove":"Remove from class","ppRemoveConfirm":"Tap again to remove","ppRemoved":"Pupil removed from your class","ppNeedName":"Enter her full name.","ppBadDob":"Check the date of birth.","ppSaved":"Profile saved","ppSavedOffline":"Saved on this device. It will upload when there is internet.","ppSyncErr":"A pupil could not be saved to the server. Check the details and try again.","ppPending":"{n} change(s) waiting for internet","ppSynced":"Saved to the server","ppDemo":"Demo mode: pupils are kept on this device only","yes":"Yes","no":"No","cancel":"Cancel","updReady":"A new version of LearnReach is ready.","updBtn":"Refresh","tr_walk":"Walking","tr_bicycle":"Bicycle","tr_motorbike":"Motorbike","tr_vehicle":"Car or bus","tr_boat":"Boat","tr_other":"Other","lw_both":"Both parents","lw_one":"One parent","lw_grandparent":"Grandparent","lw_relative":"Another relative","lw_child_headed":"Child-headed home","lw_other":"Other","ch_distance":"Lives far from school","ch_herds":"Moves with the herds","ch_chores":"Heavy chores or fetching water","ch_labour":"Child labour","ch_marriage_risk":"At risk of early marriage","ch_married":"Married","ch_pregnant":"Pregnant","ch_young_mother":"Young mother","ch_fgm_risk":"At risk of FGM","ch_fgm":"Affected by FGM","ch_period":"No pads (period poverty)","ch_hunger":"Hunger","ch_fees":"No school fees or uniform","ch_disability":"Disability","ch_orphan":"Orphan","ch_displaced":"Displaced or refugee","ch_insecurity":"Insecurity or conflict","ch_health":"Health condition","ch_other":"Other"});
 Object.assign(T.sw, {"addPupil":"＋ Ongeza mwanafunzi","ppBack":"← Rudi kwenye darasa langu","ppEdit":"Hariri wasifu","ppAddTitle":"Ongeza mwanafunzi","ppEditTitle":"Hariri wasifu","ppSave":"Hifadhi","ppName":"Jina kamili","ppDob":"Tarehe ya kuzaliwa","yrs":"miaka","ppGuardian":"Mzazi au mlezi","ppPhone":"Simu ya mlezi","ppVillage":"Kijiji au eneo","ppLangs":"Lugha anazozungumza","ppComma":"tenganisha kwa koma","ppAbout":"Kumhusu","ppSchoolWay":"Kufika shuleni","ppDistance":"Umbali kutoka shuleni","ppMinutes":"Muda wa kufika shuleni (dakika)","ppTravel":"Anavyosafiri","ppHome":"Nyumbani","ppLivesWith":"Anaishi na","ppHasChildren":"Ana watoto wake","ppHowMany":"Wangapi","ppPastoral":"Familia ya wafugaji (huhamahama na mifugo)","ppAway":"Miezi ambayo kwa kawaida huwa mbali na mifugo","ppGrades":"Darasa katika kila somo","ppLearning":"Masomo","ppChallenges":"Changamoto na msaada","ppChallengesSub":"Weka alama kwa yote yanayohusika. Ni wewe na msimamizi wa mpango tu mnaoweza kuona haya.","ppNotes":"Maelezo","ppSupport":"Msaada na rufaa","ppSupportWhat":"Kilichofanyika","ppSupportEg":"mf. alipewa pedi; alipelekwa kwa mhudumu wa afya","ppAddSupport":"Ongeza","ppNone":"Hakuna kilichorekodiwa.","ppConsentH":"Ridhaa","ppConsentText":"Mzazi au mlezi amekubali klabu irekodi changamoto zake na msaada anaopata.","ppConsentBy":"Aliyekubali","ppConsentDate":"Tarehe","ppConsentFirst":"Bado hakuna ridhaa. Changamoto zinaweza kurekodiwa mzazi au mlezi akikubali (hariri wasifu na uweke alama ya ridhaa).","ppConsentGiven":"Ridhaa ilitolewa na {who} tarehe {date}.","ppConsentOff":"Bila ridhaa, changamoto, maelezo na rekodi za msaada zitaondolewa. Endelea?","ppNoConsent":"Bado hakuna ridhaa","sgTitle":"Ulinzi wa mtoto:","sgText":"msichana huyu ana umri chini ya miaka 18. Ndoa za mapema, mimba na ukeketaji ni masuala ya ulinzi wa mtoto. Zungumza na mwalimu mkuu na umpeleke kwa afisa wa watoto wa eneo au Childline Kenya (116, bure, saa 24). Akiwa hatarini sasa, piga 999 au 112.","ppSample":"Mfano","ppPastoralist":"Familia ya wafugaji","ppMissing":"Mwanafunzi huyu hayupo tena kwenye darasa lako.","ppRemove":"Ondoa darasani","ppRemoveConfirm":"Bonyeza tena kuondoa","ppRemoved":"Mwanafunzi ameondolewa darasani","ppNeedName":"Andika jina lake kamili.","ppBadDob":"Angalia tarehe ya kuzaliwa.","ppSaved":"Wasifu umehifadhiwa","ppSavedOffline":"Imehifadhiwa kwenye kifaa hiki. Itapakiwa kukiwa na intaneti.","ppSyncErr":"Mwanafunzi hakuweza kuhifadhiwa kwenye seva. Angalia taarifa na ujaribu tena.","ppPending":"Mabadiliko {n} yanasubiri intaneti","ppSynced":"Imehifadhiwa kwenye seva","ppDemo":"Hali ya majaribio: wanafunzi wanahifadhiwa kwenye kifaa hiki tu","yes":"Ndiyo","no":"Hapana","cancel":"Ghairi","updReady":"Toleo jipya la LearnReach liko tayari.","updBtn":"Onyesha upya","tr_walk":"Kutembea","tr_bicycle":"Baiskeli","tr_motorbike":"Pikipiki","tr_vehicle":"Gari au basi","tr_boat":"Mashua","tr_other":"Nyingine","lw_both":"Wazazi wote wawili","lw_one":"Mzazi mmoja","lw_grandparent":"Bibi au babu","lw_relative":"Ndugu mwingine","lw_child_headed":"Nyumba inayoongozwa na mtoto","lw_other":"Nyingine","ch_distance":"Anaishi mbali na shule","ch_herds":"Huhamahama na mifugo","ch_chores":"Kazi nzito za nyumbani au kuchota maji","ch_labour":"Ajira ya watoto","ch_marriage_risk":"Yuko hatarini kuolewa mapema","ch_married":"Ameolewa","ch_pregnant":"Ni mjamzito","ch_young_mother":"Ni mama mchanga","ch_fgm_risk":"Yuko hatarini kukeketwa","ch_fgm":"Ameathiriwa na ukeketaji","ch_period":"Hana pedi","ch_hunger":"Njaa","ch_fees":"Hana karo au sare","ch_disability":"Ulemavu","ch_orphan":"Yatima","ch_displaced":"Mkimbizi au amehamishwa","ch_insecurity":"Ukosefu wa usalama au vita","ch_health":"Tatizo la kiafya","ch_other":"Nyingine"});
 Object.assign(T.en, { lessonOne: 'lesson', lifeNote: 'Not graded · attendance and activities', sWell: 'Attended all Life Skills topics', hWellS: 'Life Skills sessions', girlsLabel: 'Life Skills', attNote: 'Life Skills topics record attendance only. No scores are kept.', girlsText: 'LearnReach clubs serve adolescent girls in marginalised communities. Life Skills covers menstrual health, mental wellbeing, personal safety, confidence and goals, and reproductive health (ages 15 and over). It is taught with video and audio sessions and step-by-step activities, and is not graded. Quiz answers are never recorded; attendance and step-by-step activity results are saved on this device.', wellReport: 'Life Skills sessions are not graded. Quiz answers are never recorded; attendance and step-by-step activity results are kept.' });

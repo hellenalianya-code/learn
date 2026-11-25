@@ -51,6 +51,7 @@ try {
   await still(p, 'portal-class');
   await p.click('#tab-modules'); await p.click('#subj-maths'); await still(p, 'portal-modules'); await p.click('#tab-class');
   await p.click('#tab-grades'); await still(p, 'portal-gradebook');
+  await p.locator('#grade-rows .gb-toggle').first().click(); await p.waitForTimeout(300); await still(p, 'gradebook-open');
   await p.click('#tab-questions'); await still(p, 'portal-questions');
   await p.click('#tab-modules');
   await p.click('#subj-english'); await p.click('#grade-english-4');
@@ -108,12 +109,14 @@ try {
   p = await open('/teacher-portal/');
   await signIn(p);
   const g2 = recorder('demo-gradebook');
-  await p.click('#tab-grades'); await g2.step(p, 1.4);
+  await p.click('#tab-grades'); await g2.step(p, 1.6);
+  await p.locator('#grade-rows .gb-toggle').first().click(); await g2.step(p, 2.4);
+  await p.locator('#grade-rows .gb-toggle').first().click(); await g2.step(p, 0.8);
+  await p.click('#gb-p-maths'); await g2.step(p, 1.4);
   const score = p.locator('#grade-rows input.score').nth(4);
   await score.fill(''); await score.type('88', { delay: 120 }); await g2.step(p, 1.6);
-  await p.selectOption('#g-module', 'men'); await g2.step(p, 1.6);
+  await p.click('#gb-p-life'); await g2.step(p, 1.6);
   await p.locator('#grade-rows input.tick').nth(4).click(); await g2.step(p, 1.4);
-  await p.selectOption('#g-module', 'repro'); await g2.step(p, 2);
   await p.click('#tab-class'); await g2.step(p, 2.2);
   await g2.save();
   await p.close();

@@ -41,9 +41,13 @@ try {
     check((await p.textContent('#sc-stage')).length > 0, 'portal: slides advance');
     await p.click('#sc-close');
     await p.click('#tab-grades');
+    check((await p.locator('#grade-rows .gb-card').count()) > 0, 'portal: gradebook lists each girl with her grades');
+    await p.locator('#grade-rows .gb-toggle').first().click();
+    check((await p.locator('#grade-rows .gb-detail:not([hidden]) .gb-sec').count()) === 4, 'portal: opening a girl shows her 4 subjects');
+    await p.click('#gb-p-maths');
     const first = p.locator('#grade-rows input.score').first();
     await first.fill('91');
-    check((await p.locator('#grade-rows tr').first().textContent()).includes('EE'), 'portal: a score of 91 shows level EE');
+    check((await p.locator('#grade-rows .gb-tscore').first().textContent()).includes('EE'), 'portal: a score of 91 shows level EE');
     await p.click('#tab-questions');
     await p.fill('#q-text', 'CI check question?'); await p.fill('#qo0', 'Yes'); await p.fill('#qo1', 'No');
     await p.click('#q-form button[type=submit]');

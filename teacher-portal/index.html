@@ -681,6 +681,86 @@ select { border-radius: 12px; }
 .login-card h1 { color: #1b2a5a; }
 .auth-tabs button { border-radius: 999px; }
 @media print { #app { background: none; } .top { display: none; } }
+
+/* ===== Gradebook v2 ===== */
+.gb-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.gb-top { align-items: flex-end; }
+.gb-ctl { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.gb-ctl .field { min-width: 150px; }
+.gb-subj { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 4px; }
+.gb-pill { border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 800; cursor: pointer; background: #fff; color: var(--c); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 35%, transparent), 0 2px 0 rgb(20 48 45 / .06); }
+.gb-pill[aria-pressed="true"] { background: var(--c); color: #fff; box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 60%, #000 25%); }
+.gb-pill:focus-visible { outline: 3px solid #e08a14; outline-offset: 2px; }
+.gb-sum { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; background: #fff; border-radius: 20px; padding: 12px 18px; box-shadow: 0 3px 0 rgb(20 48 45 / .05), 0 8px 22px rgb(20 48 45 / .07); margin: 8px 0 12px; }
+.gb-sum-avg { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #1b2a5a; }
+.gb-sum-dist { flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px; }
+.gb-dist { display: flex; height: 26px; border-radius: 999px; overflow: hidden; gap: 2px; background: #eef3f5; }
+.gb-dist span { display: grid; place-items: center; color: #fff; font-size: .78rem; font-weight: 800; min-width: 44px; }
+.gb-list { display: flex; flex-direction: column; gap: 10px; }
+.gb-card { background: #fff; border-radius: 20px; box-shadow: 0 3px 0 rgb(20 48 45 / .05), 0 8px 22px rgb(20 48 45 / .07); overflow: hidden; }
+.gb-card.open { box-shadow: inset 0 4px 0 #3d5fe0, 0 3px 0 rgb(20 48 45 / .05), 0 12px 28px rgb(20 48 45 / .12); }
+.gb-head { display: flex; align-items: center; gap: 14px; padding: 12px 16px; flex-wrap: wrap; cursor: pointer; }
+.gb-head:hover { background: #f8fbfd; }
+.gb-toggle { all: unset; display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 0 1 230px; min-width: 0; border-radius: 12px; padding: 2px 4px; }
+.gb-toggle:focus-visible { outline: 3px solid #e08a14; }
+.gb-toggle .mini-av { width: 40px; height: 40px; font-size: .9rem; }
+.gb-chev { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #e6ebfd; color: #2b45a8; font-weight: 900; transition: transform .15s; flex: none; }
+.gb-card.open .gb-chev { transform: rotate(90deg); }
+.gb-who { display: flex; flex-direction: column; min-width: 0; }
+.gb-who b { color: #1b2a5a; font-size: 1.02rem; }
+.gb-chips { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); gap: 8px; flex: 3 1 480px; }
+.gb-chip { border-radius: 14px; padding: 6px 10px; background: color-mix(in srgb, var(--c) 9%, #fff); box-shadow: inset 0 3px 0 var(--c); display: flex; flex-direction: column; gap: 1px; }
+.gb-chip-s { font-size: .72rem; font-weight: 800; color: var(--c); text-transform: uppercase; letter-spacing: .04em; }
+.gb-chip-v { display: flex; align-items: center; gap: 6px; }
+.gb-chip-v b { font: 800 1.15rem var(--display); color: #1b2a5a; }
+.gb-end { display: flex; align-items: center; gap: 8px; }
+.gb-ring { position: relative; width: 46px; height: 46px; flex: none; }
+.gb-ring svg { width: 100%; height: 100%; display: block; }
+.gb-ring b { position: absolute; inset: 0; display: grid; place-items: center; font: 800 .9rem var(--display); }
+.gb-trend { font-size: .78rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.gb-trend.up { background: #ddf3e6; color: #1f7a4d; } .gb-trend.down { background: #fbe3e1; color: #b3261e; } .gb-trend.same { background: #eef1f3; color: #5a6e6b; }
+.gb-one { display: flex; align-items: center; gap: 8px; flex: 1 1 220px; }
+.gb-one b { font: 800 1.4rem var(--display); color: #1b2a5a; }
+.gb-tscore { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: var(--muted); font-weight: 700; }
+.gb-tscore input { width: 70px; padding: 6px 8px; border-radius: 12px; border: 1.5px solid #d3e0e6; text-align: center; font-weight: 700; }
+.gb-units { min-width: 90px; text-align: right; }
+.gb-detail { border-top: 1px dashed #dbe5e2; padding: 14px 16px 18px; background: linear-gradient(#f7fbff, #fff 120px); }
+.gb-secs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 14px; }
+.gb-sec { background: #fff; border-radius: 18px; padding: 14px 16px; box-shadow: inset 0 4px 0 var(--c), 0 4px 14px rgb(20 48 45 / .07); display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.gb-sec-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gb-sec-h h4 { margin: 0; font: 800 1.1rem var(--display); color: var(--c); }
+.gb-sec-v { display: flex; align-items: center; gap: 8px; }
+.gb-sec-v b { font: 800 1.3rem var(--display); color: #1b2a5a; }
+.gb-lab { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #5a6e6b; margin-top: 4px; }
+.gb-bars { display: flex; align-items: flex-end; gap: 6px; height: 120px; padding: 6px 4px 0; overflow-x: auto; background: repeating-linear-gradient(to top, #eef3f5 0 1px, transparent 1px 25%); border-radius: 10px; }
+.gb-bar { flex: 1 0 34px; max-width: 52px; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; cursor: pointer; border-radius: 8px; }
+.gb-bar:focus-visible { outline: 3px solid #e08a14; }
+.gb-col { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 2px; }
+.gb-fill { width: 70%; border-radius: 8px 8px 3px 3px; min-height: 4px; transition: height .4s; }
+.gb-bar.now .gb-fill { background-image: repeating-linear-gradient(45deg, rgb(255 255 255 / .35) 0 4px, transparent 4px 8px) !important; }
+.gb-bv { font-size: .72rem; font-weight: 800; color: #1b2a5a; }
+.gb-bl { font-size: .66rem; color: #5a6e6b; white-space: nowrap; }
+.gb-bar.on { background: #fff4d6; box-shadow: 0 0 0 2px #f6c453; }
+.gb-parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.gb-part { background: #f4f8fa; border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; }
+.gb-part span { font-size: .75rem; color: #5a6e6b; font-weight: 700; }
+.gb-part b { font: 800 1.05rem var(--display); color: #1b2a5a; }
+.gb-part small { color: #5a6e6b; font-size: .72rem; }
+.gb-qs { display: flex; flex-direction: column; gap: 6px; }
+.gb-unit { background: #f8fafb; border-radius: 12px; padding: 6px 10px; }
+.gb-unit summary { cursor: pointer; display: flex; justify-content: space-between; gap: 8px; align-items: center; font-weight: 700; color: #1b2a5a; }
+.gb-ql { list-style: none; margin: 8px 0 2px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.gb-ql li { display: flex; gap: 10px; align-items: flex-start; background: #fff; border-radius: 10px; padding: 6px 8px; }
+.gb-mark { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; color: #fff; }
+.gb-ql li.r .gb-mark { background: #1f7a4d; } .gb-ql li.w .gb-mark { background: #b3261e; }
+.gb-qt { font-weight: 600; }
+.gb-ql .ok { color: #1f7a4d; font-weight: 700; } .gb-ql .no { color: #b3261e; font-weight: 700; }
+.gb-life-h { margin: 6px 0; color: #1b2a5a; }
+.gb-life td, .gb-life th { white-space: normal; }
+.gb-lname { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.gb-life input.tick { width: 22px; height: 22px; accent-color: #b5476b; }
+@media (max-width: 700px) { .gb-chips { grid-template-columns: repeat(2, minmax(0, 1fr)); flex-basis: 100%; } .gb-end { margin-left: auto; } .gb-units { text-align: left; } }
+@media print { .gb-ctl, .gb-subj { display: none; } }
 </style>
 
 <!-- LOGIN / REGISTER (Supabase) -->
@@ -922,11 +1002,19 @@ select { border-radius: 12px; }
 
     <!-- GRADEBOOK -->
     <section class="view" id="view-grades" hidden>
-      <div class="row">
-        <div><h2 data-t="tGrades">Gradebook</h2><p class="muted" data-t="gradeSub">Enter a score out of 100 for each learner. Changes save on this device.</p></div>
-        <div class="row" style="gap:10px;align-items:flex-end"><div class="field" style="max-width: 280px"><label for="g-module" data-t="fModule">Module</label><select id="g-module"></select></div><div class="field" style="max-width: 170px" id="g-grade-f"><label for="g-grade" data-t="fGrade">Grade</label><select id="g-grade"></select></div></div>
+      <div class="row gb-top">
+        <div><h2 data-t="tGrades">Gradebook</h2><p class="muted" data-t="gbSub">Tap a girl to open her grades.</p></div>
+        <div class="gb-ctl">
+          <div class="field" id="gb-term-f"><label for="gb-term" data-t="gbTerm">Term</label><select id="gb-term"></select></div>
+          <div class="field" id="g-grade-f"><label for="g-grade" data-t="fGrade">Grade</label><select id="g-grade"></select></div>
+          <div class="field"><label for="gb-search" data-t="gbSearch">Search by name</label><input id="gb-search" type="search" autocomplete="off"></div>
+          <button class="btn ghost" id="gb-all" type="button" data-t="gbOpenAll">Open all</button>
+        </div>
       </div>
-      <div class="tw"><table><thead id="grade-head"></thead><tbody id="grade-rows"></tbody></table></div>
+      <div class="gb-subj" id="gb-subj" role="group" aria-label="Subject"></div>
+      <select id="g-module" class="gb-hidden" aria-hidden="true" tabindex="-1"></select>
+      <div class="gb-sum" id="gb-sum"></div>
+      <div class="gb-list" id="grade-rows"></div>
       <p class="small muted" id="grade-note"></p>
     </section>
 
@@ -2601,10 +2689,181 @@ function studentDetail(mid, s) {
   });
   return wrap;
 }
-function renderGradeSelect() { const s = $('#g-module'), v = s.value || 'num'; s.replaceChildren(...MODULES.map((m) => new Option(modLabel(m), m.id))); s.value = v; const gs = $('#g-grade'), gv = gs.value || ''; gs.replaceChildren(new Option(t('allGrades'), ''), ...GRADES.map((g) => new Option(`${t('grade')} ${g}`, String(g)))); gs.value = gv; }
-$('#g-grade').addEventListener('change', renderGrades);
-$('#g-module').addEventListener('change', renderGrades);
+$('#g-grade').addEventListener('change', () => renderGrades());
+$('#g-module').addEventListener('change', () => renderGrades());
+
+// ---- gradebook v2 ----
+Object.assign(T.en, { gbSub: 'Tap a girl to open her grades: each subject term by term, that term\'s report, and the questions she got right and wrong.', gbAll: 'All subjects', gbTerm: 'Term', gbSearch: 'Search by name', gbOpenAll: 'Open all', gbCloseAll: 'Close all', gbOverTime: 'Term by term', gbIn: 'In', gbQs: 'Class quiz questions', gbRight: 'right', gbWrong: 'wrong', gbHer: 'Her answer', gbCorrect: 'Correct answer', gbNoQs: 'No class quiz answers in this term.', gbClassAvg: 'Class average', gbScored: 'girls with a score', gbOverall: 'Overall', gbNoScore: 'No score yet', gbSaved: 'saved report', gbVs: 'since last term', gbQ: 'Class questions', gbCats: 'CATs', gbExam: 'Exam', gbTeacher: 'Teacher score', gbNone: 'No girls match.', gbLifeH: 'Life Skills attendance', gbOpen: 'Open', gbClose: 'Close', gbNoteAll: 'Scores = average of class questions, CATs and the exam. Stars: 3 = EE (80+), 2 = ME (50–79), 1 = AE (30–49). Tap a girl to open her grades.', gbNoteOne: 'Teacher score is your own mark out of 100 and saves as you type. Score = average of class questions, CATs and the exam.' });
+Object.assign(T.sw, { gbSub: 'Gusa msichana kuona alama zake: kila somo muhula kwa muhula, ripoti ya muhula huo, na maswali aliyopata sahihi na makosa.', gbAll: 'Masomo yote', gbTerm: 'Muhula', gbSearch: 'Tafuta kwa jina', gbOpenAll: 'Fungua yote', gbCloseAll: 'Funga yote', gbOverTime: 'Muhula kwa muhula', gbIn: 'Katika', gbQs: 'Maswali ya jaribio la darasa', gbRight: 'sahihi', gbWrong: 'makosa', gbHer: 'Jibu lake', gbCorrect: 'Jibu sahihi', gbNoQs: 'Hakuna majibu ya jaribio la darasa katika muhula huu.', gbClassAvg: 'Wastani wa darasa', gbScored: 'wasichana wenye alama', gbOverall: 'Jumla', gbNoScore: 'Bado hakuna alama', gbSaved: 'ripoti iliyohifadhiwa', gbVs: 'tangu muhula uliopita', gbQ: 'Maswali ya darasa', gbCats: 'CAT', gbExam: 'Mtihani', gbTeacher: 'Alama ya mwalimu', gbNone: 'Hakuna msichana anayelingana.', gbLifeH: 'Mahudhurio ya Stadi za maisha', gbOpen: 'Fungua', gbClose: 'Funga', gbNoteAll: 'Alama = wastani wa maswali ya darasa, CAT na mtihani. Nyota: 3 = EE (80+), 2 = ME (50–79), 1 = AE (30–49). Gusa msichana kuona alama zake.', gbNoteOne: 'Alama ya mwalimu ni alama yako kati ya 100 na inahifadhiwa unapoandika. Alama = wastani wa maswali ya darasa, CAT na mtihani.' });
+const SUBJ_COL = { maths: '#3d5fe0', english: '#c8661b', kiswahili: '#2f8a5b', science: '#7b4bc4', life: '#b5476b' };
+const gbOpen = new Set(); let gbTerm = null, gbQuery = '';
+const curTerm = () => termOf(todayIso());
+const modOfSubj = (g) => MODULES.find((m) => m.subject === g && m.area === 'learn');
+function subjTerm(p, r, term, g) {
+  const rep = (r.reports || {})[term];
+  if (rep && term !== curTerm()) { const x = (rep.subjects || []).find((y) => y.s === g) || {}; return { score: x.score ?? null, qr: x.qr || 0, qt: x.qt || 0, cat: x.cat ?? null, catMs: [], exam: x.exam ?? null, saved: true }; }
+  const d = rcData(p, r, term).rows.find((y) => y.g === g);
+  return { score: d.score, qr: d.right, qt: d.total, cat: d.cat.rate != null ? Math.round(d.cat.rate * 100) : null, catMs: d.cat.ms, exam: d.exam.rate != null ? Math.round(d.exam.rate * 100) : null, saved: false };
+}
+function termKeys(r) { return [...new Set([...Object.keys(r.reports || {}), curTerm()])].sort(); }
+const prevTerm = (r, term) => { const ks = termKeys(r).filter((k) => k < term); return ks.length ? ks[ks.length - 1] : null; };
+const gradeAt = (r, k) => (k === curTerm() ? r.school_grade : ((r.reports || {})[k] || {}).school_grade) || null;
+const shortTerm = (k, g) => (g ? 'G' + g + ' ' : '') + 'T' + k.split('-')[1];
+function lvBadge(s) { const L = levelOf(s); return L ? el('span', 'lvl ' + L, L) : el('span', 'muted', '–'); }
+function overallOf(p, r, term) { return avgOf(GRADED.map((g) => subjTerm(p, r, term, g).score)); }
+function trendEl(now, before) {
+  if (now == null || before == null) return null; const d = now - before;
+  const e = el('span', 'gb-trend ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'same'), (d > 0 ? '▲ +' : d < 0 ? '▼ ' : '● ') + d);
+  e.title = t('gbVs'); e.setAttribute('aria-label', (d > 0 ? '+' : '') + d + ' ' + t('gbVs')); return e;
+}
+function miniRing(score) {
+  const C = 2 * Math.PI * 16, f = score == null ? 0 : score / 100, col = LV_COLOR[levelOf(score)] || '#9aa9ad';
+  const d = el('span', 'gb-ring'); d.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="none" stroke="#e4ecef" stroke-width="5"/>' + (f ? '<circle cx="20" cy="20" r="16" fill="none" stroke="' + col + '" stroke-width="5" stroke-linecap="round" stroke-dasharray="' + (C * f).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 20 20)"/>' : '') + '</svg>';
+  d.append(el('b', null, score != null ? String(score) : '–')); d.style.color = col; return d;
+}
+function subjChip(p, r, g, term) {
+  const v = subjTerm(p, r, term, g), c = el('div', 'gb-chip'); c.style.setProperty('--c', SUBJ_COL[g]);
+  const top = el('span', 'gb-chip-s', subjName(g)); const mid = el('span', 'gb-chip-v'); mid.append(el('b', null, v.score != null ? v.score + '%' : '–'), lvBadge(v.score));
+  c.append(top, mid, starRow(v.score, 'sm')); c.setAttribute('aria-label', subjName(g) + ': ' + (v.score != null ? v.score + '%, ' + levelOf(v.score) : t('gbNoScore'))); return c;
+}
+function termBars(p, r, g, term) {
+  const wrap = el('div', 'gb-bars'); wrap.setAttribute('role', 'list');
+  termKeys(r).forEach((k) => {
+    const v = subjTerm(p, r, k, g), b = el('div', 'gb-bar' + (k === term ? ' on' : '') + (k === curTerm() ? ' now' : '')); b.setAttribute('role', 'listitem');
+    const col = LV_COLOR[levelOf(v.score)] || '#c9d3dc', h = v.score == null ? 4 : Math.max(6, v.score);
+    const fill = el('span', 'gb-fill'); fill.style.height = h + '%'; fill.style.background = col;
+    const val = el('span', 'gb-bv', v.score != null ? String(v.score) : '–');
+    const lab = el('span', 'gb-bl', shortTerm(k, gradeAt(r, k)));
+    const col2 = el('span', 'gb-col'); col2.append(val, fill); b.append(col2, lab);
+    b.setAttribute('aria-label', termLabel(k) + (gradeAt(r, k) ? ' · ' + t('grade') + ' ' + gradeAt(r, k) : '') + ': ' + (v.score != null ? v.score + '%' : t('gbNoScore')));
+    b.addEventListener('click', () => { gbTerm = k; renderGrades(); });
+    b.tabIndex = 0; b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); gbTerm = k; renderGrades(); } });
+    wrap.append(b);
+  });
+  return wrap;
+}
+function questionsFor(p, g, term) {
+  const box = el('div', 'gb-qs'); let any = false;
+  LESSONS.filter((l) => mod(l.mod).subject === g && quizQs(l.id).length).forEach((l) => {
+    const res = results[l.id]?.[p.id]; if (!res || termOf(res.at) !== term) return;
+    const qs = quizQs(l.id).filter((q) => q.id in res.answers); if (!qs.length) return; any = true;
+    const right = qs.filter((q) => res.answers[q.id] === q.a).length;
+    const u = el('details', 'gb-unit'); const sm = el('summary'); sm.append(el('span', 'gb-ut', l.title), el('span', 'chip ' + (right / qs.length >= .6 ? 'ok' : 'warn'), right + ' / ' + qs.length + ' ' + t('gbRight')));
+    u.append(sm); u.open = right < qs.length;
+    const ol = el('ol', 'gb-ql');
+    qs.forEach((q) => {
+      const ok = res.answers[q.id] === q.a, li = el('li', ok ? 'r' : 'w');
+      li.append(el('span', 'gb-mark', ok ? '✓' : '✗'));
+      const tx2 = el('div'); tx2.append(el('div', 'gb-qt', q.text));
+      const a = el('div', 'small'); const given = res.answers[q.id];
+      if (ok) a.append(el('span', 'ok', q.opts[q.a]));
+      else { a.append(el('span', 'no', t('gbHer') + ': ' + (given === -1 ? t('markedWrong') : (q.opts[given] ?? '–'))), document.createTextNode('  ·  '), el('span', 'ok', t('gbCorrect') + ': ' + q.opts[q.a])); }
+      tx2.append(a); li.append(tx2); ol.append(li);
+    });
+    u.append(ol); box.append(u);
+  });
+  if (!any) box.append(el('p', 'small muted', t('gbNoQs')));
+  return box;
+}
+function subjSection(p, r, g, term) {
+  const v = subjTerm(p, r, term, g), sec = el('section', 'gb-sec'); sec.style.setProperty('--c', SUBJ_COL[g]);
+  const h = el('div', 'gb-sec-h'); const nm = el('h4', null, subjName(g)); const right = el('div', 'gb-sec-v'); right.append(el('b', null, v.score != null ? v.score + '%' : '–'), starRow(v.score, 'sm'), lvBadge(v.score));
+  const tr = trendEl(v.score, prevTerm(r, term) ? subjTerm(p, r, prevTerm(r, term), g).score : null); if (tr) right.append(tr);
+  h.append(nm, right); sec.append(h);
+  sec.append(el('span', 'gb-lab', t('gbOverTime')), termBars(p, r, g, term));
+  sec.append(el('span', 'gb-lab', t('gbIn') + ' ' + termLabel(term) + (v.saved ? ' · ' + t('gbSaved') : '')));
+  const parts = el('div', 'gb-parts');
+  const part = (k, val) => { const d = el('div', 'gb-part'); d.append(el('span', null, k), el('b', null, val)); parts.append(d); return d; };
+  part(t('gbQ'), v.qt ? v.qr + ' / ' + v.qt + ' (' + pct(v.qr / v.qt) + ')' : '–');
+  const cp = part(t('gbCats'), v.cat != null ? v.cat + '%' : '–'); if (v.catMs && v.catMs.length) cp.append(el('small', null, v.catMs.map((m) => m.name + ': ' + m.score + '/' + m.out_of).join(' · ')));
+  part(t('gbExam'), v.exam != null ? v.exam + '%' : '–');
+  const m = modOfSubj(g); if (term === curTerm() && m && grades[m.id]?.[p.id] != null) part(t('gbTeacher'), String(grades[m.id][p.id]));
+  sec.append(parts, el('span', 'gb-lab', t('gbQs')), questionsFor(p, g, term));
+  return sec;
+}
+function gbCard(p, subj, term) {
+  const r = rowByKey(p.id) || {}, open = gbOpen.has(p.id), card = el('article', 'gb-card' + (open ? ' open' : ''));
+  const head = el('div', 'gb-head');
+  const tg = el('button', 'gb-toggle'); tg.type = 'button'; tg.id = 'gb-t-' + p.id; tg.setAttribute('aria-expanded', String(open)); tg.setAttribute('aria-controls', 'gb-d-' + p.id);
+  const who = el('span', 'gb-who'); who.append(el('b', null, p.name), el('span', 'small muted', (levelIn(p.id) ? t('grade') + ' ' + levelIn(p.id) : '–') + (p.age != null ? ' · ' + p.age + ' ' + t('yrs') : '')));
+  tg.append(el('span', 'gb-chev', '›'), avatarEl(p.name, r, 'mini-av'), who); head.append(tg);
+  const subjs = subj === 'all' ? GRADED : [subj];
+  if (subj === 'all') {
+    const chips = el('div', 'gb-chips'); subjs.forEach((g) => chips.append(subjChip(p, r, g, term))); head.append(chips);
+    const ov = overallOf(p, r, term), pv = prevTerm(r, term) ? overallOf(p, r, prevTerm(r, term)) : null;
+    const end = el('div', 'gb-end'); end.append(miniRing(ov)); const tr = trendEl(ov, pv); if (tr) end.append(tr); head.append(end);
+  } else {
+    const v = subjTerm(p, r, term, subj), m = modOfSubj(subj), cur = term === curTerm();
+    const sc = el('div', 'gb-one'); sc.append(el('b', null, v.score != null ? v.score + '%' : '–'), starRow(v.score, 'sm'), lvBadge(v.score));
+    const tr = trendEl(v.score, prevTerm(r, term) ? subjTerm(p, r, prevTerm(r, term), subj).score : null); if (tr) sc.append(tr); head.append(sc);
+    const tsc = el('label', 'gb-tscore'); tsc.append(el('span', null, t('gbTeacher')));
+    const inp = el('input', 'score'); inp.type = 'number'; inp.min = 0; inp.max = 100; inp.inputMode = 'numeric'; inp.id = 'g-' + m.id + '-' + p.id; inp.setAttribute('aria-label', p.name + ' ' + t('gbTeacher')); inp.value = grades[m.id]?.[p.id] ?? ''; inp.disabled = !cur;
+    const lvT = el('span', 'gb-tlv'); const paint = () => { lvT.replaceChildren(lvBadge(grades[m.id]?.[p.id])); }; paint();
+    inp.addEventListener('input', () => { grades[m.id] = grades[m.id] || {}; if (inp.value === '') delete grades[m.id][p.id]; else grades[m.id][p.id] = Math.max(0, Math.min(100, Math.round(+inp.value))); save(); paint(); renderClass(); });
+    inp.addEventListener('blur', () => { if (inp.value !== '' && grades[m.id]?.[p.id] != null) inp.value = grades[m.id][p.id]; });
+    tsc.append(inp, lvT); head.append(tsc);
+    const units = LESSONS.filter((l) => l.mod === m.id && quizQs(l.id).length && (!l.grade || l.grade === levelIn(p.id)));
+    head.append(el('span', 'gb-units small muted', units.filter((l) => results[l.id]?.[p.id]).length + ' / ' + units.length + ' ' + t('unitsDone').toLowerCase()));
+  }
+  head.addEventListener('click', (e) => { if (e.target.closest('input, label, a') || e.target.closest('.gb-toggle')) return; tg.click(); });
+  tg.addEventListener('click', () => { if (gbOpen.has(p.id)) gbOpen.delete(p.id); else gbOpen.add(p.id); renderGrades(); const b = document.getElementById('gb-t-' + p.id); if (b) b.focus(); });
+  card.append(head);
+  const d = el('div', 'gb-detail'); d.id = 'gb-d-' + p.id; d.hidden = !open;
+  if (open) { const grid = el('div', 'gb-secs' + (subj === 'all' ? '' : ' one')); subjs.forEach((g) => grid.append(subjSection(p, r, g, term))); d.append(grid); }
+  card.append(d); return card;
+}
+function gbSummary(list, subj, term) {
+  const box = $('#gb-sum'); box.replaceChildren();
+  const vals = list.map((p) => { const r = rowByKey(p.id) || {}; return subj === 'all' ? overallOf(p, r, term) : subjTerm(p, r, term, subj).score; }).filter((x) => x != null);
+  const avg = avgOf(vals), cnt = { EE: 0, ME: 0, AE: 0, BE: 0 }; vals.forEach((v) => { cnt[levelOf(v)]++; });
+  const a = el('div', 'gb-sum-avg'); a.append(miniRing(avg), el('span', null, t('gbClassAvg') + ' · ' + termLabel(term)));
+  const bar = el('div', 'gb-dist'); bar.setAttribute('role', 'img'); bar.setAttribute('aria-label', Object.entries(cnt).map(([k, n]) => k + ' ' + n).join(', '));
+  Object.entries(cnt).forEach(([k, n]) => { if (!n) return; const s = el('span', 'lv-' + k); s.style.flex = n; s.style.background = LV_COLOR[k]; s.textContent = k + ' ' + n; bar.append(s); });
+  const info = el('div', 'gb-sum-dist'); info.append(bar, el('span', 'small muted', vals.length + ' / ' + list.length + ' ' + t('gbScored')));
+  box.append(a, info);
+}
+function renderLifeGrid(list) {
+  const tb = $('#grade-rows'), ms = MODULES.filter((m) => m.area === 'well'), tw = el('div', 'tw'), tbl = el('table', 'gb-life'), th = el('tr');
+  th.append(el('th', null, t('hName'))); ms.forEach((m) => th.append(el('th', 'n', m.name[lang]))); const hd = el('thead'); hd.append(th);
+  const body = el('tbody');
+  list.forEach((s) => { const tr = el('tr'); const nm = el('td'); const w = el('span', 'gb-lname'); w.append(avatarEl(s.name, rowByKey(s.id) || {}, 'mini-av'), document.createTextNode(s.name)); nm.append(w); tr.append(nm);
+    ms.forEach((m) => { const td = el('td', 'n'); if (m.minAge && !(s.age >= m.minAge)) { td.append(el('span', 'muted small', '15+')); tr.append(td); return; }
+      const cb = el('input', 'tick'); cb.type = 'checkbox'; cb.id = 'att-' + m.id + '-' + s.id; cb.setAttribute('aria-label', s.name + ' · ' + m.name[lang] + ' · ' + t('attended')); cb.checked = (attendance[m.id] || []).includes(s.id);
+      cb.addEventListener('change', () => { const set = new Set(attendance[m.id] || []); cb.checked ? set.add(s.id) : set.delete(s.id); attendance[m.id] = [...set]; save(); renderClass(); toast(t('saved')); });
+      td.append(cb); tr.append(td); });
+    body.append(tr); });
+  tbl.append(hd, body); tw.append(tbl); tb.append(el('h3', 'gb-life-h', t('gbLifeH')), tw);
+}
 function renderGrades() {
+  const sel = $('#g-module'); if (!sel.querySelector('option[value="all"]')) renderGradeSelect();
+  const v = sel.value || 'all', m = v === 'all' ? null : mod(v), subj = v === 'all' ? 'all' : m.area === 'well' ? 'life' : m.subject;
+  // subject pills
+  const pills = $('#gb-subj'); pills.replaceChildren();
+  [['all', t('gbAll')], ...GRADED.map((g) => [g, subjName(g)]), ['life', SUBJECTS.find((s) => s.id === 'life').name[lang]]].forEach(([k, label]) => {
+    const b = el('button', 'gb-pill', label); b.type = 'button'; b.id = 'gb-p-' + k; b.setAttribute('aria-pressed', String(k === subj)); b.style.setProperty('--c', SUBJ_COL[k] || '#136f63');
+    b.addEventListener('click', () => { sel.value = k === 'all' ? 'all' : k === 'life' ? 'men' : modOfSubj(k).id; renderGrades(); $('#gb-p-' + k).focus(); }); pills.append(b);
+  });
+  // terms
+  const ts = $('#gb-term'), terms = [...new Set(STUDENTS.flatMap((p) => termKeys(rowByKey(p.id) || {})))].sort().reverse();
+  if (!gbTerm || !terms.includes(gbTerm)) gbTerm = curTerm();
+  ts.replaceChildren(...terms.map((k) => new Option(termLabel(k) + (k === curTerm() ? ' (' + t('jrNow').toLowerCase() + ')' : ''), k))); ts.value = gbTerm;
+  $('#g-grade-f').hidden = subj === 'life'; $('#gb-term-f').hidden = subj === 'life'; $('#gb-all').hidden = subj === 'life';
+  const gf = +($('#g-grade').value || 0), q = gbQuery.trim().toLowerCase();
+  const list = STUDENTS.filter((s) => (subj === 'life' || !gf || levelIn(s.id) === gf) && (!q || s.name.toLowerCase().includes(q)));
+  const tb = $('#grade-rows'); tb.replaceChildren(); $('#gb-sum').hidden = subj === 'life';
+  $('#gb-all').textContent = list.length && list.every((s) => gbOpen.has(s.id)) ? t('gbCloseAll') : t('gbOpenAll');
+  if (!list.length) { tb.append(el('p', 'empty muted', t('gbNone'))); $('#grade-note').textContent = ''; return; }
+  if (subj === 'life') { renderLifeGrid(list); $('#grade-note').textContent = t('attNote') + ' ' + t('ageNote'); return; }
+  gbSummary(list, subj, gbTerm);
+  list.forEach((p) => tb.append(gbCard(p, subj, gbTerm)));
+  $('#grade-note').textContent = subj === 'all' ? t('gbNoteAll') : t('gbNoteOne');
+}
+function renderGradeSelect() { const s = $('#g-module'), v = s.value || 'all'; s.replaceChildren(new Option(t('gbAll'), 'all'), ...MODULES.map((m) => new Option(modLabel(m), m.id))); s.value = v; const gs = $('#g-grade'), gv = gs.value || ''; gs.replaceChildren(new Option(t('allGrades'), ''), ...GRADES.map((g) => new Option(t('grade') + ' ' + g, String(g)))); gs.value = gv; }
+$('#gb-term').addEventListener('change', (e) => { gbTerm = e.target.value; renderGrades(); });
+$('#gb-search').addEventListener('input', (e) => { gbQuery = e.target.value; renderGrades(); $('#gb-search').focus(); });
+$('#gb-all').addEventListener('click', () => { const v = $('#g-module').value, ids = STUDENTS.map((s) => s.id); const allOpen = ids.every((i) => gbOpen.has(i)); ids.forEach((i) => (allOpen ? gbOpen.delete(i) : gbOpen.add(i))); renderGrades(); });
+
+function renderGradesOld() {
   const mid = $('#g-module').value || 'num', m = mod(mid), head = $('#grade-head'), tb = $('#grade-rows');
   head.replaceChildren(); tb.replaceChildren();
   $('#g-grade-f').hidden = m.area === 'well';

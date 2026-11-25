@@ -47,9 +47,11 @@ A teacher runs a girls' club session: she takes the register, presents a lesson 
 
 <p align="center"><img src="docs/images/pupil-journey.png" alt="Her journey: Grade 2 and 3 passed with stars, Grade 4 now, Grade 5 locked" width="720"></p>
 
-**Grading and wellbeing attendance.** Learning modules are scored out of 100 and mapped to CBC levels (EE, ME, AE, BE). Wellbeing modules record attendance only, and reproductive health is limited to girls aged 15 and over.
+**Gradebook.** One card per girl. Closed, it shows her score, stars and CBC level (EE, ME, AE, BE) in every subject, her overall score and the change since last term. Open, each subject shows her score term by term (tap a term to see it), that term's class questions, CATs, exam and teacher score, and every class-quiz question she got right or wrong with the correct answer. Pick a subject, term or grade, or search by name. Life Skills records attendance only, and reproductive health is limited to girls aged 15 and over.
 
-![Entering a score and marking wellbeing attendance](docs/images/demo-gradebook.gif)
+![A girl's gradebook card opened: subjects term by term and her quiz answers](docs/images/gradebook-open.png)
+
+![Opening a girl, entering a teacher score and marking Life Skills attendance](docs/images/demo-gradebook.gif)
 
 <p align="center"><img src="docs/images/portal-mobile.png" alt="Teacher portal on a phone" width="300"></p>
 

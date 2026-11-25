@@ -528,7 +528,7 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
 .screen.scened #qz-step, .screen.scened #act-step { background: rgb(255 255 255 / .85); padding: 4px 12px; border-radius: 999px; font-weight: 700; }
 
 /* profile: her journey */
-.pp-card.jr { position: relative; overflow: hidden; background: linear-gradient(#a9dcfb, #d9f0ff 55%, #eef8ff); border-color: #bfdcef; color: #14302d; padding-bottom: 120px; }
+.pp-card.jr { position: relative; overflow: hidden; background: linear-gradient(#a9dcfb, #d9f0ff 55%, #eef8ff); border-color: #bfdcef; color: #14302d; padding-bottom: 170px; }
 .jr .muted { color: #3f5754; }
 .jr-sky { position: absolute; inset: 0 0 auto 0; height: 200px; pointer-events: none; opacity: .9; }
 .jr-sky svg, .jr-ground svg { display: block; width: 100%; height: 100%; }
@@ -561,6 +561,43 @@ video.lesson-video { width: 100%; max-width: 100%; border-radius: var(--r); back
 .jr-terms .chip { cursor: pointer; background: #fff; }
 .jr-key { margin-top: 10px; }
 @media print { .pp-card.jr { display: none; } }
+
+/* profile look: sky header, bubbly cards, icons, rings (always light, like the journey) */
+#pupil-body.pp-themed { --bg: #f3f6f5; --surface: #ffffff; --ink: #14302d; --muted: #4f6461; --line: #dbe5e2; --teal: #136f63; --teal-soft: #dcefeb; --sun: #e9a23b; --sun-soft: #fbedd6; --rose: #b5476b; --rose-soft: #f6e1e8; --ok: #1f7a4d; --warn: #9a5b00; --bad: #b3261e; --on-accent: #fff; color-scheme: light;
+  position: relative; isolation: isolate; color: var(--ink); background: linear-gradient(#a9dcfb 0, #d6efff 200px, #eef7f6 420px, #f3f6f5 640px); border-radius: 26px; padding: 22px clamp(12px, 2.5vw, 28px) 28px; }
+.pp-sky { position: absolute; inset: 0 0 auto 0; height: 210px; z-index: -1; pointer-events: none; overflow: hidden; border-radius: 26px 26px 0 0; }
+.pp-sky svg { display: block; width: 100%; height: 100%; }
+.pp-themed .pp-who { gap: 20px; }
+.pp-themed .pp-avatar { width: 96px; height: 96px; font-size: 2rem; box-shadow: 0 0 0 5px #fff, 0 8px 20px rgb(20 48 45 / .2); background: #fff3d6; color: #8a5a10; }
+.pp-themed .pp-avatar.art { background: #fff3d6; }
+.pp-themed .pp-who h1 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); color: #1b2a5a; }
+.pp-themed .pp-who p { color: #3f5754; font-weight: 600; }
+.pp-themed .pp-school { border-left: 0; background: #fff; border-radius: 20px; padding: 10px 20px; box-shadow: 0 4px 0 rgb(61 95 224 / .18), 0 8px 18px rgb(20 48 45 / .1); margin-right: 10px; }
+.pp-themed .pp-school b { color: #3d5fe0; font-size: 1.9rem; }
+.pp-themed .chips .chip { border-radius: 999px; padding-inline: 12px; }
+.pp-themed .pp-grid { gap: 16px; }
+.pp-themed .pp-card { border: 0; border-radius: 22px; padding: 18px 20px; box-shadow: 0 4px 0 rgb(20 48 45 / .05), 0 10px 26px rgb(20 48 45 / .08); }
+.pp-themed .pp-card.pp-k { border-top: 5px solid var(--c); }
+.pp-themed .pp-card.sens { border-left: 0; }
+.pp-themed .pp-card.jr { border-top: 0; padding-bottom: 170px; }
+@media (max-width: 600px) { .pp-sky, .jr-sky { display: none; } .jr-bit { transform: translateX(calc((var(--x, 1) - 1) * 40px)); max-width: 70vw; } }
+.pp-h { display: flex; align-items: center; gap: 10px; font-size: 1.12rem; }
+.pp-ic { flex: none; width: 36px; height: 36px; border-radius: 12px; display: inline-grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 15%, #fff); }
+.pp-ic svg { width: 21px; height: 21px; }
+.pp-themed .pp-kv dt { color: #5a6e6b; }
+.pp-themed .pp-kv dd { color: #14302d; }
+.pp-themed .ln-head .chip { background: #e6ebfd; color: #2b45a8; }
+.pp-themed .ln-big { gap: 8px; margin: 14px 0; }
+.ring-stat { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ring { position: relative; width: 112px; height: 112px; }
+.ring svg { width: 100%; height: 100%; display: block; }
+.ring b { position: absolute; inset: 0; display: grid; place-items: center; font: 800 1.55rem var(--display); }
+.ring-stat > span { font-size: .85rem; color: #4f6461; font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) { .ring-arc { animation: ringIn .9s ease-out both; } @keyframes ringIn { from { stroke-dasharray: 0 999; } } }
+.pp-themed .tw table { border-collapse: separate; border-spacing: 0; }
+.pp-themed .tw { border-radius: 16px; }
+.pp-themed .pp-report { border-top-width: 5px; }
+@media print { #pupil-body.pp-themed { background: none; padding: 0; } .pp-sky { display: none; } }
 </style>
 
 <!-- LOGIN / REGISTER (Supabase) -->
@@ -3216,7 +3253,7 @@ function reportCard(p, r) {
       el('td', 'n', x.exam.ms.length ? pct(x.exam.rate) : '–'), el('td', 'n', x.score != null ? x.score + '%' : '–'), lvl(x.score));
     body.append(tr);
   });
-  const tt = el('tr', 'rc-total'); tt.append(el('td', null, t('rcOverall')), el('td'), el('td'), el('td'), el('td'), el('td', 'n', d.overall != null ? d.overall + '%' : '–'), lvl(d.overall)); body.append(tt);
+  const tt = el('tr', 'rc-total'); tt.append(el('td', null, t('rcOverall')), el('td'), el('td'), el('td'), el('td', 'n', d.overall != null ? d.overall + '%' : '–'), lvl(d.overall)); body.append(tt);
   tb.append(thead, body); wrap.append(tb); box.append(wrap);
   const foot = el('div', 'rc-foot'); foot.append(el('span', null, t('rcAtt') + ': ' + (d.att.of ? d.att.went + ' / ' + d.att.of + ' (' + pct(d.att.went / d.att.of) + ')' : '–')));
   box.append(foot, el('p', 'rc-note', t('rcHow')));
@@ -3407,7 +3444,7 @@ function savedReportCard(p, r, rep, terms, cur) {
       el('td', 'n', x.cat != null ? x.cat + '%' : '–'), el('td', 'n', x.exam != null ? x.exam + '%' : '–'), el('td', 'n', x.score != null ? x.score + '%' : '–'), lvl(x.score));
     body.append(tr);
   });
-  const tt = el('tr', 'rc-total'); tt.append(el('td', null, t('rcOverall')), el('td'), el('td'), el('td'), el('td'), el('td', 'n', rep.overall != null ? rep.overall + '%' : '–'), lvl(rep.overall)); body.append(tt);
+  const tt = el('tr', 'rc-total'); tt.append(el('td', null, t('rcOverall')), el('td'), el('td'), el('td'), el('td', 'n', rep.overall != null ? rep.overall + '%' : '–'), lvl(rep.overall)); body.append(tt);
   tb.append(thead, body); wrap.append(tb); box.append(wrap);
   const att = rep.att && rep.att[1] ? rep.att[0] + ' / ' + rep.att[1] + ' (' + pct(rep.att[0] / rep.att[1]) + ')' : '–';
   const foot = el('div', 'rc-foot'); foot.append(el('span', null, t('rcAttTerm') + ': ' + att)); if (rep.saved_at) foot.append(el('span', null, t('rcSavedOn').replace('{d}', fmtDate(rep.saved_at, { day: 'numeric', month: 'short', year: 'numeric' })))); box.append(foot);
@@ -3454,11 +3491,11 @@ function learningNow(p, r) {
   const cur = termOf(todayIso()), d = rcData(p, r, cur);
   const c = el('div', 'pp-card'); c.id = 'pp-learning';
   const h = el('div', 'ln-head'); h.append(el('h3', null, t('lnTitle')), el('span', 'chip ok', termWithGrade(cur, r.school_grade))); c.append(h);
-  const big = el('div', 'ln-big'); [[t('lnScore'), d.overall != null ? d.overall + '%' : '–'], [t('rcAtt'), d.att.of ? pct(d.att.went / d.att.of) : '–']].forEach(([k, v]) => { const x = el('div'); x.append(el('span', null, k), el('b', null, v)); big.append(x); }); c.append(big);
-  const tw = el('div', 'tw'); const tb = el('table'); const th = el('tr'); [t('rcSubject'), t('rcScore'), t('hLevel')].forEach((x, i) => th.append(el('th', i ? 'n' : null, x)));
+  const big = el('div', 'ln-big'); big.append(ringStat(t('lnScore'), d.overall != null ? d.overall / 100 : null, d.overall != null ? d.overall + '%' : '–', LV_COLOR[levelOf(d.overall)] || '#0b8a78'), ringStat(t('rcAtt'), d.att.of ? d.att.went / d.att.of : null, d.att.of ? pct(d.att.went / d.att.of) : '–', '#3d5fe0')); c.append(big);
+  const tw = el('div', 'tw'); const tb = el('table'); const th = el('tr'); [t('rcSubject'), '', t('rcScore'), t('hLevel')].forEach((x, i) => th.append(el('th', i > 1 ? 'n' : null, x)));
   const thead = el('thead'); thead.append(th); const body = el('tbody');
   d.rows.forEach((x) => { const tr = el('tr'); const L = levelOf(x.score), lt = el('td', 'n'); if (L) lt.append(el('span', 'lvl ' + L, L)); else lt.textContent = '–';
-    tr.append(el('td', null, subjName(x.g)), el('td', 'n', x.score != null ? x.score + '%' : '–'), lt); body.append(tr); });
+    const stc = el('td'); stc.append(starRow(x.score, 'sm')); tr.append(el('td', null, subjName(x.g)), stc, el('td', 'n', x.score != null ? x.score + '%' : '–'), lt); body.append(tr); });
   tb.append(thead, body); tw.append(tb); c.append(tw);
   const ms = MODULES.filter((m) => m.area === 'well' && (!m.minAge || (p.age != null && p.age >= m.minAge)));
   c.append(el('p', 'ln-foot', t('hWellS') + ': ' + ms.filter((m) => (attendance[m.id] || []).includes(p.id)).length + ' / ' + ms.length + ' · ' + t('hToCatch') + ': ' + toCatchFor(p.id)));
@@ -3592,8 +3629,37 @@ function journeyCard(p, r) {
   const gr = el('div', 'jr-ground'); gr.innerHTML = '<svg viewBox="0 -90 1600 350" preserveAspectRatio="xMidYMax slice" aria-hidden="true">' + GROUND.savanna() + '</svg>'; c.append(gr);
   return c;
 }
+
+// ---- profile look ----
+const PP_IC = {
+  about: ['#b5476b', '<circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z" fill="currentColor"/>'],
+  walk: ['#c8661b', '<path d="M9 3 6 21M15 3l3 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M12 5v2.5M12 10.5V13M12 16v2.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'],
+  home: ['#2f8a5b', '<path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/>'],
+  book: ['#3d5fe0', '<path d="M3.5 5a2 2 0 0 1 2-2H11v17H5.5a2 2 0 0 0-2 1zM20.5 5a2 2 0 0 0-2-2H13v17h5.5a2 2 0 0 1 2 1z" fill="currentColor"/>'],
+  chart: ['#0b8a78', '<path d="M4 19 9 13l4 3 7-9" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="7" r="2.2" fill="currentColor"/>'],
+  report: ['#7b4bc4', '<rect x="5" y="4" width="14" height="17" rx="2" fill="currentColor"/><rect x="9" y="2" width="6" height="4" rx="1" fill="currentColor"/><path d="M8.5 11h7M8.5 15h5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'],
+  heart: ['#b5476b', '<path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" fill="currentColor"/>'],
+};
+const LV_COLOR = { EE: '#1f7a4d', ME: '#0b8a78', AE: '#b86e0b', BE: '#b3261e' };
+function ringStat(label, frac, text, color) {
+  const d = el('div', 'ring-stat'), C = 2 * Math.PI * 34, f = frac == null ? 0 : Math.max(0, Math.min(1, frac));
+  const r = el('div', 'ring'); r.innerHTML = '<svg viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="34" fill="none" stroke="#e4ecef" stroke-width="10"/>' + (f ? '<circle class="ring-arc" cx="42" cy="42" r="34" fill="none" stroke="' + color + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + (C * f).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 42 42)"/>' : '') + '</svg>';
+  const b = el('b', null, text); b.style.color = color; r.append(b);
+  d.append(r, el('span', null, label)); return d;
+}
+function decorateProfile(box) {
+  box.classList.add('pp-themed');
+  const map = { [t('ppAbout')]: 'about', [t('ppSchoolWay')]: 'walk', [t('ppHome')]: 'home', [t('lnTitle')]: 'book', [t('pgTitle')]: 'chart', [t('rcTitle')]: 'report', [t('ppChallenges')]: 'heart' };
+  box.querySelectorAll('.pp-card h3').forEach((h) => {
+    const k = map[h.textContent]; if (!k || h.querySelector('.pp-ic')) return;
+    const [c, svg] = PP_IC[k], i = el('span', 'pp-ic'); i.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + svg + '</svg>'; i.style.setProperty('--c', c);
+    h.prepend(i); h.classList.add('pp-h'); const card = h.closest('.pp-card'); card.classList.add('pp-k'); card.style.setProperty('--c', c);
+  });
+  const sky = el('div', 'pp-sky'); sky.setAttribute('aria-hidden', 'true');
+  sky.innerHTML = '<svg viewBox="0 0 1600 300" preserveAspectRatio="xMaxYMin slice">' + SKY.savanna() + '</svg>'; box.prepend(sky);
+}
 function renderPupil() {
-  const box = $('#pupil-body'); box.replaceChildren(); updateSyncLine();
+  const box = $('#pupil-body'); box.replaceChildren(); box.classList.remove('pp-themed'); updateSyncLine();
   const p = pupilKey ? pupilByKey(pupilKey) : null; const r = pupilKey ? rowByKey(pupilKey) : null;
   if (pupilKey && !p) { box.append(el('p', 'empty muted', t('ppMissing'))); return; }
   if (pupilEdit) { box.append(pupilForm(r)); return; }
@@ -3622,7 +3688,7 @@ function renderPupil() {
     if (!(r.support || []).length) sl.append(el('span', 'small muted', t('ppNone')));
     sc.append(sl);
   }
-  box.append(grid, journeyCard(p, r), reportCard(p, r), sc);
+  box.append(grid, journeyCard(p, r), reportCard(p, r), sc); decorateProfile(box);
 }
 function pupilForm(r) {
   const isNew = !r; r = r || { languages: [], away_months: [], challenges: [], support: [], levels: {}, consent: false };

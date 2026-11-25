@@ -144,6 +144,19 @@ td.n, th.n { text-align: center; }
 .screen-stage { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 24px; max-width: 1100px; width: 100%; margin: 0 auto; padding-block: 20px; min-height: 0; overflow: auto; }
 .screen-stage h2 { font-size: clamp(1.6rem, 4.5vw, 3.4rem); }
 .screen-stage p.big { font-size: clamp(1.25rem, 3.2vw, 2.4rem); line-height: 1.35; max-width: 30ch; }
+
+.sc-vis { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: clamp(16px, 3vw, 40px); align-items: center; }
+.sc-vis p.big { max-width: none; }
+@media (max-width: 760px), (orientation: portrait) { .sc-vis { grid-template-columns: 1fr; } }
+.sc-pic { background: #fbf7ec; border-radius: 22px; padding: clamp(10px, 2vw, 22px); box-shadow: 0 6px 24px rgb(0 0 0 / .25); }
+.sc-pic svg { display: block; width: 100%; height: auto; max-height: 58vh; }
+.sc-pic .pop { opacity: 0; transform-box: fill-box; transform-origin: center; animation: picIn .5s cubic-bezier(.2, .9, .3, 1.3) forwards; animation-delay: var(--d, 0s); }
+.sc-pic .draw { stroke-dasharray: 400; stroke-dashoffset: 400; animation: picDraw 1.1s ease forwards; animation-delay: inherit; }
+.sc-pic .hi > rect:first-child { animation: picGlow 1.6s ease-in-out .8s 2 alternate; }
+@keyframes picIn { from { opacity: 0; transform: scale(.6) translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes picDraw { to { stroke-dashoffset: 0; } }
+@keyframes picGlow { to { fill: #f6d27a; } }
+@media (prefers-reduced-motion: reduce) { .sc-pic .pop { animation: none; opacity: 1; } .sc-pic .draw { animation: none; stroke-dashoffset: 0; } .sc-pic .hi > rect:first-child { animation: none; } }
 .screen-opts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
 .screen-opts div { border: 2px solid var(--screen-muted); border-radius: 14px; padding: 14px 18px; font-size: clamp(1.1rem, 2.6vw, 1.8rem); font-weight: 700; }
 .screen-opts div.ans { border-color: var(--sun); background: color-mix(in srgb, var(--sun) 22%, transparent); }
@@ -2006,6 +2019,232 @@ function toggleListen(l, b) {
 
 // ---------- Classroom screen ----------
 let slides = [], si = 0, narrate = true, scLesson = null;
+
+// ---- lesson pictures ----
+const INK = '#1d2b28', SKIN = '#8d5524', HAIR = '#1b1210';
+const g = (inner, s = 1, x = 0, y = 0) => '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')">' + inner + '</g>';
+const IC = {
+  circle: () => '<circle class="draw" cx="50" cy="50" r="38" fill="#f6c453" stroke="' + INK + '" stroke-width="4"/>',
+  triangle: () => '<path class="draw" d="M50 12 L90 84 L10 84 Z" fill="#e57b5a" stroke="' + INK + '" stroke-width="4" stroke-linejoin="round"/>',
+  square: () => '<rect class="draw" x="16" y="16" width="68" height="68" rx="3" fill="#5aa9e6" stroke="' + INK + '" stroke-width="4"/>',
+  rectangle: () => '<rect class="draw" x="6" y="28" width="88" height="48" rx="3" fill="#7cc58b" stroke="' + INK + '" stroke-width="4"/>',
+  sun: () => '<g stroke="#e9a23b" stroke-width="5" stroke-linecap="round">' + [0, 45, 90, 135, 180, 225, 270, 315].map((a) => '<line x1="50" y1="8" x2="50" y2="20" transform="rotate(' + a + ' 50 50)"/>').join('') + '</g><circle cx="50" cy="50" r="24" fill="#f6c453"/>',
+  moon: () => '<path d="M62 14 a36 36 0 1 0 22 58 a30 30 0 1 1 -22 -58z" fill="#e8e3c8"/><circle cx="30" cy="22" r="2" fill="#e8e3c8"/><circle cx="20" cy="40" r="1.6" fill="#e8e3c8"/>',
+  plate: () => '<ellipse cx="50" cy="56" rx="44" ry="26" fill="#fff" stroke="' + INK + '" stroke-width="3"/><ellipse cx="50" cy="54" rx="28" ry="15" fill="#f2efe6" stroke="#c9c2ad" stroke-width="2"/><ellipse cx="44" cy="52" rx="10" ry="6" fill="#e9a23b"/>',
+  wheel: () => '<circle cx="50" cy="50" r="40" fill="none" stroke="' + INK + '" stroke-width="7"/><circle cx="50" cy="50" r="6" fill="' + INK + '"/>' + [0, 30, 60, 90, 120, 150].map((a) => '<line x1="50" y1="12" x2="50" y2="88" stroke="#7b8a87" stroke-width="2" transform="rotate(' + a + ' 50 50)"/>').join(''),
+  house: () => '<rect x="20" y="48" width="60" height="42" fill="#e7c9a0" stroke="' + INK + '" stroke-width="3"/><path d="M10 50 L50 14 L90 50 Z" fill="#b5476b" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/><rect x="43" y="64" width="16" height="26" fill="#7a4a26"/>',
+  chapati: () => '<path d="M14 82 L50 14 L86 82 Q50 92 14 82 Z" fill="#e9b96e" stroke="#a5702e" stroke-width="3" stroke-linejoin="round"/><circle cx="44" cy="58" r="3" fill="#c0843a"/><circle cx="58" cy="70" r="2.5" fill="#c0843a"/><circle cx="50" cy="40" r="2" fill="#c0843a"/>',
+  door: () => '<rect x="26" y="8" width="48" height="86" rx="2" fill="#a0662f" stroke="' + INK + '" stroke-width="3"/><rect x="33" y="16" width="34" height="30" fill="#b9793b"/><rect x="33" y="54" width="34" height="32" fill="#b9793b"/><circle cx="66" cy="52" r="3" fill="#f6c453"/>',
+  book: () => '<path d="M14 22 h34 q4 0 4 4 v62 q0 -4 -4 -4 h-34z" fill="#2b59a8" stroke="' + INK + '" stroke-width="3"/><path d="M86 22 h-34 q-4 0 -4 4 v62 q0 -4 4 -4 h34z" fill="#3d6fc4" stroke="' + INK + '" stroke-width="3"/><line x1="58" y1="38" x2="78" y2="38" stroke="#fff" stroke-width="3"/><line x1="58" y1="48" x2="78" y2="48" stroke="#fff" stroke-width="3"/>',
+  clock: () => '<circle cx="50" cy="50" r="38" fill="#fff" stroke="' + INK + '" stroke-width="5"/><line x1="50" y1="50" x2="50" y2="26" stroke="' + INK + '" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="68" y2="58" stroke="' + INK + '" stroke-width="4" stroke-linecap="round"/>',
+  window: () => '<rect x="12" y="20" width="76" height="58" fill="#cfe8f6" stroke="' + INK + '" stroke-width="4"/><line x1="50" y1="20" x2="50" y2="78" stroke="' + INK + '" stroke-width="4"/><line x1="12" y1="49" x2="88" y2="49" stroke="' + INK + '" stroke-width="4"/>',
+  search: () => '<circle cx="42" cy="42" r="26" fill="#dcefeb" stroke="' + INK + '" stroke-width="6"/><line x1="61" y1="61" x2="88" y2="88" stroke="' + INK + '" stroke-width="9" stroke-linecap="round"/>',
+  pencil: () => '<g transform="rotate(-40 50 50)"><rect x="40" y="6" width="20" height="66" fill="#f6c453" stroke="' + INK + '" stroke-width="3"/><path d="M40 72 L50 94 L60 72 Z" fill="#e7c9a0" stroke="' + INK + '" stroke-width="3"/><path d="M47 87 L50 94 L53 87 Z" fill="' + INK + '"/><rect x="40" y="2" width="20" height="8" fill="#e57373"/></g>',
+  notebook: () => '<rect x="14" y="8" width="72" height="86" rx="4" fill="#fff" stroke="' + INK + '" stroke-width="3"/><circle cx="34" cy="32" r="10" fill="none" stroke="#2b59a8" stroke-width="3"/><path d="M58 22 L70 42 L46 42 Z" fill="none" stroke="#b5476b" stroke-width="3"/><rect x="25" y="56" width="18" height="18" fill="none" stroke="#136f63" stroke-width="3"/><rect x="50" y="58" width="26" height="14" fill="none" stroke="#b8740a" stroke-width="3"/>',
+  stone: () => '<path d="M14 70 Q10 46 34 38 Q54 26 74 40 Q94 52 86 72 Q78 86 50 86 Q20 86 14 70Z" fill="#9a9a92" stroke="#6d6d66" stroke-width="3"/><path d="M36 50 Q46 44 58 48" stroke="#b9b9b1" stroke-width="4" fill="none" stroke-linecap="round"/>',
+  cap: () => '<circle cx="50" cy="50" r="34" fill="#d64545" stroke="' + INK + '" stroke-width="3"/><circle cx="50" cy="50" r="26" fill="none" stroke="#f3b1b1" stroke-width="3" stroke-dasharray="4 4"/>',
+  stick: () => '<rect x="46" y="6" width="8" height="88" rx="3" fill="#b9793b" stroke="#7a4a26" stroke-width="2"/>',
+  bundle: () => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => '<rect x="' + (28 + i * 4.6) + '" y="6" width="5" height="88" rx="2" fill="#b9793b" stroke="#7a4a26" stroke-width="1.4"/>').join('') + '<rect x="24" y="44" width="52" height="10" rx="3" fill="#d64545"/>',
+  clap: () => '<path d="M30 80 Q18 60 26 36 L34 18 Q38 12 42 18 L44 40 L52 16 Q56 10 60 16 L58 46 Q70 34 74 40 Q78 46 66 62 Q56 82 40 86 Z" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2.5"/><g stroke="#e9a23b" stroke-width="4" stroke-linecap="round"><line x1="78" y1="18" x2="88" y2="10"/><line x1="82" y1="30" x2="94" y2="28"/><line x1="70" y1="10" x2="72" y2="2"/></g>',
+  finger: () => '<path d="M38 94 V58 Q38 50 44 50 V12 Q44 4 50 4 Q56 4 56 12 V50 Q66 48 70 56 Q76 58 76 66 V80 Q76 94 62 94 Z" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="2.5"/>',
+  tomato: () => '<circle cx="50" cy="56" r="34" fill="#e04b3a" stroke="#a52f22" stroke-width="3"/><path d="M50 24 l-10 -6 l6 10 l-14 2 l14 4 l4 0 l4 0 l14 -4 l-14 -2 l6 -10 z" fill="#4d8b3a"/><ellipse cx="38" cy="46" rx="7" ry="4" fill="#f28a7c" transform="rotate(-30 38 46)"/>',
+  mango: () => '<path d="M30 30 Q60 10 80 40 Q94 70 66 86 Q36 96 24 70 Q14 46 30 30Z" fill="#f2a73b" stroke="#c97a1a" stroke-width="3"/><path d="M58 22 Q64 10 76 10 Q72 22 58 22Z" fill="#4d8b3a"/><ellipse cx="44" cy="48" rx="8" ry="5" fill="#f8c97a" transform="rotate(-30 44 48)"/>',
+  onion: () => '<path d="M50 14 Q54 30 70 42 Q90 60 76 80 Q64 94 50 94 Q36 94 24 80 Q10 60 30 42 Q46 30 50 14Z" fill="#c76b9a" stroke="#8c3f66" stroke-width="3"/><path d="M50 30 Q42 60 50 92 M50 30 Q60 60 50 92" stroke="#e7a9c8" stroke-width="2" fill="none"/>',
+  basket: () => '<path d="M14 46 H86 L76 90 H24 Z" fill="#c9954f" stroke="#7a4a26" stroke-width="3"/><path d="M28 46 Q50 6 72 46" fill="none" stroke="#7a4a26" stroke-width="5"/><g stroke="#7a4a26" stroke-width="2"><line x1="20" y1="60" x2="80" y2="60"/><line x1="22" y1="74" x2="78" y2="74"/></g>',
+  stall: () => '<rect x="8" y="50" width="84" height="40" fill="#c9954f" stroke="' + INK + '" stroke-width="3"/><path d="M4 30 H96 L90 48 H10 Z" fill="#136f63"/><path d="M4 30 H96" stroke="' + INK + '" stroke-width="3"/>' + [0, 1, 2, 3, 4].map((i) => '<path d="M' + (10 + i * 16) + ' 48 q8 10 16 0" fill="#e9a23b"/>').join('') + '<circle cx="26" cy="50" r="8" fill="#e04b3a"/><circle cx="40" cy="50" r="8" fill="#e04b3a"/><ellipse cx="62" cy="50" rx="9" ry="7" fill="#f2a73b"/><ellipse cx="78" cy="50" rx="9" ry="7" fill="#f2a73b"/>',
+  woman: () => '<path d="M18 98 Q20 62 50 60 Q80 62 82 98Z" fill="#b5476b"/><rect x="44" y="50" width="12" height="12" fill="' + SKIN + '"/><circle cx="50" cy="38" r="18" fill="' + SKIN + '"/><path d="M30 34 Q30 10 50 10 Q70 10 70 34 Q62 22 50 22 Q38 22 30 34Z" fill="#e9a23b"/><circle cx="68" cy="16" r="6" fill="#e9a23b"/><circle cx="44" cy="38" r="2" fill="' + INK + '"/><circle cx="56" cy="38" r="2" fill="' + INK + '"/><path d="M44 46 q6 5 12 0" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  girl: (c = '#136f63') => '<path d="M18 98 Q20 64 50 62 Q80 64 82 98Z" fill="' + c + '"/><path d="M42 62 L50 72 L58 62Z" fill="#fff"/><rect x="44" y="50" width="12" height="13" fill="' + SKIN + '"/><path d="M30 40 q-4 18 2 30" stroke="' + HAIR + '" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M70 40 q4 18 -2 30" stroke="' + HAIR + '" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="50" cy="38" r="19" fill="' + SKIN + '"/><path d="M31 38 Q31 16 50 16 Q69 16 69 38 Q62 26 50 26 Q38 26 31 38Z" fill="' + HAIR + '"/><circle cx="43" cy="39" r="2.2" fill="' + INK + '"/><circle cx="57" cy="39" r="2.2" fill="' + INK + '"/><path d="M44 47 q6 5 12 0" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  teacher: () => '<path d="M14 98 Q18 60 50 58 Q82 60 86 98Z" fill="#2b59a8"/><rect x="44" y="48" width="12" height="12" fill="#6b4226"/><circle cx="50" cy="36" r="18" fill="#6b4226"/><path d="M32 34 Q32 14 50 14 Q68 14 68 34 Q60 24 50 24 Q40 24 32 34Z" fill="' + HAIR + '"/><rect x="38" y="33" width="10" height="7" rx="2" fill="none" stroke="' + INK + '" stroke-width="2"/><rect x="52" y="33" width="10" height="7" rx="2" fill="none" stroke="' + INK + '" stroke-width="2"/><path d="M45 46 q5 4 10 0" stroke="' + INK + '" stroke-width="2" fill="none"/>',
+  eye: () => '<path d="M6 50 Q50 6 94 50 Q50 94 6 50Z" fill="#fff" stroke="' + INK + '" stroke-width="4"/><circle cx="50" cy="50" r="18" fill="#7a4a26"/><circle cx="50" cy="50" r="8" fill="' + INK + '"/><circle cx="44" cy="44" r="4" fill="#fff"/>',
+  ear: () => '<path d="M60 12 Q86 14 86 44 Q86 62 70 72 Q62 78 62 88 Q60 96 50 94 Q40 92 42 80" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="4" stroke-linecap="round"/><path d="M58 30 Q72 32 70 48 Q68 58 58 60" fill="none" stroke="' + INK + '" stroke-width="4" stroke-linecap="round"/><g stroke="#2b59a8" stroke-width="4" fill="none" stroke-linecap="round"><path d="M28 34 Q20 46 28 58"/><path d="M18 26 Q6 46 18 66"/></g>',
+  nose: () => '<path d="M52 8 Q50 40 34 64 Q26 80 42 84 Q50 88 58 84 Q74 80 66 64 Q58 52 58 8" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="4" stroke-linejoin="round"/><circle cx="42" cy="76" r="4" fill="' + INK + '"/><circle cx="58" cy="76" r="4" fill="' + INK + '"/>',
+  tongue: () => '<path d="M10 40 Q50 20 90 40 Q86 66 50 70 Q14 66 10 40Z" fill="#7a2f2f" stroke="' + INK + '" stroke-width="4"/><path d="M30 46 Q32 88 50 90 Q68 88 70 46 Z" fill="#e57373" stroke="' + INK + '" stroke-width="3"/><line x1="50" y1="52" x2="50" y2="78" stroke="#c94f4f" stroke-width="3"/>',
+  hand: () => '<path d="M30 94 Q20 70 22 54 Q22 46 30 48 L34 62 L32 22 Q32 14 38 14 Q44 14 44 22 L46 48 L48 12 Q48 4 54 4 Q60 4 60 12 L60 48 L64 18 Q64 10 70 10 Q76 12 74 20 L72 52 L78 32 Q80 26 86 28 Q90 30 88 38 L80 70 Q74 90 58 94 Z" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/>',
+  sugar: () => '<path d="M14 44 H86 Q84 86 50 88 Q16 86 14 44Z" fill="#fff" stroke="' + INK + '" stroke-width="3"/><path d="M18 44 Q50 22 82 44Z" fill="#f7f5ee" stroke="' + INK + '" stroke-width="2"/><g fill="#d8d3c3"><rect x="40" y="32" width="6" height="6"/><rect x="52" y="30" width="6" height="6"/><rect x="46" y="38" width="6" height="6"/></g><rect x="62" y="14" width="6" height="30" rx="3" fill="#b9793b" transform="rotate(20 65 30)"/>',
+  lemon: () => '<path d="M12 50 Q14 24 50 20 Q86 24 88 50 Q86 76 50 80 Q14 76 12 50Z" fill="#f2df3b" stroke="#b9a51a" stroke-width="3"/><path d="M6 50 L14 48 M94 50 L86 48" stroke="#b9a51a" stroke-width="4" stroke-linecap="round"/><ellipse cx="38" cy="38" rx="10" ry="5" fill="#fbf09a" transform="rotate(-20 38 38)"/>',
+  salt: () => '<path d="M30 30 H70 L76 92 H24 Z" fill="#e9eef0" stroke="' + INK + '" stroke-width="3"/><path d="M30 30 Q30 10 50 10 Q70 10 70 30Z" fill="#9aa9ad" stroke="' + INK + '" stroke-width="3"/><g fill="' + INK + '"><circle cx="44" cy="20" r="2"/><circle cx="56" cy="20" r="2"/><circle cx="50" cy="15" r="2"/></g><g fill="#c9d3d6"><circle cx="40" cy="60" r="3"/><circle cx="52" cy="70" r="3"/><circle cx="60" cy="56" r="3"/><circle cx="46" cy="78" r="3"/></g>',
+  cotton: () => '<g fill="#fff" stroke="#c9c2ad" stroke-width="3"><circle cx="34" cy="50" r="20"/><circle cx="62" cy="44" r="22"/><circle cx="50" cy="66" r="20"/><circle cx="70" cy="66" r="16"/></g><path d="M50 86 V96" stroke="#7a4a26" stroke-width="4"/>',
+  fire: () => '<path d="M50 6 Q70 30 66 46 Q78 38 76 26 Q94 50 84 74 Q74 94 50 94 Q24 94 16 72 Q8 50 30 32 Q30 48 38 50 Q30 26 50 6Z" fill="#e9622b"/><path d="M50 40 Q64 58 60 74 Q56 88 46 86 Q34 82 38 68 Q40 58 50 40Z" fill="#f6c453"/>',
+  blindfold: () => IC.girl('#2b59a8') + '<rect x="28" y="33" width="44" height="10" rx="4" fill="#e9a23b"/><path d="M72 36 l12 -4 l-4 10z" fill="#e9a23b"/>',
+  goat: () => '<ellipse cx="50" cy="58" rx="30" ry="18" fill="#efe9dc" stroke="' + INK + '" stroke-width="3"/><g stroke="' + INK + '" stroke-width="5" stroke-linecap="round"><line x1="30" y1="70" x2="28" y2="92"/><line x1="42" y1="72" x2="42" y2="92"/><line x1="60" y1="72" x2="60" y2="92"/><line x1="70" y1="70" x2="72" y2="92"/></g><path d="M72 50 L86 36 Q94 40 92 50 L84 60 Z" fill="#efe9dc" stroke="' + INK + '" stroke-width="3"/><path d="M84 36 Q80 20 70 22" stroke="' + INK + '" stroke-width="3" fill="none"/><circle cx="87" cy="44" r="2" fill="' + INK + '"/><path d="M88 58 l2 8" stroke="' + INK + '" stroke-width="3"/><path d="M20 52 l-8 -6" stroke="' + INK + '" stroke-width="3"/>',
+  camel: () => '<path d="M14 62 Q18 44 34 46 Q38 26 50 30 Q60 34 62 46 Q70 40 74 30 L82 22 Q90 22 90 30 L80 40 Q76 58 66 64 Z" fill="#d6a865" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/><g stroke="' + INK + '" stroke-width="5" stroke-linecap="round"><line x1="24" y1="62" x2="22" y2="94"/><line x1="34" y1="64" x2="34" y2="94"/><line x1="56" y1="64" x2="56" y2="94"/><line x1="64" y1="62" x2="66" y2="94"/></g><circle cx="85" cy="27" r="2" fill="' + INK + '"/>',
+  cow: () => '<rect x="16" y="40" width="58" height="34" rx="14" fill="#fff" stroke="' + INK + '" stroke-width="3"/><circle cx="32" cy="52" r="7" fill="' + INK + '"/><circle cx="56" cy="62" r="6" fill="' + INK + '"/><g stroke="' + INK + '" stroke-width="5" stroke-linecap="round"><line x1="24" y1="72" x2="24" y2="92"/><line x1="36" y1="72" x2="36" y2="92"/><line x1="56" y1="72" x2="56" y2="92"/><line x1="66" y1="72" x2="66" y2="92"/></g><rect x="70" y="30" width="22" height="24" rx="8" fill="#e7c9a0" stroke="' + INK + '" stroke-width="3"/><path d="M72 30 Q66 20 72 16 M90 30 Q96 20 90 16" stroke="' + INK + '" stroke-width="3" fill="none"/><circle cx="78" cy="40" r="2" fill="' + INK + '"/>',
+  chicken: () => '<path d="M20 50 Q20 84 52 84 Q82 84 80 56 Q78 40 66 38 Q66 20 54 22 Q44 24 46 40 Q30 34 20 50Z" fill="#fff" stroke="' + INK + '" stroke-width="3"/><path d="M52 22 q-2 -10 6 -10 q2 -6 8 0 q6 0 2 8" fill="#d64545"/><path d="M66 32 L76 36 L66 40Z" fill="#e9a23b"/><circle cx="60" cy="32" r="2" fill="' + INK + '"/><g stroke="#e9a23b" stroke-width="4" stroke-linecap="round"><line x1="44" y1="84" x2="42" y2="96"/><line x1="58" y1="84" x2="60" y2="96"/></g>',
+  dog: () => '<rect x="20" y="44" width="54" height="26" rx="12" fill="#b9793b" stroke="' + INK + '" stroke-width="3"/><g stroke="' + INK + '" stroke-width="5" stroke-linecap="round"><line x1="28" y1="68" x2="28" y2="90"/><line x1="40" y1="68" x2="40" y2="90"/><line x1="56" y1="68" x2="56" y2="90"/><line x1="66" y1="68" x2="66" y2="90"/></g><circle cx="78" cy="40" r="15" fill="#b9793b" stroke="' + INK + '" stroke-width="3"/><path d="M70 30 Q62 40 68 52" fill="#7a4a26"/><circle cx="82" cy="38" r="2" fill="' + INK + '"/><circle cx="92" cy="44" r="3" fill="' + INK + '"/><path d="M20 50 Q8 40 12 30" stroke="' + INK + '" stroke-width="4" fill="none" stroke-linecap="round"/>',
+  donkey: () => '<rect x="14" y="44" width="58" height="28" rx="12" fill="#9aa0a6" stroke="' + INK + '" stroke-width="3"/><g stroke="' + INK + '" stroke-width="5" stroke-linecap="round"><line x1="22" y1="70" x2="22" y2="94"/><line x1="34" y1="70" x2="34" y2="94"/><line x1="54" y1="70" x2="54" y2="94"/><line x1="64" y1="70" x2="64" y2="94"/></g><path d="M66 48 L80 30 Q92 32 92 44 L86 56 Q76 60 70 56Z" fill="#9aa0a6" stroke="' + INK + '" stroke-width="3"/><path d="M78 30 L74 8 L84 26 M84 28 L88 8 L90 30" fill="#9aa0a6" stroke="' + INK + '" stroke-width="3"/><circle cx="84" cy="40" r="2" fill="' + INK + '"/>',
+  load: () => '<rect x="18" y="20" width="64" height="30" rx="6" fill="#c9954f" stroke="' + INK + '" stroke-width="3"/><path d="M18 34 H82 M50 20 V50" stroke="#7a4a26" stroke-width="3"/>' + g(IC.donkey(), .6, 20, 40),
+  milk: () => '<path d="M34 20 H66 L72 92 H28 Z" fill="#fff" stroke="' + INK + '" stroke-width="3"/><path d="M34 20 L40 8 H60 L66 20" fill="#e9eef0" stroke="' + INK + '" stroke-width="3"/><path d="M50 44 Q62 58 62 66 Q62 78 50 78 Q38 78 38 66 Q38 58 50 44Z" fill="#cfe8f6" stroke="#2b59a8" stroke-width="2"/>',
+  giraffe: () => '<path d="M30 60 Q30 44 50 44 L58 44 L64 10 Q66 4 74 6 L82 10 L76 16 L70 16 L66 50 Q72 62 64 70 H34 Q30 68 30 60Z" fill="#f2c46b" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/><g fill="#b9793b"><circle cx="42" cy="54" r="4"/><circle cx="54" cy="58" r="4"/><circle cx="66" cy="32" r="3"/><circle cx="64" cy="44" r="3"/></g><g stroke="' + INK + '" stroke-width="5" stroke-linecap="round"><line x1="36" y1="68" x2="36" y2="94"/><line x1="46" y1="70" x2="46" y2="94"/><line x1="56" y1="70" x2="56" y2="94"/><line x1="64" y1="68" x2="64" y2="94"/></g>',
+  lion: () => '<circle cx="50" cy="44" r="30" fill="#c97a1a"/><circle cx="50" cy="46" r="20" fill="#f2b354" stroke="' + INK + '" stroke-width="3"/><circle cx="43" cy="42" r="2.5" fill="' + INK + '"/><circle cx="57" cy="42" r="2.5" fill="' + INK + '"/><path d="M46 52 L54 52 L50 57Z" fill="' + INK + '"/><path d="M28 74 Q30 94 50 94 Q70 94 72 74Z" fill="#f2b354" stroke="' + INK + '" stroke-width="3"/>',
+  snake: () => '<path d="M14 78 Q30 58 46 74 Q62 90 74 70 Q84 52 70 40 Q58 30 66 18" fill="none" stroke="#4d8b3a" stroke-width="12" stroke-linecap="round"/><circle cx="68" cy="16" r="9" fill="#4d8b3a"/><circle cx="71" cy="13" r="2" fill="' + INK + '"/><path d="M76 18 l8 2 m-8 -2 l7 -4" stroke="#d64545" stroke-width="2"/>',
+  bird: () => '<ellipse cx="46" cy="56" rx="26" ry="18" fill="#2b59a8" stroke="' + INK + '" stroke-width="3"/><circle cx="70" cy="40" r="13" fill="#2b59a8" stroke="' + INK + '" stroke-width="3"/><path d="M82 40 L94 44 L82 47Z" fill="#e9a23b"/><circle cx="73" cy="37" r="2.5" fill="#fff"/><path d="M30 50 Q46 28 58 52Z" fill="#5aa9e6"/><path d="M22 58 L6 50 L10 64Z" fill="#2b59a8"/><g stroke="#e9a23b" stroke-width="3"><line x1="44" y1="74" x2="42" y2="88"/><line x1="54" y1="74" x2="56" y2="88"/></g>',
+  tree: () => '<rect x="42" y="56" width="16" height="38" fill="#7a4a26"/><circle cx="50" cy="38" r="28" fill="#4d8b3a"/><circle cx="30" cy="50" r="16" fill="#5fa04a"/><circle cx="70" cy="50" r="16" fill="#5fa04a"/>',
+  cup: () => '<path d="M22 30 H70 L66 84 Q64 90 58 90 H34 Q28 90 26 84 Z" fill="#5aa9e6" stroke="' + INK + '" stroke-width="3"/><path d="M70 42 Q88 42 86 58 Q84 72 68 70" fill="none" stroke="' + INK + '" stroke-width="5"/>',
+  chair: () => '<rect x="28" y="10" width="44" height="40" rx="4" fill="#b9793b" stroke="' + INK + '" stroke-width="3"/><rect x="22" y="50" width="56" height="10" rx="2" fill="#a0662f" stroke="' + INK + '" stroke-width="3"/><g stroke="' + INK + '" stroke-width="5" stroke-linecap="round"><line x1="28" y1="60" x2="26" y2="94"/><line x1="72" y1="60" x2="74" y2="94"/></g>',
+  water: () => '<path d="M50 8 Q78 44 78 62 Q78 90 50 90 Q22 90 22 62 Q22 44 50 8Z" fill="#5aa9e6" stroke="#2b59a8" stroke-width="3"/><path d="M36 62 Q36 74 46 78" stroke="#cfe8f6" stroke-width="4" fill="none" stroke-linecap="round"/>',
+  seed: () => '<ellipse cx="50" cy="60" rx="20" ry="13" fill="#b9793b" stroke="#7a4a26" stroke-width="3"/><path d="M38 60 Q50 52 62 60" stroke="#7a4a26" stroke-width="2" fill="none"/><rect x="6" y="74" width="88" height="20" fill="#8a5a33"/>',
+  sprout: () => '<path d="M50 74 V44" stroke="#4d8b3a" stroke-width="5"/><path d="M50 50 Q30 46 30 32 Q46 30 50 50Z M50 46 Q70 40 72 26 Q54 26 50 46Z" fill="#5fa04a"/><rect x="6" y="74" width="88" height="20" fill="#8a5a33"/>',
+  plant: () => '<path d="M50 76 V30" stroke="#4d8b3a" stroke-width="6"/><path d="M50 60 Q24 58 20 40 Q42 36 50 60Z M50 50 Q76 46 80 28 Q58 26 50 50Z M50 34 Q36 22 44 8 Q56 18 50 34Z" fill="#5fa04a"/><rect x="6" y="74" width="88" height="20" fill="#8a5a33"/><path d="M50 76 L40 92 M50 76 L60 92 M50 76 V94" stroke="#e7c9a0" stroke-width="2.5"/>',
+  weak: () => '<path d="M50 76 Q46 56 58 44" stroke="#c9b26a" stroke-width="4" fill="none"/><path d="M58 44 Q70 46 72 56 Q62 58 58 44Z" fill="#d8c98a"/><rect x="6" y="74" width="88" height="20" fill="#8a5a33"/>',
+  cloud: () => '<g fill="#e9eef0" stroke="#9aa9ad" stroke-width="3"><circle cx="34" cy="38" r="16"/><circle cx="56" cy="30" r="20"/><circle cx="74" cy="42" r="14"/><rect x="22" y="40" width="58" height="16" stroke="none"/></g><g stroke="#2b59a8" stroke-width="4" stroke-linecap="round"><line x1="34" y1="66" x2="30" y2="78"/><line x1="50" y1="66" x2="46" y2="82"/><line x1="66" y1="66" x2="62" y2="78"/></g>',
+  can: () => '<path d="M26 40 H70 V86 H26 Z" fill="#5aa9e6" stroke="' + INK + '" stroke-width="3"/><path d="M70 50 L92 30" stroke="' + INK + '" stroke-width="6" stroke-linecap="round"/><path d="M26 50 Q8 50 12 66 Q14 74 26 74" fill="none" stroke="' + INK + '" stroke-width="4"/><g fill="#2b59a8"><circle cx="94" cy="38" r="2"/><circle cx="90" cy="46" r="2"/><circle cx="96" cy="48" r="2"/></g>',
+  leaf: () => '<path d="M14 84 Q14 20 86 14 Q86 80 14 84Z" fill="#5fa04a" stroke="#3d7a2c" stroke-width="3"/><path d="M14 84 L72 28" stroke="#3d7a2c" stroke-width="3"/>',
+  wind: () => '<g stroke="#9aa9ad" stroke-width="5" fill="none" stroke-linecap="round"><path d="M10 34 H62 Q76 34 76 22 Q76 12 66 12"/><path d="M10 52 H80 Q94 52 94 64 Q94 74 84 74"/><path d="M10 70 H50"/></g>',
+  soil: () => '<rect x="6" y="40" width="88" height="50" rx="6" fill="#6b4226"/><g fill="#8a5a33"><circle cx="24" cy="56" r="5"/><circle cx="52" cy="70" r="6"/><circle cx="76" cy="54" r="4"/><circle cx="36" cy="78" r="4"/></g><path d="M30 40 Q40 26 50 40 Q60 26 70 40" fill="#5fa04a"/>',
+  heart: () => '<path d="M50 88 Q10 60 12 36 Q14 14 34 14 Q46 14 50 28 Q54 14 66 14 Q86 14 88 36 Q90 60 50 88Z" fill="#e57373" stroke="#b5476b" stroke-width="3"/>',
+  shelter: () => '<path d="M8 80 Q50 10 92 80 Z" fill="#c9954f" stroke="' + INK + '" stroke-width="3"/><path d="M40 80 Q50 54 60 80Z" fill="' + INK + '"/>',
+  food: () => '<path d="M14 54 H86 Q84 86 50 88 Q16 86 14 54Z" fill="#e7c9a0" stroke="' + INK + '" stroke-width="3"/><g fill="#5fa04a"><ellipse cx="38" cy="50" rx="10" ry="6"/><ellipse cx="62" cy="48" rx="12" ry="7"/></g><ellipse cx="50" cy="46" rx="10" ry="6" fill="#e9a23b"/>',
+  school: () => '<rect x="10" y="40" width="80" height="50" fill="#e7c9a0" stroke="' + INK + '" stroke-width="3"/><path d="M4 42 L50 14 L96 42 Z" fill="#136f63" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/><rect x="42" y="60" width="16" height="30" fill="#7a4a26"/><rect x="18" y="52" width="16" height="14" fill="#cfe8f6" stroke="' + INK + '" stroke-width="2"/><rect x="66" y="52" width="16" height="14" fill="#cfe8f6" stroke="' + INK + '" stroke-width="2"/><line x1="50" y1="14" x2="50" y2="2" stroke="' + INK + '" stroke-width="2"/><path d="M50 2 h12 v7 h-12z" fill="#d64545"/>',
+  pin: () => '<path d="M50 94 Q20 56 20 38 Q20 10 50 10 Q80 10 80 38 Q80 56 50 94Z" fill="#d64545" stroke="' + INK + '" stroke-width="3"/><circle cx="50" cy="38" r="12" fill="#fff"/>',
+  radio: () => '<rect x="10" y="34" width="80" height="54" rx="8" fill="#5b3f8c" stroke="' + INK + '" stroke-width="3"/><circle cx="34" cy="61" r="15" fill="#2a1d44"/><circle cx="34" cy="61" r="7" fill="#7d64ad"/><rect x="56" y="46" width="26" height="10" rx="2" fill="#f6c453"/><circle cx="62" cy="72" r="4" fill="#f6c453"/><circle cx="76" cy="72" r="4" fill="#f6c453"/><line x1="70" y1="34" x2="86" y2="8" stroke="' + INK + '" stroke-width="3"/>',
+  apple: () => '<path d="M50 30 Q30 18 18 38 Q8 62 28 84 Q40 94 50 86 Q60 94 72 84 Q92 62 82 38 Q70 18 50 30Z" fill="#d64545" stroke="#9b2c2c" stroke-width="3"/><path d="M50 30 Q50 16 56 10" stroke="#7a4a26" stroke-width="4" fill="none"/><path d="M54 18 Q66 8 72 18 Q62 24 54 18Z" fill="#5fa04a"/>',
+  ball: () => '<circle cx="50" cy="50" r="38" fill="#fff" stroke="' + INK + '" stroke-width="4"/><path d="M50 30 L66 42 L60 62 H40 L34 42 Z" fill="' + INK + '"/><g stroke="' + INK + '" stroke-width="3"><line x1="50" y1="30" x2="50" y2="12"/><line x1="66" y1="42" x2="86" y2="36"/><line x1="60" y1="62" x2="72" y2="80"/><line x1="40" y1="62" x2="28" y2="80"/><line x1="34" y1="42" x2="14" y2="36"/></g>',
+  cat: () => '<ellipse cx="46" cy="70" rx="28" ry="20" fill="#e9a23b" stroke="' + INK + '" stroke-width="3"/><circle cx="66" cy="40" r="18" fill="#e9a23b" stroke="' + INK + '" stroke-width="3"/><path d="M52 30 L54 14 L64 24 M70 24 L80 14 L82 30" fill="#e9a23b" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/><circle cx="60" cy="40" r="2.5" fill="' + INK + '"/><circle cx="72" cy="40" r="2.5" fill="' + INK + '"/><path d="M63 47 L66 50 L69 47" stroke="' + INK + '" stroke-width="2" fill="none"/><path d="M20 70 Q4 60 10 44" stroke="' + INK + '" stroke-width="5" fill="none" stroke-linecap="round"/>',
+  egg: () => '<path d="M50 10 Q80 12 82 58 Q82 90 50 90 Q18 90 18 58 Q20 12 50 10Z" fill="#fbf3e2" stroke="' + INK + '" stroke-width="3"/><ellipse cx="38" cy="40" rx="6" ry="10" fill="#fff"/>',
+  fish: () => '<path d="M10 50 Q36 18 66 36 L90 20 L84 50 L90 80 L66 64 Q36 82 10 50Z" fill="#5aa9e6" stroke="#2b59a8" stroke-width="3"/><circle cx="28" cy="46" r="3" fill="' + INK + '"/><path d="M44 36 Q52 50 44 64" stroke="#2b59a8" stroke-width="2" fill="none"/>',
+  hat: () => '<ellipse cx="50" cy="70" rx="44" ry="12" fill="#c9954f" stroke="' + INK + '" stroke-width="3"/><path d="M24 70 Q24 26 50 26 Q76 26 76 70Z" fill="#d6a865" stroke="' + INK + '" stroke-width="3"/><rect x="25" y="56" width="50" height="8" fill="#b5476b"/>',
+  ink: () => '<rect x="26" y="34" width="48" height="56" rx="8" fill="#2a1d44" stroke="' + INK + '" stroke-width="3"/><rect x="38" y="20" width="24" height="16" fill="#7b8a87" stroke="' + INK + '" stroke-width="3"/><rect x="32" y="52" width="36" height="20" fill="#fff"/><text x="50" y="67" text-anchor="middle" font-size="12" font-weight="800" fill="#2a1d44" font-family="sans-serif">INK</text>',
+  jug: () => '<path d="M28 20 H70 L66 90 H32 Z" fill="#c97a1a" stroke="' + INK + '" stroke-width="3"/><path d="M28 20 L18 12 H30" fill="#c97a1a" stroke="' + INK + '" stroke-width="3"/><path d="M68 34 Q90 36 86 56 Q82 70 66 70" fill="none" stroke="' + INK + '" stroke-width="5"/>',
+  kite: () => '<path d="M50 6 L82 40 L50 78 L18 40 Z" fill="#e57b5a" stroke="' + INK + '" stroke-width="3"/><path d="M50 6 V78 M18 40 H82" stroke="' + INK + '" stroke-width="2"/><path d="M50 78 Q40 86 50 92 Q60 98 52 100" stroke="' + INK + '" stroke-width="2" fill="none"/>',
+  leg: () => '<path d="M40 6 H62 L60 64 Q60 72 66 76 L86 82 Q92 86 88 92 H44 Q38 92 38 84 Z" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/>',
+  mother: () => IC.woman(),
+  hen: () => IC.chicken(),
+  person: () => IC.girl('#b5476b'),
+  thing: () => g(IC.cup(), .5, 0, 25) + g(IC.book(), .5, 48, 25),
+  place: () => IC.pin(),
+  animal: () => IC.goat(),
+  check: () => '<circle cx="50" cy="50" r="40" fill="#4d8b3a"/><path d="M30 52 L44 66 L72 36" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  cross: () => '<circle cx="50" cy="50" r="40" fill="#d64545"/><path d="M34 34 L66 66 M66 34 L34 66" stroke="#fff" stroke-width="10" stroke-linecap="round"/>',
+  wave: () => IC.girl('#2b59a8') + '<path d="M80 56 Q90 30 84 18" stroke="' + SKIN + '" stroke-width="8" fill="none" stroke-linecap="round"/><g stroke="#e9a23b" stroke-width="3" stroke-linecap="round"><line x1="92" y1="14" x2="98" y2="8"/><line x1="94" y1="24" x2="100" y2="22"/></g>',
+  carry: () => IC.girl('#8a2d4f') + '<path d="M34 6 H66 L62 22 H38 Z" fill="#5aa9e6" stroke="' + INK + '" stroke-width="3"/>',
+  eat: () => g(IC.goat(), 1) + '<path d="M86 62 q4 10 -2 18 M90 64 q8 6 4 16" stroke="#5fa04a" stroke-width="4" fill="none" stroke-linecap="round"/>',
+};
+// a row of pictures with labels; extra text tiles, numbers and arrows
+const escX = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function wrapLab(t) { t = String(t); if (t.length <= 11) return [t]; const w = t.split(' '), out = ['']; w.forEach((x) => { const cur = out[out.length - 1]; if (cur && (cur + ' ' + x).length > 12 && out.length < 2) out.push(x); else out[out.length - 1] = cur ? cur + ' ' + x : x; }); return out; }
+function art(items, o = {}) {
+  const n = items.length, oneRow = n <= 7 && items.some((x) => x.text != null), cols = o.cols || (n <= 4 || oneRow ? n : n <= 6 ? 3 : n <= 8 ? 4 : Math.ceil(n / 2)), rows = Math.ceil(n / cols);
+  const two = items.some((x) => x.l && wrapLab(x.l).length > 1), cw = 120, ch = o.noLabel ? 120 : two ? 172 : 150;
+  const W = cols * cw, H = rows * ch;
+  const cells = items.map((it, i) => {
+    const x = (i % cols) * cw, y = Math.floor(i / cols) * ch, d = (o.stagger === false ? 0 : i * (o.step || .25)).toFixed(2);
+    const body = it.text != null ? '<text x="60" y="' + (o.noLabel ? 72 : 78) + '" text-anchor="middle" font-size="' + (it.size || 44) + '" font-weight="800" fill="' + (it.color || INK) + '" style="font-family: var(--display), sans-serif">' + escX(it.text) + '</text>'
+      : g((IC[it.i] || IC.check)(it.c), it.s || 1, 10 + (100 - 100 * (it.s || 1)) / 2, 8 + (100 - 100 * (it.s || 1)) / 2);
+    const ls = it.l && !o.noLabel ? wrapLab(it.l) : [];
+    const lab = ls.length ? '<text text-anchor="middle" font-size="17" font-weight="700" fill="' + INK + '" style="font-family: var(--body), sans-serif">' + ls.map((t, j) => '<tspan x="60" y="' + (128 + j * 20) + '">' + escX(t) + '</tspan>').join('') + '</text>' : '';
+    return '<g transform="translate(' + x + ' ' + y + ')" class="pop' + (it.hi ? ' hi' : '') + '" style="--d:' + d + 's">' + (it.hi ? '<rect x="4" y="2" width="112" height="' + (ch - 4) + '" rx="14" fill="#fbe7b0"/>' : '') + body + lab + '</g>';
+  }).join('');
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + escX(o.alt || items.map((x) => x.l || x.text).filter((x) => x != null && x !== '').join(', ')) + '">' + cells + '</svg>';
+}
+// worked sums, one line each
+function eqLines(lines) { const H = lines.length * 74 + 10; return '<svg viewBox="0 0 480 ' + H + '" role="img" aria-label="' + escX(lines.map((x) => x.t).join('; ')) + '">' + lines.map((x, i) => '<text class="pop" style="--d:' + (i * .6) + 's; font-family: var(--display), sans-serif" x="240" y="' + (60 + i * 74) + '" text-anchor="middle" font-size="' + (x.size || 46) + '" font-weight="800" fill="' + (x.color || INK) + '">' + escX(x.t) + '</text>').join('') + '</svg>'; }
+// labelled plant: leaves, stem, roots
+function plantParts() {
+  const lab = (x, y, x2, y2, t, d) => '<g class="pop" style="--d:' + d + 's"><line x1="' + x + '" y1="' + y + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + INK + '" stroke-width="2.5"/><circle cx="' + x + '" cy="' + y + '" r="4" fill="' + INK + '"/><text x="' + (x2 + (x2 > x ? 8 : -8)) + '" y="' + (y2 + 7) + '" text-anchor="' + (x2 > x ? 'start' : 'end') + '" font-size="22" font-weight="800" fill="' + INK + '" style="font-family: var(--body), sans-serif">' + escX(t) + '</text></g>';
+  return '<svg viewBox="0 0 420 300" role="img" aria-label="' + escX([LL('leaves', 'majani'), LL('stem', 'shina'), LL('roots', 'mizizi')].join(', ')) + '"><rect x="0" y="180" width="420" height="120" fill="#8a5a33"/><rect x="0" y="176" width="420" height="8" fill="#5fa04a"/>' +
+    '<g class="pop" style="--d:0s"><path d="M210 182 V70" stroke="#4d8b3a" stroke-width="10"/><path d="M210 140 Q160 136 150 104 Q194 98 210 140Z M210 116 Q262 108 272 74 Q228 70 210 116Z M210 84 Q186 60 200 30 Q222 52 210 84Z" fill="#5fa04a"/>' +
+    '<path d="M210 182 Q190 220 168 240 M210 182 Q232 222 258 236 M210 182 V262 M200 214 L180 222 M222 214 L240 226" stroke="#e7c9a0" stroke-width="5" fill="none" stroke-linecap="round"/></g>' +
+    lab(262, 84, 330, 60, LL('leaves', 'majani'), .5) + lab(214, 160, 330, 150, LL('stem', 'shina'), .9) + lab(210, 236, 100, 250, LL('roots', 'mizizi'), 1.3) + '</svg>';
+}
+const LL = (en, sw) => (lang === 'sw' && sw ? sw : en);
+const dots = (n, icon, l, s) => Array.from({ length: n }, (_, i) => ({ i: icon, l: l ? String(i + 1) : '', s: s || .8 }));
+const ten = (n, ones) => [...Array.from({ length: n }, () => ({ i: 'bundle', l: LL('1 ten', 'kumi 1') })), ...Array.from({ length: ones }, () => ({ i: 'stick', l: LL('1 one', 'moja 1') }))];
+const PICS = {
+  num4: [
+    () => art([{ i: 'circle', l: LL('circle', 'duara') }, { i: 'triangle', l: LL('triangle', 'pembetatu') }, { i: 'square', l: LL('square', 'mraba') }, { i: 'rectangle', l: LL('rectangle', 'mstatili') }]),
+    () => art([{ i: 'circle', l: LL('circle', 'duara'), hi: 1 }, { i: 'plate', l: LL('plate', 'sahani') }, { i: 'wheel', l: LL('wheel', 'gurudumu') }, { i: 'sun', l: LL('sun', 'jua') }]),
+    () => art([{ i: 'triangle', l: LL('triangle', 'pembetatu'), hi: 1 }, { i: 'house', l: LL('roof', 'paa') }, { i: 'chapati', l: LL('chapati', 'chapati') }]),
+    () => art([{ i: 'square', l: LL('square', 'mraba'), hi: 1 }, { i: 'rectangle', l: LL('rectangle', 'mstatili'), hi: 1 }, { i: 'door', l: LL('door', 'mlango') }, { i: 'book', l: LL('book', 'kitabu') }]),
+    () => art([{ i: 'search', l: LL('look', 'tafuta') }, { i: 'clock', l: LL('circle', 'duara') }, { i: 'window', l: LL('rectangle', 'mstatili') }, { i: 'door', l: LL('rectangle', 'mstatili') }]),
+    () => art([{ i: 'notebook', l: LL('exercise book', 'daftari') }, { i: 'pencil', l: LL('pencil', 'penseli') }]),
+  ],
+  num5: [
+    () => art(Array.from({ length: 20 }, (_, i) => ({ text: i + 1, size: 40 })), { cols: 5, noLabel: true, step: .08 }),
+    () => art(dots(10, 'finger', true, .8), { cols: 5, step: .35 }),
+    () => art([{ i: 'bundle', l: LL('ten', 'kumi') }, { text: '+' }, ...dots(3, 'stick', false), { text: '=' }, { text: '13', color: '#136f63' }], { step: .3 }),
+    () => art(dots(12, 'stone', true, .8), { cols: 6, step: .2 }),
+    () => art([{ i: 'clap', l: '1' }, { i: 'clap', l: '2' }, { i: 'clap', l: '3' }, { text: '= 3', color: '#136f63' }], { step: .5 }),
+  ],
+  num1: [
+    () => art(Array.from({ length: 12 }, () => ({ i: 'stick', s: .8 })), { cols: 6, noLabel: true, step: .06, alt: LL('many loose sticks', 'vijiti vingi') }),
+    () => art([{ i: 'stick', l: '10 ×' }, { text: '→' }, { i: 'bundle', l: LL('one ten', 'kumi moja'), hi: 1 }]),
+    () => art([...ten(3, 4), { text: '= 34', color: '#136f63' }], { step: .2, cols: 4 }),
+    () => art([{ text: '5', size: 70, color: '#2b59a8' }, { text: '2', size: 70, color: '#b8740a' }, { text: '=' }, { text: LL('5 tens', 'kumi 5'), size: 24, color: '#2b59a8' }, { text: '+', size: 30 }, { text: LL('2 ones', 'moja 2'), size: 24, color: '#b8740a' }]),
+    () => art([...ten(4, 0), { text: '40', color: '#136f63' }], { step: .25 }),
+    () => art([{ i: 'stone', l: LL('stones', 'mawe') }, { i: 'cap', l: LL('bottle tops', 'vifuniko') }, { i: 'stick', l: LL('sticks', 'vijiti') }, { text: '27' }, { text: '41' }, { text: '50' }, { text: '63' }], { cols: 7 }),
+    () => art([{ text: '38', color: '#2b59a8' }, { text: '?', color: '#b8740a' }, { text: '83', color: '#2b59a8' }], { noLabel: true }),
+  ],
+  num2: [
+    () => art([{ i: 'woman', l: 'Mama Wanjiru' }, { i: 'stall', l: LL('market', 'soko') }, { i: 'tomato', l: LL('tomatoes', 'nyanya') }, { i: 'mango', l: LL('mangoes', 'maembe') }, { i: 'onion', l: LL('onions', 'vitunguu') }]),
+    () => art([{ i: 'tomato', l: '12' }, { text: '+' }, { i: 'tomato', l: '9' }, { text: '=' }, { text: '21', color: '#136f63' }], { step: .4 }),
+    () => eqLines([{ t: '25 + 14' }, { t: LL('tens: ', 'makumi: ') + '20 + 10 = 30', color: '#2b59a8', size: 38 }, { t: LL('ones: ', 'mamoja: ') + '5 + 4 = 9', color: '#b8740a', size: 38 }, { t: '30 + 9 = 39', color: '#136f63', size: 52 }]),
+    () => art([{ i: 'mango', l: '15' }, { text: '+' }, { i: 'mango', l: '5' }, { text: '=' }, { i: 'basket', l: '20', hi: 1 }], { step: .4 }),
+    () => art([{ i: 'stone', l: LL('tens', 'makumi') }, { i: 'stone', l: LL('tens', 'makumi') }, { text: '|', color: '#9aa9ad' }, { i: 'cap', l: LL('ones', 'mamoja') }, { i: 'cap', l: LL('ones', 'mamoja') }, { i: 'cap', l: LL('ones', 'mamoja') }]),
+    () => eqLines([{ t: '30 + 20 = ?' }, { t: '16 + 3 = ?' }, { t: '24 + 15 = ?' }]),
+    () => art([{ i: 'house', l: LL('home', 'nyumbani') }, { text: '→' }, { i: 'stall', l: LL('market', 'soko') }, { i: 'tomato', l: 'KSh 10' }, { text: '+' }, { i: 'onion', l: 'KSh 5' }]),
+  ],
+  sci4: [
+    () => art([{ i: 'eye', l: LL('see', 'kuona') }, { i: 'ear', l: LL('hear', 'kusikia') }, { i: 'nose', l: LL('smell', 'kunusa') }, { i: 'tongue', l: LL('taste', 'kuonja') }, { i: 'hand', l: LL('touch', 'kugusa') }], { step: .4 }),
+    () => art([{ i: 'eye', l: LL('eyes: see', 'macho: kuona'), hi: 1 }, { i: 'ear', l: LL('ears: hear', 'masikio: kusikia'), hi: 1 }, { i: 'radio', l: LL('sound', 'sauti') }, { i: 'nose', l: LL('nose: smell', 'pua: kunusa'), hi: 1 }]),
+    () => art([{ i: 'tongue', l: LL('tongue', 'ulimi'), hi: 1 }, { i: 'sugar', l: LL('sweet', 'tamu') }, { i: 'lemon', l: LL('sour', 'chachu') }, { i: 'salt', l: LL('salty', 'chumvi') }]),
+    () => art([{ i: 'hand', l: LL('skin', 'ngozi'), hi: 1 }, { i: 'stone', l: LL('hard', 'gumu') }, { i: 'cotton', l: LL('soft', 'laini') }, { i: 'fire', l: LL('hot', 'moto') }]),
+    () => art([{ i: 'blindfold', l: LL('eyes closed', 'macho yamefungwa') }, { i: 'hand', l: LL('feel', 'gusa') }, { text: '?', color: '#b8740a', size: 70 }]),
+  ],
+  sci5: [
+    () => art([{ i: 'goat', l: LL('living', 'hai') }, { i: 'tree', l: LL('living', 'hai') }, { text: '|', color: '#9aa9ad' }, { i: 'stone', l: LL('non-living', 'si hai') }, { i: 'cup', l: LL('non-living', 'si hai') }]),
+    () => art([{ i: 'girl', l: LL('people', 'watu') }, { i: 'goat', l: LL('goats', 'mbuzi') }, { i: 'bird', l: LL('birds', 'ndege') }, { i: 'tree', l: LL('trees', 'miti') }, { i: 'check', l: LL('living', 'hai') }]),
+    () => art([{ i: 'stone', l: LL('stone', 'jiwe') }, { i: 'cup', l: LL('cup', 'kikombe') }, { i: 'chair', l: LL('chair', 'kiti') }, { i: 'water', l: LL('water', 'maji') }, { i: 'cross', l: LL('non-living', 'si hai') }]),
+    () => art([{ i: 'seed', l: LL('seed', 'mbegu') }, { text: '→' }, { i: 'sprout', l: LL('grows', 'inaota') }, { text: '→' }, { i: 'plant', l: LL('plant', 'mmea') }], { step: .5, cols: 5 }),
+    () => art([{ i: 'school', l: LL('school', 'shule') }, { i: 'tree', l: LL('living', 'hai') }, { i: 'goat', l: LL('living', 'hai') }, { i: 'stone', l: LL('non-living', 'si hai') }, { i: 'chair', l: LL('non-living', 'si hai') }]),
+  ],
+  sci3: [
+    () => art([{ i: 'plant', l: LL('plant', 'mmea') }, { i: 'check', l: LL('living', 'hai') }, { i: 'water', l: LL('water', 'maji') }, { i: 'sun', l: LL('sunlight', 'mwanga wa jua') }, { i: 'soil', l: LL('soil', 'udongo') }]),
+    () => art([{ i: 'cloud', l: LL('rain', 'mvua') }, { i: 'can', l: LL('watering', 'kumwagilia') }, { i: 'plant', l: LL('roots drink', 'mizizi inanywa'), hi: 1 }]),
+    () => art([{ i: 'sun', l: LL('sunlight', 'mwanga wa jua') }, { text: '→' }, { i: 'leaf', l: LL('leaves make food', 'majani hutengeneza chakula'), hi: 1 }]),
+    () => art([{ i: 'wind', l: LL('air', 'hewa') }, { i: 'soil', l: LL('fertile soil', 'udongo wenye rutuba') }, { i: 'plant', l: LL('grows well', 'unakua vizuri') }]),
+    () => plantParts(),
+    () => art([{ i: 'sun', l: LL('sun + water', 'jua + maji') }, { i: 'plant', l: LL('grows well', 'unakua vizuri'), hi: 1 }, { text: '|', color: '#9aa9ad' }, { i: 'moon', l: LL('dark', 'gizani') }, { i: 'weak', l: LL('weak', 'dhaifu') }]),
+  ],
+  sci6: [
+    () => art([{ i: 'goat', l: LL('goat', 'mbuzi') }, { i: 'camel', l: LL('camel', 'ngamia') }, { i: 'cow', l: LL('cow', "ng'ombe") }, { i: 'chicken', l: LL('chicken', 'kuku') }, { i: 'dog', l: LL('dog', 'mbwa') }, { i: 'donkey', l: LL('donkey', 'punda') }]),
+    () => art([{ i: 'goat', l: LL('goat', 'mbuzi') }, { text: '→' }, { i: 'milk', l: LL('milk', 'maziwa') }, { i: 'donkey', l: LL('donkey', 'punda') }, { text: '→' }, { i: 'load', l: LL('carries loads', 'hubeba mizigo') }]),
+    () => art([{ i: 'giraffe', l: LL('giraffe', 'twiga') }, { i: 'lion', l: LL('lion', 'simba') }, { i: 'snake', l: LL('snake', 'nyoka') }, { i: 'bird', l: LL('bird', 'ndege') }]),
+    () => art([{ i: 'food', l: LL('food', 'chakula') }, { i: 'water', l: LL('water', 'maji') }, { i: 'shelter', l: LL('shelter', 'makazi') }, { i: 'heart', l: LL('be kind', 'kuwa mpole') }]),
+    () => art([{ i: 'goat', l: LL('domestic', 'wa nyumbani') }, { text: '|', color: '#9aa9ad' }, { i: 'giraffe', l: LL('wild', 'wa porini') }, { i: 'pencil', l: LL('draw', 'chora') }]),
+  ],
+  lit4: [
+    () => art([{ i: 'sun', l: 'morning' }, { i: 'wave', l: '"Good morning!"' }, { i: 'girl', c: '#b5476b', l: '"Good morning!"' }]),
+    () => art([{ i: 'sun', s: .7, l: 'Good morning' }, { i: 'sun', l: 'Good afternoon' }, { i: 'moon', l: 'Good evening' }], { step: .5 }),
+    () => art([{ i: 'girl', l: 'Akiru' }, { text: '12', l: 'years old' }, { i: 'pin', l: 'Lodwar' }]),
+    () => art([{ i: 'girl', l: '"What is your name?"' }, { text: '?', color: '#b8740a', size: 70 }, { i: 'girl', c: '#b5476b', l: '"How old are you?"' }], { cols: 3 }),
+    () => art([{ i: 'wave', l: 'Nice to meet you' }, { i: 'heart', l: 'Thank you' }, { i: 'girl', c: '#b5476b', l: 'Nice to meet you' }]),
+    () => art([{ i: 'girl', l: 'greet' }, { text: '⇄', color: '#136f63', size: 60 }, { i: 'girl', c: '#b5476b', l: 'swap' }]),
+  ],
+  lit6: [
+    () => art('abcdefghijklm'.split('').map((c) => ({ text: c, size: 48, color: '#136f63' })), { cols: 7, noLabel: true, step: .12 }),
+    () => art([{ i: 'apple', l: 'a · apple' }, { i: 'ball', l: 'b · ball' }, { i: 'cat', l: 'c · cat' }, { i: 'dog', l: 'd · dog' }, { i: 'egg', l: 'e · egg' }], { step: .5 }),
+    () => art([{ i: 'fish', l: 'f · fish' }, { i: 'goat', l: 'g · goat' }, { i: 'hat', l: 'h · hat' }, { i: 'ink', l: 'i · ink' }, { i: 'jug', l: 'j · jug' }], { step: .5 }),
+    () => art([{ i: 'kite', l: 'k · kite' }, { i: 'leg', l: 'l · leg' }, { i: 'mango', l: 'm · mango' }], { step: .5 }),
+    () => art([{ i: 'ear', l: 'listen' }, { i: 'finger', l: 'point' }, { i: 'book', l: 'b · book' }, { i: 'cup', l: 'c · cup' }, { i: 'door', l: 'd · door' }]),
+  ],
+  lit7: [
+    () => art([{ i: 'person', l: 'person' }, { i: 'animal', l: 'animal' }, { i: 'place', l: 'place' }, { i: 'thing', l: 'thing' }]),
+    () => art([{ i: 'girl', l: 'girl' }, { i: 'teacher', l: 'teacher' }, { i: 'mother', l: 'mother' }, { i: 'goat', l: 'goat' }, { i: 'camel', l: 'camel' }, { i: 'hen', l: 'hen' }]),
+    () => art([{ i: 'school', l: 'school' }, { i: 'stall', l: 'market' }, { i: 'pin', l: 'Lodwar' }, { i: 'book', l: 'book' }, { i: 'cup', l: 'cup' }, { i: 'radio', l: 'radio' }]),
+    () => art([{ text: 'A', size: 72, color: '#b5476b', l: 'Akiru' }, { text: 'K', size: 72, color: '#b5476b', l: 'Kakuma' }, { text: 'K', size: 72, color: '#b5476b', l: 'Kenya' }]),
+    () => art([{ i: 'school', l: 'classroom' }, { i: 'book', l: 'book' }, { i: 'chair', l: 'chair' }, { i: 'window', l: 'window' }, { i: 'pencil', l: 'pencil' }]),
+  ],
+  lit3: [
+    () => art([{ i: 'eat', l: 'The goat is eating.' }, { i: 'check', s: .6, l: 'sentence' }, { text: 'The goat', size: 26, color: '#7b8a87' }, { i: 'cross', s: .6, l: 'not a sentence' }]),
+    () => art([{ text: 'T', size: 80, color: '#b5476b', l: 'The' }, { text: 'M', size: 80, color: '#b5476b', l: 'My' }, { text: 'W', size: 80, color: '#b5476b', l: 'We' }]),
+    () => art([{ text: '.', size: 110, color: '#136f63', l: 'full stop' }, { text: '?', size: 80, color: '#b8740a', l: 'question mark' }, { i: 'goat', l: 'Where is the goat?' }]),
+    () => art([{ i: 'girl', l: 'Akiru' }, { i: 'pin', l: 'Lodwar' }, { text: 'A  L', size: 46, color: '#b5476b', l: 'capital letters' }]),
+    () => art([{ i: 'carry', l: 'My sister' }, { text: '+', size: 50 }, { i: 'water', l: 'carries water.' }, { i: 'check', s: .6, l: 'who + what' }]),
+    () => eqLines([{ t: 'the girls play football in kakuma', size: 26, color: '#7b8a87' }, { t: 'The girls play football in Kakuma.', size: 26, color: '#136f63' }, { t: 'T  ·  K  ·  .', color: '#b5476b' }]),
+    () => art([{ i: 'school', l: 'my school' }, { i: 'pencil', l: 'write 3' }, { text: 'A … .', size: 34, color: '#136f63', l: 'check' }]),
+  ],
+};
+function slidePic(lessonId, idx) { const p = PICS[lessonId]; const f = p && p[idx]; if (!f) return null; const d = el('div', 'sc-pic'); d.innerHTML = f(); return d; }
 function present(id) {
   stopSpeech();
   const l = lesson(id); scLesson = l; const m = mod(l.mod);
@@ -2034,7 +2273,9 @@ function drawSlide() {
     const a = actFor(l.id), sid = regId && regSession() && regSession().lesson === l.id ? regId : null;
     st.append(el('span', 'eyebrow', '★ ' + t('actBtn')), el('h2', null, tx(a.title)), el('p', 'big', t('actStartSlide')), btn(t('actStart'), 'sun', () => openActivity(a.id, l.id, sid, sid ? eligibleFor(l.id).filter((g) => regState[g.id] && regState[g.id] !== 'a') : null)));
   } else if (s.kind === 'text') {
-    st.append(el('span', 'eyebrow', modLabel(m)), el('p', 'big', s.p));
+    const pic = slidePic(l.id, l.body.indexOf(s.p));
+    if (pic) { const v = el('div', 'sc-vis'); v.append(pic, el('p', 'big', s.p)); st.append(el('span', 'eyebrow', modLabel(m)), v); }
+    else st.append(el('span', 'eyebrow', modLabel(m)), el('p', 'big', s.p));
   } else {
     st.append(el('span', 'eyebrow', t('question')), el('h2', null, s.q.text));
     if (s.q.type === 'mc') {

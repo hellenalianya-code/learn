@@ -153,6 +153,11 @@ td.n, th.n { text-align: center; }
 .sc-pic .pop { opacity: 0; transform-box: fill-box; transform-origin: center; animation: picIn .5s cubic-bezier(.2, .9, .3, 1.3) forwards; animation-delay: var(--d, 0s); }
 .sc-pic .draw { stroke-dasharray: 400; stroke-dashoffset: 400; animation: picDraw 1.1s ease forwards; animation-delay: inherit; }
 .sc-pic .hi > rect:first-child { animation: picGlow 1.6s ease-in-out .8s 2 alternate; }
+.sc-cover { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: clamp(16px, 3vw, 44px); align-items: center; }
+.sc-cover-txt { display: flex; flex-direction: column; gap: 18px; }
+.sc-cover h2 { font-size: clamp(2rem, 5.5vw, 4.2rem); line-height: 1.05; }
+.sc-cover p.big { max-width: 22ch; }
+@media (max-width: 760px), (orientation: portrait) { .sc-cover { grid-template-columns: 1fr; } }
 @keyframes picIn { from { opacity: 0; transform: scale(.6) translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes picDraw { to { stroke-dashoffset: 0; } }
 @keyframes picGlow { to { fill: #f6d27a; } }
@@ -2261,6 +2266,28 @@ const PICS = {
     () => art([{ i: 'school', l: 'my school' }, { i: 'pencil', l: 'write 3' }, { text: 'A … .', size: 34, color: '#136f63', l: 'check' }]),
   ],
 };
+// lesson covers (title slide): a scene, plus one line on what the class will learn
+function sensesCover() {
+  const cx = 280, cy = 262, R = 192, sz = 84, items = [['eye', LL('see', 'kuona')], ['ear', LL('hear', 'kusikia')], ['nose', LL('smell', 'kunusa')], ['tongue', LL('taste', 'kuonja')], ['hand', LL('touch', 'kugusa')]];
+  let lines = '', icons = '';
+  items.forEach(([ic, lab], i) => {
+    const a = Math.PI - i * Math.PI / 4, x = cx + R * Math.cos(a), y = cy - R * Math.sin(a) * .98, d = (.5 + i * .35).toFixed(2);
+    lines += '<g class="pop" style="--d:' + d + 's"><line x1="' + (cx + (x - cx) * .3).toFixed(1) + '" y1="' + (cy - 40 + (y - cy + 40) * .3).toFixed(1) + '" x2="' + (cx + (x - cx) * .72).toFixed(1) + '" y2="' + (cy - 40 + (y - cy + 40) * .72).toFixed(1) + '" stroke="#c9bfa6" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/></g>';
+    icons += '<g transform="translate(' + (x - sz / 2).toFixed(1) + ' ' + (y - sz / 2).toFixed(1) + ')"><g class="pop" style="--d:' + d + 's"><circle cx="' + sz / 2 + '" cy="' + sz / 2 + '" r="' + (sz / 2 + 6) + '" fill="#fff"/>' + g(IC[ic](), sz / 100) + '<text x="' + sz / 2 + '" y="' + (sz + 30) + '" text-anchor="middle" font-size="20" font-weight="800" fill="' + INK + '" style="font-family: var(--body), sans-serif">' + escX(lab) + '</text></g></g>';
+  });
+  const girl = '<g transform="translate(' + (cx - 75) + ' ' + (cy - 60) + ')"><g class="pop" style="--d:0s">' + g(IC.girl('#b5476b'), 1.5) + '</g></g>';
+  return '<svg viewBox="30 16 500 344" role="img" aria-label="' + escX(LL('A girl and her five senses: ', 'Msichana na milango yake mitano ya fahamu: ') + items.map((x) => x[1]).join(', ')) + '">' + lines + girl + icons + '</svg>';
+}
+const COVERS = {
+  sci4: { pic: sensesCover, goal: () => LL('Today: how we see, hear, smell, taste and touch.', 'Leo: jinsi tunavyoona, kusikia, kunusa, kuonja na kugusa.') },
+};
+function lessonCover(l, eyebrow) {
+  const c = COVERS[l.id]; if (!c) return null;
+  const wrap = el('div', 'sc-cover'), txt = el('div', 'sc-cover-txt'), pic = el('div', 'sc-pic');
+  pic.innerHTML = c.pic();
+  txt.append(el('span', 'eyebrow', eyebrow), el('h2', null, l.title), el('p', 'big', c.goal()));
+  wrap.append(txt, pic); return wrap;
+}
 function slidePic(lessonId, idx) { const p = PICS[lessonId]; const f = p && p[idx]; if (!f) return null; const d = el('div', 'sc-pic'); d.innerHTML = f(); return d; }
 function present(id) {
   stopSpeech();
@@ -2272,7 +2299,7 @@ function present(id) {
 }
 function askOne(q) { const l = lesson(q.lesson); scLesson = l; slides = [{ kind: 'q', q, shown: false }]; si = 0; $('#screen').classList.toggle('well', mod(l.mod).area === 'well'); $('#screen').hidden = false; drawSlide(); }
 function slideText(s) {
-  if (s.kind === 'title') return [scLesson.title];
+  if (s.kind === 'title') return COVERS[scLesson.id] ? [scLesson.title, COVERS[scLesson.id].goal()] : [scLesson.title];
   if (s.kind === 'video') return [];
   if (s.kind === 'act') return [tx(actFor(scLesson.id).title), t('actStartSlide')];
   if (s.kind === 'text') return [s.p];
@@ -2283,7 +2310,9 @@ function drawSlide() {
   $('#sc-title').textContent = `${lessonTag(l)} · ${l.title}`;
   $('#sc-voice').textContent = t(narrate ? 'narrOn' : 'narrOff');
   if (s.kind === 'title') {
-    st.append(el('span', 'eyebrow', `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`), el('h2', null, l.title), el('p', 'big', videoUrls[l.id] ? t('videoNext') : t('mediaFile')));
+    const eb = `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`, cov = lessonCover(l, eb);
+    if (cov) { st.append(cov); if (videoUrls[l.id]) cov.querySelector('.sc-cover-txt').append(el('p', 'muted', t('videoNext'))); }
+    else st.append(el('span', 'eyebrow', eb), el('h2', null, l.title), el('p', 'big', videoUrls[l.id] ? t('videoNext') : t('mediaFile')));
   } else if (s.kind === 'video') {
     const v = el('video'); v.controls = true; v.src = videoUrls[l.id]; v.setAttribute('playsinline', ''); st.append(v);
   } else if (s.kind === 'act') {

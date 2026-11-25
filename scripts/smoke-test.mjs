@@ -48,10 +48,11 @@ try {
     const first = p.locator('#grade-rows input.score').first();
     await first.fill('91');
     check((await p.locator('#grade-rows .gb-tscore').first().textContent()).includes('EE'), 'portal: a score of 91 shows level EE');
-    await p.click('#tab-questions');
-    await p.fill('#q-text', 'CI check question?'); await p.fill('#qo0', 'Yes'); await p.fill('#qo1', 'No');
-    await p.click('#q-form button[type=submit]');
-    check((await p.textContent('#q-bank')).includes('CI check question?'), 'portal: a new question is saved');
+    await p.click('#tab-exams');
+    check((await p.locator('#ex-list .ex-card').count()) > 0, 'portal: an end-of-term exam for each grade and subject');
+    await p.locator('#ex-list .ex-card .ex-acts .btn').first().click();
+    check(await p.isVisible('#ex') && (await p.locator('#ex .ex-pk').count()) > 0, 'portal: sitting an exam on the tablet starts with picking the girl');
+    await p.click('#ex-close');
     check(errors.length === 0, `portal: no script errors ${errors.join(' | ')}`);
     await p.close();
   }

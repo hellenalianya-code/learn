@@ -625,6 +625,7 @@ main h2 { color: #1b2a5a; }
 #tab-modules { --tc: #2f8a5b; --ti: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%3E%3Cpath%20d%3D'M3.5%205a2%202%200%200%201%202-2H11v17H5.5a2%202%200%200%200-2%201zM20.5%205a2%202%200%200%200-2-2H13v17h5.5a2%202%200%200%201%202%201z'%20fill%3D'%23fff'%2F%3E%3C%2Fsvg%3E"); }
 #tab-grades { --tc: #7b4bc4; --ti: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%3E%3Cpath%20d%3D'M12%203l2.6%205.6%206%20.7-4.5%204.1%201.2%206L12%2016.4%206.7%2019.4l1.2-6L3.4%209.3l6-.7z'%20fill%3D'%23fff'%2F%3E%3C%2Fsvg%3E"); }
 #tab-questions { --tc: #0b8a78; --ti: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%3E%3Cpath%20d%3D'M4%206a3%203%200%200%201%203-3h10a3%203%200%200%201%203%203v8a3%203%200%200%201-3%203h-6l-5%204v-4a2%202%200%200%201-2-2z'%20fill%3D'%23fff'%2F%3E%3Cpath%20d%3D'M10%208.2a2%202%200%201%201%202.8%201.8c-.6.3-.8.7-.8%201.3'%20stroke%3D'%23fff'%20stroke-width%3D'1.9'%20fill%3D'none'%20stroke-linecap%3D'round'%2F%3E%3Ccircle%20cx%3D'12'%20cy%3D'14'%20r%3D'1.1'%20fill%3D'%23fff'%2F%3E%3C%2Fsvg%3E"); }
+#tab-exams { --tc: #0b8a78; --ti: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%3E%3Crect%20x%3D'4.5'%20y%3D'3'%20width%3D'15'%20height%3D'18.5'%20rx%3D'2.5'%20fill%3D'none'%20stroke%3D'%23fff'%20stroke-width%3D'2.2'%2F%3E%3Cpath%20d%3D'M8.5%208.5h7M8.5%2012.5h7M8.5%2016.5h3.5'%20stroke%3D'%23fff'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%2F%3E%3C%2Fsvg%3E"); }
 /* bubbly surfaces */
 .card, .ins-card, .tw, .ses, .catch-row, .stat, .tile, .login-card, .pp-card { border: 0; border-radius: 20px; box-shadow: 0 3px 0 rgb(20 48 45 / .05), 0 8px 22px rgb(20 48 45 / .08); }
 .card.well { box-shadow: inset 0 5px 0 #b5476b, 0 3px 0 rgb(20 48 45 / .05), 0 8px 22px rgb(20 48 45 / .08); }
@@ -775,12 +776,48 @@ select { border-radius: 12px; }
 .pp-pf { font-size: .78rem; font-weight: 800; padding: 2px 10px; border-radius: 999px; }
 .pp-pf.ok { background: #ddf3e6; color: #1f7a4d; } .pp-pf.no { background: #fbe3e1; color: #b3261e; }
 .pp-tag { color: #9a5b00; margin: 6px 0 0; font-weight: 700; }
+.pp-tag.real { color: #136f63; }
 .pp-ql li { align-items: center; }
 .pp-qb { flex: 1; min-width: 0; }
 .pp-qm { flex: none; font: 800 .9rem var(--display); color: #1b2a5a; background: #eef3f5; border-radius: 999px; padding: 2px 10px; }
 .gb-ql li.p .gb-mark { background: #b86e0b; }
 .pp-tot { display: flex; justify-content: flex-end; gap: 10px; align-items: center; padding: 6px 4px 2px; border-top: 1px dashed #d6e2e8; margin-top: 4px; color: #1b2a5a; }
 .pp-tot b { font: 800 1.05rem var(--display); }
+
+/* ===== Exams ===== */
+.ex-term { font-weight: 800; }
+.ex-grade { margin: 14px 0 20px; }
+.ex-grade h3 { display: flex; align-items: center; gap: 10px; color: #1b2a5a; margin: 0 0 10px; }
+.ex-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 12px; }
+.ex-card { background: #fff; border-radius: 20px; padding: 14px 16px; box-shadow: inset 0 5px 0 var(--c), 0 3px 0 rgb(20 48 45 / .05), 0 8px 22px rgb(20 48 45 / .07); display: flex; flex-direction: column; gap: 8px; }
+.ex-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ex-h h4 { margin: 0; font: 800 1.15rem var(--display); color: var(--c); }
+.ex-from { margin: 0; color: #4f6461; }
+.ex-prog { display: flex; align-items: center; gap: 10px; }
+.ex-bar { flex: 1; height: 10px; border-radius: 999px; background: #eef3f5; overflow: hidden; }
+.ex-bar i { display: block; height: 100%; background: var(--c); border-radius: 999px; }
+.ex-girls { display: flex; flex-wrap: wrap; gap: 6px; }
+.ex-girl { display: inline-flex; gap: 6px; align-items: center; border-radius: 999px; padding: 3px 10px; font-size: .8rem; background: #eef3f5; color: #4f6461; }
+.ex-girl.pass { background: #ddf3e6; color: #1f7a4d; } .ex-girl.fail { background: #fbe3e1; color: #b3261e; }
+.ex-acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.ex-acts .btn { width: auto; }
+.ex-mark { border-top: 1px dashed #d6e2e8; padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.ex-ml { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow: auto; }
+.ex-ml li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; background: #f8fafb; border-radius: 12px; padding: 6px 10px; }
+.ex-ml li .mark { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 6px; }
+.ex-ml .mark button { width: 40px; height: 36px; border-radius: 10px; border: 1.5px solid #d6e2e8; background: #fff; font-weight: 900; cursor: pointer; }
+.ex-ml .mark button.r[aria-pressed="true"] { background: #1f7a4d; color: #fff; border-color: #1f7a4d; }
+.ex-ml .mark button.w[aria-pressed="true"] { background: #b3261e; color: #fff; border-color: #b3261e; }
+.ex-mq { font-weight: 600; }
+.ex-mbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ex-mbar .btn { width: auto; }
+.ex-tot { margin-right: auto; color: #1b2a5a; }
+.ex-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; width: 100%; }
+.ex-pk { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; gap: 0 10px; align-items: center; text-align: left; border: 0; border-radius: 16px; padding: 10px 12px; background: #fff; box-shadow: 0 3px 0 rgb(20 48 45 / .08); cursor: pointer; font: inherit; color: #14302d; }
+.ex-pk .mini-av { grid-row: 1 / span 2; width: 42px; height: 42px; }
+.ex-pk.done { background: #eef7f1; }
+.ex-pk:focus-visible { outline: 3px solid #e08a14; }
+#tab-exams { --tc: #0b8a78; }
 </style>
 
 <!-- LOGIN / REGISTER (Supabase) -->
@@ -860,7 +897,7 @@ select { border-radius: 12px; }
         <button role="tab" id="tab-sessions" data-view="sessions" aria-selected="false" data-t="tSessions">Sessions</button>
         <button role="tab" id="tab-modules" data-view="modules" aria-selected="false" data-t="tModules">Modules</button>
         <button role="tab" id="tab-grades" data-view="grades" aria-selected="false" data-t="tGrades">Gradebook</button>
-        <button role="tab" id="tab-questions" data-view="questions" aria-selected="false" data-t="tQuestions">Questions</button>
+        <button role="tab" id="tab-exams" data-view="exams" aria-selected="false" data-t="tExams">Exams</button>
       </nav>
     </div>
   </header>
@@ -1039,6 +1076,10 @@ select { border-radius: 12px; }
     </section>
 
     <!-- QUESTIONS -->
+    <section class="view" id="view-exams" hidden>
+      <div class="row"><div><h2 data-t="exTitle">End-of-term exams</h2><p class="muted" data-t="exSub"></p></div><span class="chip ex-term" id="ex-term"></span></div>
+      <div id="ex-list"></div>
+    </section>
     <section class="view" id="view-questions" hidden>
       <div><h2 data-t="tQuestions">Questions</h2><p class="muted" data-t="qSub">Write questions for a lesson, then ask them on the classroom screen. The answer stays hidden until you reveal it.</p></div>
       <form class="card" id="q-form" novalidate>
@@ -1084,6 +1125,11 @@ select { border-radius: 12px; }
   <div class="screen-top"><span id="qz-who"></span><button class="btn ghost sm" id="qz-close" type="button" data-t="qzStop">Stop</button></div>
   <div class="screen-stage" id="qz-stage"></div>
   <div class="screen-bar"><span id="qz-step"></span><button class="btn sun" id="qz-next" type="button" disabled data-t="next">Next →</button></div>
+</div>
+<div class="screen quiz" id="ex" hidden role="dialog" aria-modal="true" aria-label="End-of-term exam">
+  <div class="screen-top"><span id="ex-who"></span><button class="btn ghost sm" id="ex-close" type="button" data-t="close">Close</button></div>
+  <div class="screen-stage" id="ex-stage"></div>
+  <div class="screen-bar"><button class="btn ghost" id="ex-prev" type="button" hidden>← Back</button><span id="ex-step"></span><button class="btn sun" id="ex-next" type="button" disabled data-t="next">Next →</button></div>
 </div>
 <!-- STEP-BY-STEP ACTIVITY (light full screen) -->
 <div class="screen act" id="act" hidden role="dialog" aria-modal="true" aria-label="Step-by-step activity">
@@ -1666,7 +1712,8 @@ async function boot() {
 // ---------- Navigation ----------
 function show(view) {
   stopSpeech();
-  ['class', 'students', 'sessions', 'register', 'quiz', 'report', 'modules', 'lesson', 'grades', 'questions', 'pupil'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
+  if (view === 'exams') renderExams();
+  ['class', 'students', 'sessions', 'register', 'quiz', 'report', 'modules', 'lesson', 'grades', 'questions', 'exams', 'pupil'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
   const tab = view === 'pupil' ? 'students' : view === 'lesson' ? 'modules' : ['register', 'quiz', 'report'].includes(view) ? 'sessions' : view;
   document.querySelectorAll('.tabs [data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === tab)));
   window.scrollTo({ top: 0 });
@@ -2712,6 +2759,149 @@ function studentDetail(mid, s) {
 $('#g-grade').addEventListener('change', () => renderGrades());
 $('#g-module').addEventListener('change', () => renderGrades());
 
+// ---- end-of-term exams ----
+Object.assign(T.en, { tExams: 'Exams', exTitle: 'End-of-term exams', exSub: 'One exam for each grade and subject, made from the lessons taught this term. Girls sit it on the tablet, or on a printed paper that you mark in. The mark goes to her report card as the end-of-term exam.', exQs: 'questions', exMarks: '100 marks', exFrom: 'From', exTaught: 'lessons taught this term', exAllLessons: 'all Grade {g} lessons (none taught yet this term)', exDone: 'done', exAvg: 'Average', exSit: 'Sit on tablet', exPrint: 'Print paper (PDF)', exEnter: 'Enter paper marks', exNotYet: 'not yet', exPick: 'Who is sitting the exam?', exAgain: 'sit again replaces this result', exReady: 'Pass the tablet to {n}.', exStart: 'Start the exam', exHow: 'Read each question and tap your answer. You can go back. Nobody sees right or wrong until your teacher checks it.', exThanks: 'Well done, {n}! Your exam is saved.', exBackList: 'Next girl', exSubmit: 'Hand in', exPrev: '← Back', exQ: 'Question', exSaved: 'Exam saved', exPaperFor: 'Paper marks for', exGirl: 'Girl', exTick: 'Tick each question: right or wrong.', exSave: 'Save marks', exCancel: 'Cancel', exNeedAll: 'Mark every question first.', exName: 'End-of-term exam', exKey: 'Answer key', exNameLine: 'Name', exDateLine: 'Date', exInstr: 'Answer all questions. Circle the letter of the right answer. Each question shows its marks.', exPaperTablet: 'Tablet exam', exPaperPaper: 'Paper exam', exNoGirls: 'No girls in this grade.', exScoreNow: 'Score so far', exGrade: 'Grade', exAnswer: 'Answer', exTerm: 'Term', exRevision: '+ revision from other Grade {g} lessons' });
+Object.assign(T.sw, { tExams: 'Mitihani', exTitle: 'Mitihani ya mwisho wa muhula', exSub: 'Mtihani mmoja kwa kila darasa na somo, kutoka kwa masomo yaliyofundishwa muhula huu. Wasichana hufanya kwenye kishikwambi, au kwenye karatasi utakayosahihisha. Alama huenda kwenye ripoti yake kama mtihani wa mwisho wa muhula.', exQs: 'maswali', exMarks: 'alama 100', exFrom: 'Kutoka', exTaught: 'masomo yaliyofundishwa muhula huu', exAllLessons: 'masomo yote ya Darasa la {g} (hakuna lililofundishwa bado)', exDone: 'wamemaliza', exAvg: 'Wastani', exSit: 'Fanya kwenye kishikwambi', exPrint: 'Chapisha karatasi (PDF)', exEnter: 'Weka alama za karatasi', exNotYet: 'bado', exPick: 'Nani anafanya mtihani?', exAgain: 'kufanya tena kunabadilisha matokeo haya', exReady: 'Mpe {n} kishikwambi.', exStart: 'Anza mtihani', exHow: 'Soma kila swali na uguse jibu lako. Unaweza kurudi nyuma. Hakuna anayeona sahihi au kosa hadi mwalimu aangalie.', exThanks: 'Hongera, {n}! Mtihani wako umehifadhiwa.', exBackList: 'Msichana anayefuata', exSubmit: 'Wasilisha', exPrev: '← Nyuma', exQ: 'Swali', exSaved: 'Mtihani umehifadhiwa', exPaperFor: 'Alama za karatasi za', exGirl: 'Msichana', exTick: 'Weka alama kila swali: sahihi au kosa.', exSave: 'Hifadhi alama', exCancel: 'Ghairi', exNeedAll: 'Sahihisha kila swali kwanza.', exName: 'Mtihani wa mwisho wa muhula', exKey: 'Majibu', exNameLine: 'Jina', exDateLine: 'Tarehe', exInstr: 'Jibu maswali yote. Zungushia herufi ya jibu sahihi. Kila swali linaonyesha alama zake.', exPaperTablet: 'Mtihani wa kishikwambi', exPaperPaper: 'Mtihani wa karatasi', exNoGirls: 'Hakuna wasichana katika darasa hili.', exScoreNow: 'Alama hadi sasa', exGrade: 'Darasa', exAnswer: 'Jibu', exTerm: 'Muhula', exRevision: '+ marudio kutoka masomo mengine ya Darasa la {g}' });
+const exTermNow = () => termOf(todayIso());
+function examLessons(subj, g, term) {
+  const taught = [...new Set(sessions.filter((s) => s.status === 'done' && s.date && termOf(s.date) === term).map((s) => s.lesson))].filter((id) => { const l = LESSONS.find((x) => x.id === id); return l && mod(l.mod).subject === subj && l.grade === g && quizQs(id).length; });
+  const all = LESSONS.filter((l) => mod(l.mod).subject === subj && l.grade === g && quizQs(l.id).length).map((l) => l.id);
+  if (!taught.length) return { ids: all, taught: false, extra: [] };
+  const nq = taught.reduce((a, id) => a + quizQs(id).length, 0);
+  return { ids: taught, taught: true, extra: nq < 8 ? all.filter((id) => !taught.includes(id)) : [] };
+}
+function examPaper(subj, g, term) {
+  const src = examLessons(subj, g, term), seed = 'exam|' + term + '|' + subj + '|' + g;
+  const ord = (ids) => ids.flatMap((id) => quizQs(id)).map((q) => ({ q, k: hashStr(seed + '|' + q.id) })).sort((a, b) => a.k - b.k).map((x) => x.q);
+  const main = ord(src.ids), qs = [...main, ...ord(src.extra || []).slice(0, Math.max(0, 10 - main.length))].slice(0, 20);
+  const n = qs.length || 1, base = Math.floor(100 / n), extra = 100 - base * n, maxes = qs.map((_, i) => base + (i < extra ? 1 : 0));
+  // answers in a mixed order (the same on the tablet, the paper and the answer key) so 'A' is not always right
+  const orders = qs.map((q) => q.opts.map((_, k) => k).sort((a, b) => hashStr(seed + '|o|' + q.id + '|' + a) - hashStr(seed + '|o|' + q.id + '|' + b)));
+  const letter = (i, k) => String.fromCharCode(65 + orders[i].indexOf(k));
+  return { qs, maxes, orders, letter, src, subj, g, term };
+}
+const examOf = (s, subj, term) => { const r = rowByKey(s.id); return ((r && r.marks) || []).filter((m) => m.kind === 'exam' && m.subject === subj && m.date && termOf(m.date) === term).slice(-1)[0] || null; };
+function saveExam(s, paper, answers, mode) {
+  const r = rowByKey(s.id); if (!r) return null;
+  const score = paper.qs.reduce((a, q, i) => a + (mode === 'paper' ? (answers[q.id] === 'r' ? paper.maxes[i] : 0) : (answers[q.id] === q.a ? paper.maxes[i] : 0)), 0);
+  const m = { id: 'ext-' + paper.term + '-' + paper.subj + '-' + s.id, kind: 'exam', subject: paper.subj, name: t('exName'), out_of: 100, date: todayIso(), score, grade: paper.g, mode, qids: paper.qs.map((q) => q.id), maxes: paper.maxes, answers: { ...answers } };
+  const keep = (r.marks || []).filter((x) => !(x.kind === 'exam' && x.subject === paper.subj && x.date && termOf(x.date) === paper.term));
+  savePupil(r.id, { marks: [...keep, m] }); return m;
+}
+const girlsIn = (g) => STUDENTS.filter((s) => levelIn(s.id) === g);
+function renderExams() {
+  const box = $('#ex-list'); box.replaceChildren(); const term = exTermNow();
+  $('#ex-term').textContent = termLabel(term);
+  [1, 2, 3, 4, 5, 6].forEach((g) => {
+    const girls = girlsIn(g); if (!girls.length) return;
+    const sec = el('section', 'ex-grade'); const h = el('h3', null, t('grade') + ' ' + g); h.append(el('span', 'chip', girls.length + ' ' + (girls.length === 1 ? t('girl') : t('girls')))); sec.append(h);
+    const grid = el('div', 'ex-cards');
+    GRADED.forEach((subj) => {
+      const paper = examPaper(subj, g, term), c = el('article', 'ex-card'); c.style.setProperty('--c', SUBJ_COL[subj]); c.id = 'ex-' + subj + '-' + g;
+      const done = girls.map((s) => [s, examOf(s, subj, term)]), nd = done.filter(([, m]) => m).length;
+      const av = done.filter(([, m]) => m).map(([, m]) => Math.round(100 * m.score / m.out_of));
+      const hd = el('div', 'ex-h'); hd.append(el('h4', null, subjName(subj)), el('span', 'small muted', paper.qs.length + ' ' + t('exQs') + ' · ' + t('exMarks')));
+      c.append(hd);
+      c.append(el('p', 'small ex-from', t('exFrom') + ': ' + paper.src.ids.map((id) => lesson(id).title).join(', ') + ' · ' + (paper.src.taught ? t('exTaught') + ((paper.src.extra || []).length ? ' ' + t('exRevision').replace('{g}', g) : '') : t('exAllLessons').replace('{g}', g))));
+      const prog = el('div', 'ex-prog'); const bar = el('span', 'ex-bar'); const fill = el('i'); fill.style.width = (girls.length ? 100 * nd / girls.length : 0) + '%'; bar.append(fill);
+      prog.append(bar, el('span', 'small', nd + ' / ' + girls.length + ' ' + t('exDone') + (av.length ? ' · ' + t('exAvg') + ' ' + avgOf(av) + '%' : ''))); c.append(prog);
+      const chips = el('div', 'ex-girls');
+      done.forEach(([s, m]) => { const p100 = m ? Math.round(100 * m.score / m.out_of) : null; const ch = el('span', 'ex-girl ' + (m ? (p100 >= 50 ? 'pass' : 'fail') : 'todo')); ch.append(el('b', null, s.name.split(' ')[0]), el('span', null, m ? p100 + '%' : t('exNotYet'))); chips.append(ch); });
+      c.append(chips);
+      const acts = el('div', 'ex-acts');
+      const b1 = btn('▶ ' + t('exSit'), 'sm', () => openExam(subj, g)); b1.id = 'ex-sit-' + subj + '-' + g;
+      const b2 = btn('⬇ ' + t('exPrint'), 'ghost sm', () => printExam(subj, g)); b2.id = 'ex-print-' + subj + '-' + g;
+      const b3 = btn('✎ ' + t('exEnter'), 'ghost sm', () => paperMarks(subj, g, c)); b3.id = 'ex-enter-' + subj + '-' + g;
+      if (!paper.qs.length) [b1, b2, b3].forEach((b) => { b.disabled = true; });
+      acts.append(b1, b2, b3); c.append(acts); grid.append(c);
+    });
+    sec.append(grid); box.append(sec);
+  });
+  if (!box.children.length) box.append(el('p', 'empty muted', t('exNoGirls')));
+}
+// --- paper: enter marks question by question ---
+function paperMarks(subj, g, card) {
+  card.querySelector('.ex-mark')?.remove();
+  const paper = examPaper(subj, g, exTermNow()), girls = girlsIn(g), f = el('form', 'ex-mark'); f.noValidate = true;
+  const sel = el('select'); sel.id = 'ex-girl-' + subj + '-' + g; girls.forEach((s) => sel.append(new Option(s.name + (examOf(s, subj, exTermNow()) ? ' ✓' : ''), s.id)));
+  const lab = el('label', 'field'); lab.append(el('span', null, t('exPaperFor')), sel); f.append(lab, el('p', 'small muted', t('exTick')));
+  const ans = {}, ol = el('ol', 'ex-ml'), tot = el('b', 'ex-tot');
+  const sum = () => { tot.textContent = t('exScoreNow') + ': ' + paper.qs.reduce((a, q, i) => a + (ans[q.id] === 'r' ? paper.maxes[i] : 0), 0) + ' / 100'; };
+  paper.qs.forEach((q, i) => {
+    const li = el('li'); li.append(el('span', 'ex-mq', (i + 1) + '. ' + q.text), el('span', 'small muted', t('exAnswer') + ': ' + paper.letter(i, q.a) + ' · ' + paper.maxes[i] + ' ' + t('ppMarks')));
+    const grp = el('div', 'mark'); grp.setAttribute('role', 'group'); grp.setAttribute('aria-label', t('exQ') + ' ' + (i + 1));
+    [['r', '✓'], ['w', '✗']].forEach(([v, sym]) => { const b = el('button', v, sym); b.type = 'button'; b.id = 'exm-' + v + '-' + i; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', (v === 'r' ? t('markRight') : t('markWrong')) + ' · ' + t('exQ') + ' ' + (i + 1));
+      b.addEventListener('click', () => { ans[q.id] = v; grp.querySelectorAll('button').forEach((o) => o.setAttribute('aria-pressed', String(o === b))); sum(); }); grp.append(b); });
+    li.append(grp); ol.append(li);
+  });
+  sum(); const err = el('p', 'err small'); err.setAttribute('role', 'alert');
+  const go = btn(t('exSave'), 'sm', () => {
+    if (paper.qs.some((q) => !ans[q.id])) { err.textContent = t('exNeedAll'); return; }
+    const s = STUDENTS.find((x) => x.id === sel.value); saveExam(s, paper, ans, 'paper'); toast(t('exSaved') + ': ' + s.name); renderExams(); renderClass();
+  }); go.id = 'ex-save-' + subj + '-' + g;
+  const cancel = btn(t('exCancel'), 'ghost sm', () => f.remove());
+  const bar = el('div', 'ex-mbar'); bar.append(tot, go, cancel);
+  f.append(ol, err, bar); card.append(f); sel.focus();
+}
+// --- tablet: one girl at a time ---
+let ex = null;
+function openExam(subj, g) { ex = { paper: examPaper(subj, g, exTermNow()), girl: null, i: -1, answers: {} }; setScene($('#ex'), sceneOf({ grade: g })); $('#ex').hidden = false; drawExam(); }
+function drawExam() {
+  const st = $('#ex-stage'), next = $('#ex-next'), prev = $('#ex-prev'), P = ex.paper; st.replaceChildren(); prev.hidden = true;
+  $('#ex-who').textContent = t('exName') + ' · ' + subjName(P.subj) + ' · ' + t('grade') + ' ' + P.g + (ex.girl ? ' · ' + ex.girl.name : '');
+  if (!ex.girl) {
+    st.append(el('span', 'eyebrow', t('exName')), el('h2', null, t('exPick')));
+    const list = el('div', 'ex-pick');
+    girlsIn(P.g).forEach((s) => { const m = examOf(s, P.subj, P.term); const b = el('button', 'ex-pk' + (m ? ' done' : '')); b.type = 'button'; b.id = 'exp-' + s.id;
+      b.append(avatarEl(s.name, rowByKey(s.id) || {}, 'mini-av'), el('b', null, s.name), el('span', 'small', m ? '✓ ' + t('exDone') + ' · ' + t('exAgain') : t('exNotYet')));
+      b.addEventListener('click', () => { ex.girl = s; ex.i = -1; ex.answers = {}; drawExam(); }); list.append(b); });
+    st.append(list); $('#ex-step').textContent = ''; next.hidden = true; return;
+  }
+  next.hidden = false;
+  if (ex.i === -1) { st.append(el('span', 'eyebrow', P.qs.length + ' ' + t('exQs') + ' · ' + t('exMarks')), el('h2', null, t('exReady').replace('{n}', ex.girl.name)), el('p', 'big', t('exHow'))); next.disabled = false; next.textContent = t('exStart'); $('#ex-step').textContent = ''; return; }
+  if (ex.i >= P.qs.length) { st.append(el('span', 'eyebrow', t('exSaved')), el('h2', null, t('exThanks').replace('{n}', ex.girl.name.split(' ')[0]))); next.disabled = false; next.textContent = t('exBackList'); $('#ex-step').textContent = ''; return; }
+  const q = P.qs[ex.i]; prev.hidden = ex.i === 0;
+  st.append(el('span', 'eyebrow', t('exQ') + ' ' + (ex.i + 1) + ' / ' + P.qs.length + ' · ' + P.maxes[ex.i] + ' ' + t('ppMarks')), el('h2', null, q.text));
+  const opts = el('div', 'qz-opts');
+  P.orders[ex.i].forEach((k, pos) => { const o = q.opts[k]; const b = el('button', null, String.fromCharCode(65 + pos) + '. ' + o); b.type = 'button'; b.setAttribute('aria-pressed', String(ex.answers[q.id] === k));
+    b.addEventListener('click', () => { ex.answers[q.id] = k; opts.querySelectorAll('button').forEach((o2) => o2.setAttribute('aria-pressed', String(o2 === b))); next.disabled = false; }); opts.append(b); });
+  st.append(opts); $('#ex-step').textContent = t('noRightWrong');
+  next.disabled = !(q.id in ex.answers); next.textContent = ex.i === P.qs.length - 1 ? t('exSubmit') : t('next');
+}
+$('#ex-next').addEventListener('click', () => {
+  if (!ex) return; const P = ex.paper;
+  if (ex.i >= P.qs.length) { ex.girl = null; ex.i = -1; ex.answers = {}; drawExam(); return; }
+  ex.i++;
+  if (ex.i === P.qs.length) { saveExam(ex.girl, P, ex.answers, 'tablet'); renderExams(); renderClass(); }
+  drawExam();
+});
+$('#ex-prev').addEventListener('click', () => { if (ex && ex.i > 0) { ex.i--; drawExam(); } });
+$('#ex-close').addEventListener('click', () => { $('#ex').hidden = true; ex = null; renderExams(); });
+// --- printable paper (PDF) with an answer key ---
+function printExam(subj, g) {
+  const P = examPaper(subj, g, exTermNow()), title = t('exName') + ' · ' + subjName(subj) + ' · ' + t('grade') + ' ' + g + ' · ' + termLabel(P.term);
+  const blob = makePdf(title, (pdf) => {
+    const L = 50, R = 545; let y;
+    const header = (key) => { pdf.rect(0, 772, 595, 70, SUBJ_HEX[subj] || '#136f63'); pdf.text(L, 812, 'LearnReach · ' + (key ? t('exKey') : t('exName')), { size: 16, bold: true, color: '#ffffff' }); pdf.text(L, 792, subjName(subj) + ' · ' + t('grade') + ' ' + g + ' · ' + termLabel(P.term), { size: 11, color: '#ffffff' }); pdf.text(R, 800, '100 ' + t('ppMarks'), { size: 13, bold: true, color: '#ffffff', align: 'right' }); };
+    header(false); y = 740;
+    pdf.text(L, y, t('exNameLine') + ':', { size: 11, bold: true }); pdf.line(L + 40, y - 2, 330, y - 2, '#9aa9ad'); pdf.text(345, y, t('exDateLine') + ':', { size: 11, bold: true }); pdf.line(380, y - 2, R, y - 2, '#9aa9ad');
+    y -= 26; pdf.wrap(t('exInstr'), 9.5, R - L).forEach((ln) => { pdf.text(L, y, ln, { size: 9.5, color: '#4f6461' }); y -= 13; }); y -= 8;
+    P.qs.forEach((q, i) => {
+      const lines = pdf.wrap((i + 1) + '. ' + q.text, 11, R - L - 70, true), need = lines.length * 15 + q.opts.length * 17 + 14;
+      if (y - need < 60) { pdf.page(); header(false); y = 740; }
+      lines.forEach((ln, k) => { pdf.text(L, y, ln, { size: 11, bold: true, color: '#1b2a5a' }); if (!k) pdf.text(R, y, '(' + P.maxes[i] + ' ' + t('ppMarks') + ')', { size: 9, color: '#5a6e6b', align: 'right' }); y -= 15; });
+      P.orders[i].forEach((k, pos) => { pdf.text(L + 18, y, String.fromCharCode(65 + pos) + '.', { size: 10.5, bold: true }); pdf.text(L + 36, y, q.opts[k], { size: 10.5 }); y -= 17; });
+      y -= 10;
+    });
+    pdf.page(); header(true); y = 740;
+    pdf.rect(L, y - 6, R - L, 20, '#eef3fb'); [[L + 8, t('exQ'), 'left'], [L + 90, t('exAnswer'), 'left'], [L + 400, t('ppMarks'), 'right']].forEach(([x, h, al]) => pdf.text(x, y, h.toUpperCase(), { size: 8, bold: true, color: '#4b5f7a', align: al })); y -= 20;
+    P.qs.forEach((q, i) => { if (y < 60) { pdf.page(); header(true); y = 740; } pdf.text(L + 8, y, String(i + 1), { size: 10 }); pdf.text(L + 90, y, P.letter(i, q.a) + '. ' + q.opts[q.a], { size: 10, bold: true }); pdf.text(L + 170 + 230, y, String(P.maxes[i]), { size: 10, align: 'right' }); pdf.line(L, y - 6, R, y - 6); y -= 18; });
+    y -= 10; pdf.text(L, y, t('exFrom') + ': ' + P.src.ids.map((id) => lesson(id).title).join(', '), { size: 9, color: '#5a6e6b' });
+  });
+  saveBlob(blob, 'Exam_' + slug(subjName(subj)) + '_Grade-' + g + '_Term-' + P.term.split('-')[1] + '-' + P.term.split('-')[0] + '.pdf');
+}
+
+
 // ---- CAT and exam papers ----
 Object.assign(T.en, { ppPapers: 'CATs and exams', ppPass: 'Passed', ppFail: 'Failed', ppSamplePaper: 'Sample paper', ppQ: 'Question', ppMarks: 'marks', ppPart: 'part marks for working shown', ppNoPaper: 'Typed-in mark: the questions were not recorded.', ppNoMarks: 'No CATs or exams in this term.', ppPassKey: 'Pass = 50% or more.' });
 Object.assign(T.sw, { ppPapers: 'CAT na mitihani', ppPass: 'Amefaulu', ppFail: 'Hajafaulu', ppSamplePaper: 'Karatasi ya mfano', ppQ: 'Swali', ppMarks: 'alama', ppPart: 'alama za sehemu kwa hatua za kazi', ppNoPaper: 'Alama iliyoandikwa: maswali hayakurekodiwa.', ppNoMarks: 'Hakuna CAT wala mitihani katika muhula huu.', ppPassKey: 'Kufaulu = 50% au zaidi.' });
@@ -2732,14 +2922,19 @@ function samplePaper(pid, subj, grade, term, m) {
     return { q: x.q, lesson: x.l, max: max[i], got: got[i], given: got[i] === max[i] ? x.q.a : wrongs[hashStr(seed + '|w' + i) % wrongs.length] };
   });
 }
+function realPaper(m) { // an exam sat in the Exams tab: her own answers
+  return m.qids.map((id, i) => { const q = questions.find((x) => x.id === id); if (!q) return null; const a = m.answers[id], right = m.mode === 'paper' ? a === 'r' : a === q.a; const wr = q.opts.map((_, k) => k).filter((k) => k !== q.a);
+    return { q, max: (m.maxes || [])[i] || 0, got: right ? (m.maxes || [])[i] || 0 : 0, given: m.mode === 'paper' ? (right ? q.a : -1) : a, paper: m.mode === 'paper' }; }).filter(Boolean);
+}
 function paperEl(pid, subj, grade, term, m, sample) {
   const pctv = Math.round(100 * m.score / m.out_of), pass = pctv >= 50, det = el('details', 'pp-paper ' + (pass ? 'pass' : 'fail'));
   const sm = el('summary'); sm.append(el('span', 'pp-pn', m.name), el('b', null, m.score + ' / ' + m.out_of), el('span', 'pp-pct', pctv + '%'), lvBadge(pctv), el('span', 'pp-pf ' + (pass ? 'ok' : 'no'), pass ? '✓ ' + t('ppPass') : '✗ ' + t('ppFail')));
   if (m.date) sm.append(el('span', 'small muted', fmtDate(m.date, { day: 'numeric', month: 'short', year: 'numeric' })));
   det.append(sm);
-  const items = sample ? samplePaper(pid, subj, grade, term, m) : null;
+  const real = m.qids && m.answers ? realPaper(m) : null;
+  const items = real || (sample ? samplePaper(pid, subj, grade, term, m) : null);
   if (!items) { det.append(el('p', 'small muted', t('ppNoPaper'))); return det; }
-  det.append(el('p', 'small pp-tag', t('ppSamplePaper') + ' · ' + items.length + ' ' + (lang === 'sw' ? 'maswali' : 'questions') + ' · ' + items.filter((x) => x.got === x.max).length + ' ' + t('gbRight')));
+  det.append(el('p', 'small pp-tag' + (real ? ' real' : ''), (real ? (m.mode === 'paper' ? t('exPaperPaper') : t('exPaperTablet')) : t('ppSamplePaper')) + ' · ' + items.length + ' ' + (lang === 'sw' ? 'maswali' : 'questions') + ' · ' + items.filter((x) => x.got === x.max).length + ' ' + t('gbRight')));
   const ol = el('ol', 'gb-ql pp-ql');
   items.forEach((x, i) => {
     const full = x.got === x.max, part = x.got > 0 && !full, li = el('li', full ? 'r' : part ? 'p' : 'w');
@@ -2747,7 +2942,8 @@ function paperEl(pid, subj, grade, term, m, sample) {
     const body = el('div', 'pp-qb'); body.append(el('div', 'gb-qt', (i + 1) + '. ' + x.q.text));
     const a = el('div', 'small');
     if (full) a.append(el('span', 'ok', x.q.opts[x.q.a]));
-    else { a.append(el('span', 'no', t('gbHer') + ': ' + x.q.opts[x.given]), document.createTextNode('  ·  '), el('span', 'ok', t('gbCorrect') + ': ' + x.q.opts[x.q.a])); if (part) a.append(document.createTextNode('  ·  ' + t('ppPart'))); }
+    else if (x.paper) { a.append(el('span', 'no', t('markWrong')), document.createTextNode('  ·  '), el('span', 'ok', t('gbCorrect') + ': ' + x.q.opts[x.q.a])); }
+    else { a.append(el('span', 'no', t('gbHer') + ': ' + (x.q.opts[x.given] ?? '–')), document.createTextNode('  ·  '), el('span', 'ok', t('gbCorrect') + ': ' + x.q.opts[x.q.a])); if (part) a.append(document.createTextNode('  ·  ' + t('ppPart'))); }
     body.append(a); li.append(body, el('span', 'pp-qm', x.got + ' / ' + x.max)); ol.append(li);
   });
   const tot = el('div', 'pp-tot'); tot.append(el('span', null, (lang === 'sw' ? 'Jumla' : 'Total')), el('b', null, items.reduce((s2, x) => s2 + x.got, 0) + ' / ' + m.out_of));
@@ -3814,7 +4010,7 @@ function schoolPanel(r) { const d = el('div', 'pp-school'); d.id = 'pp-school'; 
 function snapshot(p, r, term) {
   const d = rcData(p, r, term);
   return { school_grade: r.school_grade || null, levels: Object.fromEntries(GRADED.map((g) => [g, levelIn(p.id, g) || null])),
-    subjects: d.rows.map((x) => ({ s: x.g, qr: x.right, qt: x.total, cat: x.cat.rate == null ? null : Math.round(x.cat.rate * 100), cats: x.cat.ms.map((m) => ({ name: m.name, score: m.score, out_of: m.out_of })), exams: x.exam.ms.map((m) => ({ name: m.name, score: m.score, out_of: m.out_of })), exam: x.exam.rate == null ? null : Math.round(x.exam.rate * 100), score: x.score })),
+    subjects: d.rows.map((x) => ({ s: x.g, qr: x.right, qt: x.total, cat: x.cat.rate == null ? null : Math.round(x.cat.rate * 100), cats: x.cat.ms.map((m) => ({ name: m.name, score: m.score, out_of: m.out_of })), exams: x.exam.ms.map((m) => ({ name: m.name, score: m.score, out_of: m.out_of, ...(m.qids ? { qids: m.qids, answers: m.answers, maxes: m.maxes, mode: m.mode } : {}) })), exam: x.exam.rate == null ? null : Math.round(x.exam.rate * 100), score: x.score })),
     overall: d.overall, att: [d.att.went, d.att.of], remark: (r.remarks || {})[term] || '', source: 'closed', saved_at: todayIso() };
 }
 function saveTerm(p, r, term) { savePupil(r.id, { reports: { ...(r.reports || {}), [term]: snapshot(p, r, term) } }); }
@@ -4132,8 +4328,9 @@ function pdfW(s, size, bold) { let w = 0; for (const ch of winStr(s)) { const c 
 const pdfEsc = (s) => winStr(s).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
 const rgb = (hex) => [1, 3, 5].map((i) => (parseInt(hex.slice(i, i + 2), 16) / 255).toFixed(3)).join(' ');
 function makePdf(title, draw) {
-  const ops = [];
+  const pages = [[]]; let ops = pages[0];
   const api = {
+    page() { ops = []; pages.push(ops); },
     text(x, y, s, o = {}) { const size = o.size || 10, bold = !!o.bold; let xx = x; if (o.align === 'right') xx = x - pdfW(s, size, bold); else if (o.align === 'center') xx = x - pdfW(s, size, bold) / 2; ops.push('BT /' + (bold ? 'F2' : 'F1') + ' ' + size + ' Tf ' + rgb(o.color || '#14302d') + ' rg ' + xx.toFixed(2) + ' ' + y.toFixed(2) + ' Td (' + pdfEsc(s) + ') Tj ET'); },
     rect(x, y, w, h, fill, stroke) { if (fill) ops.push(rgb(fill) + ' rg ' + [x, y, w, h].map((v) => v.toFixed(2)).join(' ') + ' re f'); if (stroke) ops.push(rgb(stroke) + ' RG 0.7 w ' + [x, y, w, h].map((v) => v.toFixed(2)).join(' ') + ' re S'); },
     line(x1, y1, x2, y2, c = '#d6e2e8', w = 0.7) { ops.push(rgb(c) + ' RG ' + w + ' w ' + x1.toFixed(2) + ' ' + y1.toFixed(2) + ' m ' + x2.toFixed(2) + ' ' + y2.toFixed(2) + ' l S'); },
@@ -4141,15 +4338,14 @@ function makePdf(title, draw) {
     wrap(s, size, maxW, bold) { const lines = []; let cur = ''; String(s).split(/\s+/).filter(Boolean).forEach((wd) => { const tt = cur ? cur + ' ' + wd : wd; if (pdfW(tt, size, bold) > maxW && cur) { lines.push(cur); cur = wd; } else cur = tt; }); if (cur) lines.push(cur); return lines; },
   };
   draw(api);
-  const content = ops.join('\n'), objs = [null,
-    '<< /Type /Catalog /Pages 2 0 R >>', '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>',
+  const n = pages.length, objs = [null, '<< /Type /Catalog /Pages 2 0 R >>', '<< /Type /Pages /Kids [' + pages.map((_, i) => (6 + i * 2) + ' 0 R').join(' ') + '] /Count ' + n + ' >>',
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>', '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
-    '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream', '<< /Title (' + pdfEsc(title) + ') /Producer (LearnReach) >>'];
-  let out = '%PDF-1.4\n%âãÏÓ\n'; const offs = [];
+    '<< /Title (' + pdfEsc(title) + ') /Producer (LearnReach) >>'];
+  pages.forEach((pg, i) => { const content = pg.join('\n'); objs.push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + (7 + i * 2) + ' 0 R >>', '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream'); });
+  let out = '%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n'; const offs = [];
   for (let i = 1; i < objs.length; i++) { offs[i] = out.length; out += i + ' 0 obj\n' + objs[i] + '\nendobj\n'; }
   const xref = out.length;
-  out += 'xref\n0 ' + objs.length + '\n0000000000 65535 f \n' + offs.slice(1).map((o) => String(o).padStart(10, '0') + ' 00000 n \n').join('') + 'trailer\n<< /Size ' + objs.length + ' /Root 1 0 R /Info 7 0 R >>\nstartxref\n' + xref + '\n%%EOF\n';
+  out += 'xref\n0 ' + objs.length + '\n0000000000 65535 f \n' + offs.slice(1).map((o) => String(o).padStart(10, '0') + ' 00000 n \n').join('') + 'trailer\n<< /Size ' + objs.length + ' /Root 1 0 R /Info 5 0 R >>\nstartxref\n' + xref + '\n%%EOF\n';
   const bytes = new Uint8Array(out.length); for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 255;
   return new Blob([bytes], { type: 'application/pdf' });
 }

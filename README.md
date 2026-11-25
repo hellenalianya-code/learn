@@ -53,6 +53,10 @@ A teacher runs a girls' club session: she takes the register, presents a lesson 
 
 ![Opening a girl, entering a teacher score and marking Life Skills attendance](docs/images/demo-gradebook.gif)
 
+**End-of-term exams.** The Exams tab has one exam for each grade and subject, made from the lessons taught that term (with revision from the grade's other lessons if the term was short). Girls sit it on the tablet one at a time, where it is marked automatically and no right or wrong is shown to them, or on a printed paper (PDF with an answer key) that the teacher marks in question by question. The mark goes to her report card as the end-of-term exam, and the Gradebook can open the exam to show every answer.
+
+![Exams tab: an exam for each grade and subject, with who has sat it](docs/images/portal-exams.png)
+
 <p align="center"><img src="docs/images/portal-mobile.png" alt="Teacher portal on a phone" width="300"></p>
 
 ### Programme dashboard
@@ -67,7 +71,8 @@ Milestones, learners and sessions, pilot sites, the content library, module comp
 - **Audio-visual lessons:** present any lesson as narrated slides; reading lessons have a Listen button for radio or speaker use. Every lesson is in English and Kiswahili.
 - **Lesson pictures:** original drawings on all slides of the Grade 1–2 Maths, Science and English lessons (shapes, counting, the senses, plants, animals, letters), with Kiswahili labels. They work offline.
 - **Step-by-step picture activities:** for example "How to wear a pad" and one Maths activity per grade.
-- **Sessions:** start class, take the register (present, late, absent), present, then a short class quiz on the shared device. Catch-up lists show who missed which lesson.
+- **Sessions:** start class, take the register (present, late, absent), present, then a short class quiz on the shared device.
+- **End-of-term exams:** one per grade and subject from the lessons taught that term; sat on the tablet (auto-marked) or on a printed paper the teacher marks in; feeds the report card. Catch-up lists show who missed which lesson.
 - **Students and profiles:** club list with level and attendance bar; profiles saved online (Supabase) with guardian consent before sensitive details; report card per term (class questions, CATs, exams later); Close term saves every girl's report; past paper reports can be added.
 - **Teacher analytics:** attendance by week, subject results, girls who need attention, questions to reteach, girls at each grade.
 - **Girls' wellbeing:** menstrual health, mental wellbeing, personal safety and reproductive health (15+), never graded.

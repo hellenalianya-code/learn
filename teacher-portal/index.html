@@ -765,6 +765,22 @@ select { border-radius: 12px; }
 .dl-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: -2px 0 12px; }
 .dl-row .btn { width: auto; }
 .gb-dl { justify-content: flex-start; margin: 0 0 12px; }
+
+.pp-papers { display: flex; flex-direction: column; gap: 6px; }
+.pp-paper { background: #f8fafb; border-radius: 12px; padding: 6px 10px; box-shadow: inset 4px 0 0 #1f7a4d; }
+.pp-paper.fail { box-shadow: inset 4px 0 0 #b3261e; }
+.pp-paper summary { cursor: pointer; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 700; color: #1b2a5a; }
+.pp-pn { min-width: 130px; }
+.pp-pct { color: #4f6461; font-weight: 700; }
+.pp-pf { font-size: .78rem; font-weight: 800; padding: 2px 10px; border-radius: 999px; }
+.pp-pf.ok { background: #ddf3e6; color: #1f7a4d; } .pp-pf.no { background: #fbe3e1; color: #b3261e; }
+.pp-tag { color: #9a5b00; margin: 6px 0 0; font-weight: 700; }
+.pp-ql li { align-items: center; }
+.pp-qb { flex: 1; min-width: 0; }
+.pp-qm { flex: none; font: 800 .9rem var(--display); color: #1b2a5a; background: #eef3f5; border-radius: 999px; padding: 2px 10px; }
+.gb-ql li.p .gb-mark { background: #b86e0b; }
+.pp-tot { display: flex; justify-content: flex-end; gap: 10px; align-items: center; padding: 6px 4px 2px; border-top: 1px dashed #d6e2e8; margin-top: 4px; color: #1b2a5a; }
+.pp-tot b { font: 800 1.05rem var(--display); }
 </style>
 
 <!-- LOGIN / REGISTER (Supabase) -->
@@ -2696,6 +2712,58 @@ function studentDetail(mid, s) {
 $('#g-grade').addEventListener('change', () => renderGrades());
 $('#g-module').addEventListener('change', () => renderGrades());
 
+// ---- CAT and exam papers ----
+Object.assign(T.en, { ppPapers: 'CATs and exams', ppPass: 'Passed', ppFail: 'Failed', ppSamplePaper: 'Sample paper', ppQ: 'Question', ppMarks: 'marks', ppPart: 'part marks for working shown', ppNoPaper: 'Typed-in mark: the questions were not recorded.', ppNoMarks: 'No CATs or exams in this term.', ppPassKey: 'Pass = 50% or more.' });
+Object.assign(T.sw, { ppPapers: 'CAT na mitihani', ppPass: 'Amefaulu', ppFail: 'Hajafaulu', ppSamplePaper: 'Karatasi ya mfano', ppQ: 'Swali', ppMarks: 'alama', ppPart: 'alama za sehemu kwa hatua za kazi', ppNoPaper: 'Alama iliyoandikwa: maswali hayakurekodiwa.', ppNoMarks: 'Hakuna CAT wala mitihani katika muhula huu.', ppPassKey: 'Kufaulu = 50% au zaidi.' });
+function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function samplePaper(pid, subj, grade, term, m) {
+  const g = Math.min(6, Math.max(1, +grade || 1)), isExam = m.kind === 'exam' || /exam|mtihani/i.test(m.name || '');
+  const bank = LESSONS.filter((l) => mod(l.mod).subject === subj && l.grade === g).flatMap((l) => quizQs(l.id).map((q) => ({ q, l })));
+  if (!bank.length) return null;
+  const seed = pid + '|' + term + '|' + subj + '|' + m.name;
+  const qs = bank.map((x) => ({ x, k: hashStr(seed + '|' + x.q.id) })).sort((a, b) => a.k - b.k).slice(0, Math.min(bank.length, isExam ? 20 : 10)).map((y) => y.x);
+  const n = qs.length, base = Math.floor(m.out_of / n), extra = m.out_of - base * n, max = qs.map((_, i) => base + (i < extra ? 1 : 0));
+  const got = qs.map(() => 0); let left = Math.max(0, Math.min(m.out_of, Math.round(m.score)));
+  const order = qs.map((_, i) => i).sort((a, b) => hashStr(seed + '|r' + a) - hashStr(seed + '|r' + b));
+  order.forEach((i) => { if (left >= max[i]) { got[i] = max[i]; left -= max[i]; } });
+  if (left > 0) { const i = order.find((j) => got[j] === 0 && max[j] > left); if (i != null) { got[i] = left; left = 0; } }
+  return qs.map((x, i) => {
+    const wrongs = x.q.opts.map((_, k) => k).filter((k) => k !== x.q.a);
+    return { q: x.q, lesson: x.l, max: max[i], got: got[i], given: got[i] === max[i] ? x.q.a : wrongs[hashStr(seed + '|w' + i) % wrongs.length] };
+  });
+}
+function paperEl(pid, subj, grade, term, m, sample) {
+  const pctv = Math.round(100 * m.score / m.out_of), pass = pctv >= 50, det = el('details', 'pp-paper ' + (pass ? 'pass' : 'fail'));
+  const sm = el('summary'); sm.append(el('span', 'pp-pn', m.name), el('b', null, m.score + ' / ' + m.out_of), el('span', 'pp-pct', pctv + '%'), lvBadge(pctv), el('span', 'pp-pf ' + (pass ? 'ok' : 'no'), pass ? '✓ ' + t('ppPass') : '✗ ' + t('ppFail')));
+  if (m.date) sm.append(el('span', 'small muted', fmtDate(m.date, { day: 'numeric', month: 'short', year: 'numeric' })));
+  det.append(sm);
+  const items = sample ? samplePaper(pid, subj, grade, term, m) : null;
+  if (!items) { det.append(el('p', 'small muted', t('ppNoPaper'))); return det; }
+  det.append(el('p', 'small pp-tag', t('ppSamplePaper') + ' · ' + items.length + ' ' + (lang === 'sw' ? 'maswali' : 'questions') + ' · ' + items.filter((x) => x.got === x.max).length + ' ' + t('gbRight')));
+  const ol = el('ol', 'gb-ql pp-ql');
+  items.forEach((x, i) => {
+    const full = x.got === x.max, part = x.got > 0 && !full, li = el('li', full ? 'r' : part ? 'p' : 'w');
+    li.append(el('span', 'gb-mark', full ? '✓' : part ? '½' : '✗'));
+    const body = el('div', 'pp-qb'); body.append(el('div', 'gb-qt', (i + 1) + '. ' + x.q.text));
+    const a = el('div', 'small');
+    if (full) a.append(el('span', 'ok', x.q.opts[x.q.a]));
+    else { a.append(el('span', 'no', t('gbHer') + ': ' + x.q.opts[x.given]), document.createTextNode('  ·  '), el('span', 'ok', t('gbCorrect') + ': ' + x.q.opts[x.q.a])); if (part) a.append(document.createTextNode('  ·  ' + t('ppPart'))); }
+    body.append(a); li.append(body, el('span', 'pp-qm', x.got + ' / ' + x.max)); ol.append(li);
+  });
+  const tot = el('div', 'pp-tot'); tot.append(el('span', null, (lang === 'sw' ? 'Jumla' : 'Total')), el('b', null, items.reduce((s2, x) => s2 + x.got, 0) + ' / ' + m.out_of));
+  det.append(ol, tot); return det;
+}
+function papersFor(p, r, g, term, v) {
+  const box = el('div', 'pp-papers'), grade = gradeAt(r, term) || levelIn(p.id);
+  const rep = (r.reports || {})[term], savedSample = v.saved && rep && rep.source === 'sample';
+  const ms = [...(v.catMs || []).map((m) => ({ kind: 'cat', ...m })), ...(v.examMs || []).map((m) => ({ kind: 'exam', ...m }))];
+  if (!ms.length) { box.append(el('p', 'small muted', t('ppNoMarks'))); return box; }
+  ms.forEach((m) => { const sample = savedSample || (!v.saved && r.is_sample && /^(cat1|cat2|exam)-s\d\d-/.test(m.id || '')); box.append(paperEl(p.id, g, grade, term, m, sample)); });
+  box.append(el('p', 'small muted', t('ppPassKey')));
+  return box;
+}
+
+
 // ---- gradebook v2 ----
 Object.assign(T.en, { gbSub: 'Tap a girl to open her grades: each subject term by term, that term\'s report, and the questions she got right and wrong.', gbAll: 'All subjects', gbTerm: 'Term', gbSearch: 'Search by name', gbOpenAll: 'Open all', gbCloseAll: 'Close all', gbOverTime: 'Term by term', gbIn: 'In', gbQs: 'Class quiz questions', gbRight: 'right', gbWrong: 'wrong', gbHer: 'Her answer', gbCorrect: 'Correct answer', gbNoQs: 'No class quiz answers in this term.', gbClassAvg: 'Class average', gbScored: 'girls with a score', gbOverall: 'Overall', gbNoScore: 'No score yet', gbSaved: 'saved report', gbVs: 'since last term', gbQ: 'Class questions', gbCats: 'CATs', gbExam: 'Exam', gbTeacher: 'Teacher score', gbNone: 'No girls match.', gbLifeH: 'Life Skills attendance', gbOpen: 'Open', gbClose: 'Close', gbNoteAll: 'Scores = average of class questions, CATs and the exam. Stars: 3 = EE (80+), 2 = ME (50–79), 1 = AE (30–49). Tap a girl to open her grades.', gbNoteOne: 'Teacher score is your own mark out of 100 and saves as you type. Score = average of class questions, CATs and the exam.' });
 Object.assign(T.sw, { gbSub: 'Gusa msichana kuona alama zake: kila somo muhula kwa muhula, ripoti ya muhula huo, na maswali aliyopata sahihi na makosa.', gbAll: 'Masomo yote', gbTerm: 'Muhula', gbSearch: 'Tafuta kwa jina', gbOpenAll: 'Fungua yote', gbCloseAll: 'Funga yote', gbOverTime: 'Muhula kwa muhula', gbIn: 'Katika', gbQs: 'Maswali ya jaribio la darasa', gbRight: 'sahihi', gbWrong: 'makosa', gbHer: 'Jibu lake', gbCorrect: 'Jibu sahihi', gbNoQs: 'Hakuna majibu ya jaribio la darasa katika muhula huu.', gbClassAvg: 'Wastani wa darasa', gbScored: 'wasichana wenye alama', gbOverall: 'Jumla', gbNoScore: 'Bado hakuna alama', gbSaved: 'ripoti iliyohifadhiwa', gbVs: 'tangu muhula uliopita', gbQ: 'Maswali ya darasa', gbCats: 'CAT', gbExam: 'Mtihani', gbTeacher: 'Alama ya mwalimu', gbNone: 'Hakuna msichana anayelingana.', gbLifeH: 'Mahudhurio ya Stadi za maisha', gbOpen: 'Fungua', gbClose: 'Funga', gbNoteAll: 'Alama = wastani wa maswali ya darasa, CAT na mtihani. Nyota: 3 = EE (80+), 2 = ME (50–79), 1 = AE (30–49). Gusa msichana kuona alama zake.', gbNoteOne: 'Alama ya mwalimu ni alama yako kati ya 100 na inahifadhiwa unapoandika. Alama = wastani wa maswali ya darasa, CAT na mtihani.' });
@@ -2782,7 +2850,7 @@ function subjSection(p, r, g, term) {
   const cp = part(t('gbCats'), v.cat != null ? v.cat + '%' : '–'); if (v.catMs && v.catMs.length) cp.append(el('small', null, v.catMs.map((m) => m.name + ': ' + m.score + '/' + m.out_of).join(' · ')));
   const ep = part(t('gbExam'), v.exam != null ? v.exam + '%' : '–'); if (v.examMs && v.examMs.length) ep.append(el('small', null, v.examMs.map((m) => m.name + ': ' + m.score + '/' + m.out_of).join(' · ')));
   const m = modOfSubj(g); if (term === curTerm() && m && grades[m.id]?.[p.id] != null) part(t('gbTeacher'), String(grades[m.id][p.id]));
-  sec.append(parts, el('span', 'gb-lab', t('gbQs')), questionsFor(p, g, term));
+  sec.append(parts, el('span', 'gb-lab', t('ppPapers')), papersFor(p, r, g, term, v), el('span', 'gb-lab', t('gbQs')), questionsFor(p, g, term));
   return sec;
 }
 function gbCard(p, subj, term) {

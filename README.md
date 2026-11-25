@@ -33,17 +33,19 @@ A teacher runs a girls' club session: she takes the register, presents a lesson 
 | **Modules** | **Gradebook** |
 | ![Modules by subject and grade, with Present to class and Listen buttons](docs/images/portal-modules.png) | ![Gradebook with scores and levels](docs/images/portal-gradebook.png) |
 
-**Classroom screen with pictures.** Every lesson becomes narrated, full-screen slides for a TV or projector. Grade 1–2 Maths, Science and English lessons have drawn pictures on every slide that pop in one by one, so young learners can follow even before they read well. Lessons are starting to get a cover slide that says what the class will learn. Questions come at the end, and the answer stays hidden until the teacher reveals it.
+**Classroom screen with pictures and scenes.** Every lesson becomes narrated, full-screen slides for a TV or projector, set in a scene girls know that changes with the grade: savanna with acacias and a giraffe (Grades 1–2), a village with manyattas, goats and maize (3–4), sunset with a solar-powered school, radio mast and camel (5–6), and a dawn with flowers for Life Skills. The class quiz and picture activities use the same scenes. Grade 1–2 Maths, Science and English lessons have drawn pictures on every slide that pop in one by one, so young learners can follow even before they read well. Lessons are starting to get a cover slide that says what the class will learn. Questions come at the end, and the answer stays hidden until the teacher reveals it.
 
 | Lesson cover | Counting at the market |
 | --- | --- |
 | ![Cover of "Our five senses": a girl with see, hear, smell, taste and touch around her](docs/images/lesson-cover.png) | ![Adding at the market: 12 tomatoes and 9 tomatoes make 21](docs/images/lesson-picture.png) |
 
-**Each girl's profile.** Tap a name to see her profile: about her, how she gets to school, home situation, learning grade per subject, and a report card per term with class questions, CATs and (later) exams. Past terms are kept, so the teacher can pick a class and term and see whether she is improving or slipping.
+**Each girl's profile.** Tap a name to see her profile: about her, how she gets to school, home situation, and a report card per term with class questions, CATs and (later) exams. **Her journey** shows one circle per class at school: passed grades with a tick and stars, her current grade, and the next one locked. Tap a grade to open its subjects; tap a term to open that report card.
 
 | Profile | Progress over time |
 | --- | --- |
 | ![Pupil profile with class at school and current term](docs/images/pupil-profile.png) | ![Learning now and a line chart of her score each term](docs/images/pupil-progress.png) |
+
+<p align="center"><img src="docs/images/pupil-journey.png" alt="Her journey: Grade 2 and 3 passed with stars, Grade 4 now, Grade 5 locked" width="720"></p>
 
 **Grading and wellbeing attendance.** Learning modules are scored out of 100 and mapped to CBC levels (EE, ME, AE, BE). Wellbeing modules record attendance only, and reproductive health is limited to girls aged 15 and over.
 
@@ -59,7 +61,7 @@ Milestones, learners and sessions, pilot sites, the content library, module comp
 
 ## Key features
 
-- **Five subjects, Grades 1–6:** Maths, English, Kiswahili and Science (graded), plus Life Skills (not graded). Each girl has her own learning grade per subject, so she is taught at the right level.
+- **Five subjects, Grades 1–6:** Maths, English, Kiswahili and Science (graded), plus Life Skills (not graded). Each girl's class at school decides her lessons in every subject (Grade 7 and above use Grade 6 lessons).
 - **Audio-visual lessons:** present any lesson as narrated slides; reading lessons have a Listen button for radio or speaker use. Every lesson is in English and Kiswahili.
 - **Lesson pictures:** original drawings on all slides of the Grade 1–2 Maths, Science and English lessons (shapes, counting, the senses, plants, animals, letters), with Kiswahili labels. They work offline.
 - **Step-by-step picture activities:** for example "How to wear a pad" and one Maths activity per grade.

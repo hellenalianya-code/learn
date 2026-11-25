@@ -70,6 +70,8 @@ try {
   await p.click('#tab-students'); await still(p, 'portal-students');
   await p.locator('#view-students .namebtn').first().click(); await still(p, 'pupil-profile');
   await p.locator('#pp-progress').scrollIntoViewIfNeeded(); await still(p, 'pupil-progress');
+  await p.locator('#pp-journey').scrollIntoViewIfNeeded(); await p.waitForTimeout(450);
+  await p.locator('#pp-journey').screenshot({ path: `${out}/pupil-journey.png` }); console.log('saved pupil-journey.png');
   await p.close();
 
   p = await open('/teacher-portal/', { width: 390, height: 844 });

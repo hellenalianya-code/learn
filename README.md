@@ -25,17 +25,25 @@ LearnReach brings lessons and essential health information to adolescent girls i
 
 ### Teacher portal
 
-A teacher runs a girls' club session: she presents a lesson on the classroom TV or projector, asks the class questions, grades learning modules and marks attendance for wellbeing sessions.
+A teacher runs a girls' club session: she takes the register, presents a lesson on the classroom TV or projector, asks the class questions and follows each girl's progress term by term.
 
-| My class | Modules |
+| My class | Students |
 | --- | --- |
-| ![Class list with ages, averages and CBC levels](docs/images/portal-class.png) | ![Modules with Present to class and Listen buttons](docs/images/portal-modules.png) |
-| **Gradebook** | **Questions** |
-| ![Gradebook with scores and levels](docs/images/portal-gradebook.png) | ![Question bank with Ask class buttons](docs/images/portal-questions.png) |
+| ![My class: stat tiles and analytics for the teacher](docs/images/portal-class.png) | ![Students tab: club members with level and attendance bar](docs/images/portal-students.png) |
+| **Modules** | **Gradebook** |
+| ![Modules by subject and grade, with Present to class and Listen buttons](docs/images/portal-modules.png) | ![Gradebook with scores and levels](docs/images/portal-gradebook.png) |
 
-**Classroom screen.** Every lesson becomes narrated, full-screen slides for a TV or projector. Questions come at the end, and the answer stays hidden until the teacher reveals it.
+**Classroom screen with pictures.** Every lesson becomes narrated, full-screen slides for a TV or projector. Grade 1–2 Maths, Science and English lessons have drawn pictures on every slide that pop in one by one, so young learners can follow even before they read well. Lessons are starting to get a cover slide that says what the class will learn. Questions come at the end, and the answer stays hidden until the teacher reveals it.
 
-![Full-screen classroom slide](docs/images/classroom-screen.png)
+| Lesson cover | Counting at the market |
+| --- | --- |
+| ![Cover of "Our five senses": a girl with see, hear, smell, taste and touch around her](docs/images/lesson-cover.png) | ![Adding at the market: 12 tomatoes and 9 tomatoes make 21](docs/images/lesson-picture.png) |
+
+**Each girl's profile.** Tap a name to see her profile: about her, how she gets to school, home situation, learning grade per subject, and a report card per term with class questions, CATs and (later) exams. Past terms are kept, so the teacher can pick a class and term and see whether she is improving or slipping.
+
+| Profile | Progress over time |
+| --- | --- |
+| ![Pupil profile with class at school and current term](docs/images/pupil-profile.png) | ![Learning now and a line chart of her score each term](docs/images/pupil-progress.png) |
 
 **Grading and wellbeing attendance.** Learning modules are scored out of 100 and mapped to CBC levels (EE, ME, AE, BE). Wellbeing modules record attendance only, and reproductive health is limited to girls aged 15 and over.
 
@@ -51,12 +59,16 @@ Milestones, learners and sessions, pilot sites, the content library, module comp
 
 ## Key features
 
-- Audio-visual lessons: present any lesson as narrated slides; reading lessons have a Listen button for radio or speaker use
-- Girls' wellbeing modules (menstrual health, mental wellbeing, personal safety, reproductive health 15+) delivered as video and audio, never graded
-- Gradebook with CBC levels, a question bank and an "Ask class" mode
-- English and Kiswahili interface
-- Programme dashboard for staff and partners
-- Works offline: each page is a single HTML file
+- **Five subjects, Grades 1–6:** Maths, English, Kiswahili and Science (graded), plus Life Skills (not graded). Each girl has her own learning grade per subject, so she is taught at the right level.
+- **Audio-visual lessons:** present any lesson as narrated slides; reading lessons have a Listen button for radio or speaker use. Every lesson is in English and Kiswahili.
+- **Lesson pictures:** original drawings on all slides of the Grade 1–2 Maths, Science and English lessons (shapes, counting, the senses, plants, animals, letters), with Kiswahili labels. They work offline.
+- **Step-by-step picture activities:** for example "How to wear a pad" and one Maths activity per grade.
+- **Sessions:** start class, take the register (present, late, absent), present, then a short class quiz on the shared device. Catch-up lists show who missed which lesson.
+- **Students and profiles:** club list with level and attendance bar; profiles saved online (Supabase) with guardian consent before sensitive details; report card per term (class questions, CATs, exams later); Close term saves every girl's report; past paper reports can be added.
+- **Teacher analytics:** attendance by week, subject results, girls who need attention, questions to reteach, girls at each grade.
+- **Girls' wellbeing:** menstrual health, mental wellbeing, personal safety and reproductive health (15+), never graded.
+- **Accounts:** teachers register and sign in (Supabase); admins see sign-ins on the Admin page.
+- **Works offline:** the portal opens without internet and uploads changes when the connection comes back.
 
 ## Project structure
 
@@ -98,18 +110,23 @@ npm run capture # regenerate docs/images (needs ffmpeg)
 - **Audio-visual first.** Lessons are designed to be watched and heard together on shared solar-powered screens and radios.
 - **Wellbeing is not graded.** Girls' answers in wellbeing sessions are never stored; only attendance is recorded.
 - **Age-appropriate content.** Reproductive health is limited to girls aged 15 and over.
-- **Local storage only.** Grades, attendance and questions are saved in the teacher's browser for now.
+- **Offline first.** Pupils and profiles save on the device straight away and upload to Supabase when online. Sessions, attendance, quiz results and questions are still kept in the teacher's browser for now.
+- **No photos of children.** Real girls are shown by their initials; only the sample girls have drawn avatars.
+- **Pictures that work anywhere.** Lesson pictures are drawn in code (SVG), so they need no downloads and look sharp on any screen.
 
 ## Known limitations
 
 - Teacher sign-in uses Supabase (see [`supabase/SETUP.md`](supabase/SETUP.md)). The test account `user1` / `1234` only works in demo mode, when `supabase-config.js` holds placeholders.
-- Video and audio lessons show placeholders until media files are added.
+- Video and audio lessons need their media files added by the teacher; until then the slides and narration carry the lesson.
+- For now every signed-in teacher sees all pupils; linking pupils to their teacher comes next.
 - Many devices have no Kiswahili text-to-speech voice; recorded narration is recommended.
 
 ## Roadmap
 
+- Cover slides for every lesson, and pictures for Grades 3–6, Kiswahili and Life Skills
+- Exams on the report card
+- Link pupils to teachers; move sessions, attendance and quiz results to Supabase
 - Learner PINs (teacher accounts are done, with Supabase)
-- Sync of grades and attendance to the dashboard when internet is available
 - Media library upload and offline caching
 - Recorded multilingual narration (Kiswahili, Turkana, Somali)
 - AI-assisted multilingual information access

@@ -56,6 +56,20 @@ try {
   await p.click('#subj-english'); await p.click('#grade-english-4');
   await p.locator('.lesson-row', { hasText: 'The solar radio' }).locator('.acts .btn').first().click(); // "The solar radio"
   await p.click('#sc-next'); await still(p, 'classroom-screen');
+  await p.click('#sc-close');
+  // lesson pictures: the cover of "Our five senses" and a counted market sum (wait for the pop-in animation)
+  await p.click('#tab-modules'); await p.click('#subj-science'); await p.click('#grade-science-1');
+  await p.evaluate(() => { narrate = false; });
+  await p.locator('.lesson-row', { hasText: 'Our five senses' }).locator('.acts .btn').first().click();
+  await p.waitForTimeout(3000); await still(p, 'lesson-cover');
+  await p.click('#sc-close');
+  await p.evaluate(() => { narrate = false; present('num2'); }); await p.click('#sc-next'); await p.click('#sc-next');
+  await p.waitForTimeout(4000); await still(p, 'lesson-picture');
+  await p.click('#sc-close');
+  // Students tab and a sample girl's profile
+  await p.click('#tab-students'); await still(p, 'portal-students');
+  await p.locator('#view-students .namebtn').first().click(); await still(p, 'pupil-profile');
+  await p.locator('#pp-progress').scrollIntoViewIfNeeded(); await still(p, 'pupil-progress');
   await p.close();
 
   p = await open('/teacher-portal/', { width: 390, height: 844 });
@@ -75,10 +89,13 @@ try {
   await p.type('#p', '1234', { delay: 60 }); await g1.step(p, 0.6);
   await p.click('#login-form button[type=submit]'); await g1.step(p, 1.8);
   await p.click('#tab-modules'); await g1.step(p, 1.2);
-  await p.click('#subj-english'); await g1.step(p, 1.2);
-  await p.click('#grade-english-4'); await g1.step(p, 1.4);
-  await p.locator('.lesson-row', { hasText: 'The solar radio' }).locator('.acts .btn').first().click(); await g1.step(p, 1.8);
-  for (let i = 0; i < 3; i++) { await p.click('#sc-next'); await g1.step(p, 1.8); }
+  await p.click('#subj-science'); await g1.step(p, 1.2);
+  await p.click('#grade-science-1'); await g1.step(p, 1.4);
+  await p.evaluate(() => { narrate = false; });
+  await p.locator('.lesson-row', { hasText: 'Our five senses' }).locator('.acts .btn').first().click();
+  await p.waitForTimeout(2600); await g1.step(p, 2.6); // cover: the senses pop in one by one
+  for (let i = 0; i < 4; i++) { await p.click('#sc-next'); await p.waitForTimeout(2000); await g1.step(p, 2.2); }
+  for (let i = 0; i < 1; i++) await p.click('#sc-next');
   await p.click('#sc-next'); await g1.step(p, 1.6); // question slide
   const reveal = p.locator('#sc-stage .btn');
   if (await reveal.count()) { await reveal.click(); await g1.step(p, 2.4); }

@@ -47,7 +47,7 @@ A teacher runs a girls' club session: she takes the register, presents a lesson 
 
 <p align="center"><img src="docs/images/pupil-journey.png" alt="Her journey: Grade 2 and 3 passed with stars, Grade 4 now, Grade 5 locked" width="720"></p>
 
-**Gradebook.** One card per girl. Closed, it shows her score, stars and CBC level (EE, ME, AE, BE) in every subject, her overall score and the change since last term. Open, each subject shows her score term by term (tap a term to see it), that term's class questions, CATs, exam and teacher score, and every class-quiz question she got right or wrong with the correct answer. Pick a subject, term or grade, or search by name. Life Skills records attendance only, and reproductive health is limited to girls aged 15 and over.
+**Gradebook.** One card per girl. Closed, it shows her score, stars and CBC level (EE, ME, AE, BE) in every subject, her overall score and the change since last term. Open, each subject shows her score term by term (tap a term to see it), that term's class questions, CATs, exam and teacher score, and every class-quiz question she got right or wrong with the correct answer. Pick a subject, term or grade, or search by name. **Downloads:** a PDF report card or the data (CSV) for any girl, class and term (for example Grade 3 Term 1), all her terms in one CSV, or the whole class for a term. Life Skills records attendance only, and reproductive health is limited to girls aged 15 and over.
 
 ![A girl's gradebook card opened: subjects term by term and her quiz answers](docs/images/gradebook-open.png)
 

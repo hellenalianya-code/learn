@@ -2132,9 +2132,26 @@ function art(items, o = {}) {
       : g((IC[it.i] || IC.check)(it.c), it.s || 1, 10 + (100 - 100 * (it.s || 1)) / 2, 8 + (100 - 100 * (it.s || 1)) / 2);
     const ls = it.l && !o.noLabel ? wrapLab(it.l) : [];
     const lab = ls.length ? '<text text-anchor="middle" font-size="17" font-weight="700" fill="' + INK + '" style="font-family: var(--body), sans-serif">' + ls.map((t, j) => '<tspan x="60" y="' + (128 + j * 20) + '">' + escX(t) + '</tspan>').join('') + '</text>' : '';
-    return '<g transform="translate(' + x + ' ' + y + ')" class="pop' + (it.hi ? ' hi' : '') + '" style="--d:' + d + 's">' + (it.hi ? '<rect x="4" y="2" width="112" height="' + (ch - 4) + '" rx="14" fill="#fbe7b0"/>' : '') + body + lab + '</g>';
+    return '<g transform="translate(' + x + ' ' + y + ')"><g class="pop' + (it.hi ? ' hi' : '') + '" style="--d:' + d + 's">' + (it.hi ? '<rect x="4" y="2" width="112" height="' + (ch - 4) + '" rx="14" fill="#fbe7b0"/>' : '') + body + lab + '</g></g>';
   }).join('');
   return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + escX(o.alt || items.map((x) => x.l || x.text).filter((x) => x != null && x !== '').join(', ')) + '">' + cells + '</svg>';
+}
+// counted groups: a grid of a things, '+', a grid of b things, '=', the total
+function countSum(icon, a, b, total, opts = {}) {
+  const sz = 34, gap = 4, col = 5;
+  const grid = (n, x0, y0, d0) => { let out = ''; for (let i = 0; i < n; i++) { const cx = x0 + (i % col) * (sz + gap), cy = y0 + Math.floor(i / col) * (sz + gap); out += '<g transform="translate(' + cx + ' ' + cy + ')"><g class="pop" style="--d:' + (d0 + i * .06).toFixed(2) + 's">' + g(IC[icon](), sz / 100) + '</g></g>'; } return out; };
+  const gw = col * (sz + gap) - gap, rows = (n) => Math.ceil(n / col), gh = (n) => rows(n) * (sz + gap) - gap;
+  const H = Math.max(gh(a), gh(b), 60) + 60, top = 10, mid = top + Math.max(gh(a), gh(b)) / 2;
+  const xA = 10, xP = xA + gw + 14, xB = xP + 40, xE = xB + gw + 14, xT = xE + 46, W = xT + 90;
+  const txt = (x, y, t, size, color, d) => '<text class="pop" style="--d:' + d + 's; font-family: var(--display), sans-serif" x="' + x + '" y="' + y + '" text-anchor="middle" font-size="' + size + '" font-weight="800" fill="' + color + '">' + escX(t) + '</text>';
+  const lab = (x, y, t, d) => '<text class="pop" style="--d:' + d + 's; font-family: var(--body), sans-serif" x="' + x + '" y="' + y + '" text-anchor="middle" font-size="20" font-weight="700" fill="' + INK + '">' + escX(t) + '</text>';
+  const dB = .3 + a * .06 + .3, dT = dB + b * .06 + .4;
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + escX(opts.alt || (a + ' + ' + b + ' = ' + total)) + '">' +
+    grid(a, xA, top, .1) + lab(xA + gw / 2, H - 14, String(a), .1) +
+    txt(xP + 13, mid + 14, '+', 44, INK, dB - .2) +
+    grid(b, xB, top, dB) + lab(xB + gw / 2, H - 14, String(b), dB) +
+    txt(xE + 16, mid + 14, '=', 44, INK, dT - .2) +
+    txt(xT + 30, mid + 20, String(total), 58, '#136f63', dT) + (opts.unit ? lab(xT + 30, H - 14, opts.unit, dT) : '') + '</svg>';
 }
 // worked sums, one line each
 function eqLines(lines) { const H = lines.length * 74 + 10; return '<svg viewBox="0 0 480 ' + H + '" role="img" aria-label="' + escX(lines.map((x) => x.t).join('; ')) + '">' + lines.map((x, i) => '<text class="pop" style="--d:' + (i * .6) + 's; font-family: var(--display), sans-serif" x="240" y="' + (60 + i * 74) + '" text-anchor="middle" font-size="' + (x.size || 46) + '" font-weight="800" fill="' + (x.color || INK) + '">' + escX(x.t) + '</text>').join('') + '</svg>'; }
@@ -2176,9 +2193,9 @@ const PICS = {
   ],
   num2: [
     () => art([{ i: 'woman', l: 'Mama Wanjiru' }, { i: 'stall', l: LL('market', 'soko') }, { i: 'tomato', l: LL('tomatoes', 'nyanya') }, { i: 'mango', l: LL('mangoes', 'maembe') }, { i: 'onion', l: LL('onions', 'vitunguu') }]),
-    () => art([{ i: 'tomato', l: '12' }, { text: '+' }, { i: 'tomato', l: '9' }, { text: '=' }, { text: '21', color: '#136f63' }], { step: .4 }),
+    () => countSum('tomato', 12, 9, 21, { unit: LL('tomatoes', 'nyanya'), alt: LL('12 tomatoes and 9 tomatoes make 21 tomatoes', 'nyanya 12 na nyanya 9 ni nyanya 21') }),
     () => eqLines([{ t: '25 + 14' }, { t: LL('tens: ', 'makumi: ') + '20 + 10 = 30', color: '#2b59a8', size: 38 }, { t: LL('ones: ', 'mamoja: ') + '5 + 4 = 9', color: '#b8740a', size: 38 }, { t: '30 + 9 = 39', color: '#136f63', size: 52 }]),
-    () => art([{ i: 'mango', l: '15' }, { text: '+' }, { i: 'mango', l: '5' }, { text: '=' }, { i: 'basket', l: '20', hi: 1 }], { step: .4 }),
+    () => countSum('mango', 15, 5, 20, { unit: LL('mangoes', 'maembe'), alt: LL('15 mangoes and 5 more make 20 mangoes', 'maembe 15 na mengine 5 ni maembe 20') }),
     () => art([{ i: 'stone', l: LL('tens', 'makumi') }, { i: 'stone', l: LL('tens', 'makumi') }, { text: '|', color: '#9aa9ad' }, { i: 'cap', l: LL('ones', 'mamoja') }, { i: 'cap', l: LL('ones', 'mamoja') }, { i: 'cap', l: LL('ones', 'mamoja') }]),
     () => eqLines([{ t: '30 + 20 = ?' }, { t: '16 + 3 = ?' }, { t: '24 + 15 = ?' }]),
     () => art([{ i: 'house', l: LL('home', 'nyumbani') }, { text: '→' }, { i: 'stall', l: LL('market', 'soko') }, { i: 'tomato', l: 'KSh 10' }, { text: '+' }, { i: 'onion', l: 'KSh 5' }]),

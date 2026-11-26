@@ -54,6 +54,13 @@ jobs:
           MAX_CHARS: ${{ inputs.max_chars }}
           MODULES: ${{ inputs.modules }}
           DRY_RUN: ${{ inputs.dry_run }}
+      - name: Keep a copy of the recordings with this run (in case saving them fails)
+        if: ${{ !inputs.dry_run }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: narration
+          path: teacher-portal/voice
+          retention-days: 14
       - name: Commit the recordings
         id: commit
         if: ${{ !inputs.dry_run }}
@@ -63,7 +70,9 @@ jobs:
           git add teacher-portal/voice
           if git diff --cached --quiet; then echo "No new recordings"; exit 0; fi
           git commit -m "Record lesson narration (ElevenLabs)"
-          git push
+          # other workflows (README media) may push meanwhile: rebase and retry
+          for i in 1 2 3 4 5; do git pull --rebase -q origin main && git push && break; sleep 5; done
+          git status -sb | head -1 | grep -qv ahead
           echo "changed=true" >> "$GITHUB_OUTPUT"
       - name: Redeploy the site with the recordings
         if: steps.commit.outputs.changed == 'true'

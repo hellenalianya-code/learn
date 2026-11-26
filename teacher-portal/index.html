@@ -3810,7 +3810,8 @@ function upgradeSamples() { // sample girls only: bring in the history with ups 
   if (DEMO || !user || typeof SAMPLE_REPORTS === 'undefined') return; let n = 0;
   rosterRows.slice().forEach((r) => {
     const id = r.local_id; if (!r.is_sample || !SAMPLE_REPORTS[id]) return;
-    if ((r.marks || []).some((m) => m.id === 'exam-' + id + '-maths')) return;
+    // already upgraded when her saved terms carry exam details (never judge by marks: a teacher may clear an exam)
+    if ((r.marks || []).some((m) => m.id === 'exam-' + id + '-maths') || Object.values(r.reports || {}).some((rep) => (rep.subjects || []).some((x) => Array.isArray(x.exams)))) return;
     const keep = (r.marks || []).filter((m) => !/^(cat|cat1|cat2|exam)-s\d\d-/.test(m.id || ''));
     savePupil(r.id, { school_grade: SAMPLE_SCHOOL[id], reports: SAMPLE_REPORTS[id], marks: [...keep, ...SAMPLE_MARKS[id]], remarks: { ...(r.remarks || {}), ...SAMPLE_REMARKS[id] }, levels: {} }); n++;
   });

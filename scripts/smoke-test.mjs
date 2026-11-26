@@ -50,7 +50,9 @@ try {
     check((await p.locator('#grade-rows .gb-tscore').first().textContent()).includes('EE'), 'portal: a score of 91 shows level EE');
     await p.click('#tab-exams');
     check((await p.locator('#ex-list .ex-card').count()) > 0, 'portal: an end-of-term exam for each grade and subject');
-    await p.locator('#ex-list .ex-card .ex-acts .btn').first().click();
+    const card = p.locator('#ex-list .ex-card').first();
+    if (await card.locator('[id^="ex-reopen-"]').count()) { check((await card.textContent()).includes('Closed'), 'portal: an exam closes once every result is approved'); await card.locator('[id^="ex-reopen-"]').click(); }
+    await p.locator('#ex-list .ex-card').first().locator('[id^="ex-sit-"]').click();
     check(await p.isVisible('#ex') && (await p.locator('#ex .ex-pk').count()) > 0, 'portal: sitting an exam on the tablet starts with picking the girl');
     await p.click('#ex-close');
     check(errors.length === 0, `portal: no script errors ${errors.join(' | ')}`);

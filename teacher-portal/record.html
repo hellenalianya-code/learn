@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LearnReach · Record narration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink: #1d2b28; --muted: #5d6b68; --line: #e3ddd0; --bg: #fdf8ee; --card: #fff; --teal: #136f63; --sun: #f6c453; --rose: #b5476b; --ok: #2e7d4f; --display: 'Baloo 2', 'Nunito', sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Nunito, system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+  header { background: var(--teal); color: #fff; padding: 14px 18px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  header h1 { font-family: var(--display); font-size: 1.35rem; margin: 0; flex: 1; }
+  header a { color: #fff; font-weight: 700; }
+  main { max-width: 860px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; box-shadow: 0 2px 0 var(--line); }
+  h2 { font-family: var(--display); margin: 0 0 8px; font-size: 1.2rem; }
+  .muted { color: var(--muted); } .small { font-size: .9rem; }
+  label { font-weight: 700; display: block; margin: 10px 0 4px; }
+  input[type=text], select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; background: #fff; }
+  .consent { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; background: #f4f9f7; border-radius: 12px; padding: 10px 12px; }
+  .consent input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .grow { flex: 1; min-width: 160px; }
+  button { font: inherit; font-weight: 700; border: 0; border-radius: 999px; padding: 10px 18px; cursor: pointer; background: #eef2f0; color: var(--ink); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.rec { background: var(--rose); color: #fff; min-width: 150px; font-size: 1.05rem; }
+  button.rec.on { background: #8d1f43; animation: pulse 1s infinite; }
+  button.go { background: var(--teal); color: #fff; }
+  button.sun { background: var(--sun); }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(181, 71, 107, .25); } }
+  .lesson { font-family: var(--display); color: var(--teal); font-size: 1rem; margin: 0; }
+  .say { font-size: 1.6rem; line-height: 1.45; margin: 10px 0 14px; font-weight: 700; min-height: 3em; }
+  .meter { height: 8px; background: #eef2f0; border-radius: 99px; overflow: hidden; } .meter i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .08s; }
+  .bar { height: 10px; background: #eef2f0; border-radius: 99px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--teal); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; max-height: 180px; overflow: auto; }
+  .chip { border: 1px solid var(--line); border-radius: 99px; padding: 3px 9px; font-size: .8rem; background: #fff; cursor: pointer; }
+  .chip.done { background: #e3f3e8; border-color: #b9dfc6; } .chip.person { background: #fdf0d2; border-color: #f1d48a; } .chip.cur { outline: 3px solid var(--teal); }
+  .tag { display: inline-block; font-size: .8rem; border-radius: 99px; padding: 2px 9px; background: #eef2f0; }
+  .tag.ok { background: #e3f3e8; color: var(--ok); }
+  ul.tips { margin: 6px 0 0; padding-left: 20px; } ul.tips li { margin: 3px 0; }
+  .warn { background: #fff4e5; border: 1px solid #f1d48a; border-radius: 12px; padding: 10px 12px; }
+  kbd { background: #eef2f0; border-radius: 6px; padding: 1px 6px; font-size: .85em; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎙️ Record narration · Rekodi sauti</h1>
+  <a href="./">← Teacher portal</a>
+</header>
+<main>
+  <section class="card" id="who">
+    <h2>1. Who is reading? · Nani anasoma?</h2>
+    <p class="muted small">Your voice will narrate these lines for the girls in LearnReach lessons, on the classroom screen and on tablets, also with no internet.</p>
+    <label for="name">Your name · Jina lako</label>
+    <input type="text" id="name" autocomplete="name" placeholder="e.g. Amina Wanjiru">
+    <div class="consent">
+      <input type="checkbox" id="consent">
+      <label for="consent" style="margin:0;font-weight:600">I agree that Vivanet Solutions Ltd may use these recordings of my voice in LearnReach, an open-source learning platform, so that schools and organisations can play them to learners. I understand they may be shared with LearnReach's lessons, and that I can ask for them to be removed from future versions. ·
+      <span class="muted">Nakubali Vivanet Solutions Ltd itumie rekodi hizi za sauti yangu katika LearnReach ili shule na mashirika ziwachezee wanafunzi. Ninaweza kuomba ziondolewe katika matoleo yajayo.</span></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. Choose what to read · Chagua cha kusoma</h2>
+    <div class="row">
+      <div class="grow"><label for="lang">Language · Lugha</label>
+        <select id="lang"><option value="sw">Kiswahili</option><option value="en">English</option></select></div>
+      <div class="grow"><label for="mod">Module · Somo</label><select id="mod"></select></div>
+    </div>
+    <label class="row small" style="font-weight:600"><input type="checkbox" id="todo-only" checked> Only lines not yet read by a person · Mistari ambayo bado haijasomwa</label>
+    <p class="small muted" id="count"></p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <section class="card" id="studio">
+    <p class="lesson" id="lesson"></p>
+    <p class="say" id="say">…</p>
+    <div class="meter"><i id="lvl"></i></div>
+    <div class="row" style="margin-top:12px">
+      <button class="rec" id="rec">● Record</button>
+      <button id="play" disabled>▶ Listen</button>
+      <button id="del" disabled>✕ Delete</button>
+      <span class="grow"></span>
+      <button id="prev">← Back</button>
+      <button class="go" id="next">Next →</button>
+    </div>
+    <p class="small muted" id="state" style="margin-bottom:0"></p>
+    <p class="small muted" style="margin-bottom:0"><kbd>Space</kbd> record / stop · <kbd>→</kbd> next · <kbd>←</kbd> back · <kbd>P</kbd> listen</p>
+  </section>
+
+  <section class="card">
+    <h2>3. Send the recordings · Tuma rekodi</h2>
+    <p class="muted small">Recordings are kept on this device until you download them. Download, then send the file to the LearnReach team (Hellen).</p>
+    <div class="row"><button class="sun" id="dl">⬇ Download recordings (<span id="nrec">0</span>)</button><span class="small muted" id="dlnote"></span></div>
+  </section>
+
+  <section class="card">
+    <h2>Tips · Vidokezo</h2>
+    <ul class="tips small">
+      <li>Sit in a quiet room: close the door and windows, switch off fans and the radio. Soft things (curtains, a bed, cushions) stop echo.</li>
+      <li>Hold the phone or headset about a hand's width (15–20 cm) from your mouth, a little to the side.</li>
+      <li>Read the way you would speak to a class of girls aged 8–14: warm, clear and not too fast.</li>
+      <li>Press Record, wait a moment, read the line, wait a moment, then Stop. Listen back; if it is not right, just record again.</li>
+      <li>Take a break every 20–30 minutes and drink water.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const MOD_NAMES = { kis: 'Kiswahili', lit: 'English', num: 'Maths · Hisabati', sci: 'Science · Sayansi', men: 'Menstrual health · Afya ya hedhi', mind: 'Mental wellbeing · Afya ya akili', safe: 'Personal safety · Usalama', self: 'Confidence and goals · Kujiamini', repro: 'Reproductive health · Afya ya uzazi' };
+let DATA = { lessons: [], lines: [] }, MAN = { files: {}, made: {} }, list = [], i = 0, takes = {}, rec = null, chunks = [], stream = null, ctx = null, an = null, raf = 0, player = null;
+
+// ---- saved takes (IndexedDB), so nothing is lost if the page is closed ----
+const db = new Promise((res, rej) => { const r = indexedDB.open('lr-record', 1); r.onupgradeneeded = () => r.result.createObjectStore('takes'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const tx = async (mode, fn) => { const d = await db; return new Promise((res, rej) => { const t = d.transaction('takes', mode), st = t.objectStore('takes'), q = fn(st); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }); };
+async function loadTakes() { const d = await db; return new Promise((res) => { const out = {}; const c = d.transaction('takes').objectStore('takes').openCursor(); c.onsuccess = () => { const cur = c.result; if (cur) { out[cur.key] = cur.value; cur.continue(); } else res(out); }; }); }
+
+function saveWho() { try { localStorage.setItem('lr-record-who', JSON.stringify({ name: $('#name').value, consent: $('#consent').checked })); } catch {} updateUi(); }
+function ready() { return $('#name').value.trim().length > 1 && $('#consent').checked; }
+
+function build() {
+  const lang = $('#lang').value, mod = $('#mod').value, todo = $('#todo-only').checked;
+  const order = new Map(DATA.lessons.map((l, k) => [l.id, k]));
+  list = DATA.lines.filter((l) => l.lang === lang && (l.mods || []).includes(mod) && (!todo || !String(MAN.made[l.key] || '').startsWith('human:') || takes[l.key]))
+    .sort((a, b) => (order.get((a.lessons || [])[0]) ?? 999) - (order.get((b.lessons || [])[0]) ?? 999));
+  const firstTodo = list.findIndex((l) => !takes[l.key]); i = firstTodo < 0 ? 0 : firstTodo;
+  drawChips(); show();
+}
+function lessonOf(l) { const id = (l.lessons || [])[0]; const L = DATA.lessons.find((x) => x.id === id); return L ? L.title : ''; }
+function drawChips() {
+  const box = $('#chips'); box.replaceChildren();
+  list.forEach((l, k) => { const c = document.createElement('span'); c.className = 'chip' + (takes[l.key] ? ' done' : String(MAN.made[l.key] || '').startsWith('human:') ? ' person' : '') + (k === i ? ' cur' : ''); c.textContent = k + 1; c.title = l.text; c.onclick = () => { stopAll(); i = k; drawChips(); show(); }; box.append(c); });
+  const done = list.filter((l) => takes[l.key]).length;
+  $('#count').textContent = list.length ? `${done} of ${list.length} lines recorded on this device · ${list.reduce((a, l) => a + l.text.length, 0)} characters (about ${Math.max(1, Math.round(list.reduce((a, l) => a + l.text.length, 0) / 900))} minutes of reading)` : 'Nothing to read here. Choose another module or language.';
+  $('#prog').style.width = list.length ? (100 * done / list.length) + '%' : '0';
+}
+function show() {
+  const l = list[i];
+  $('#lesson').textContent = l ? `${lessonOf(l)} · line ${i + 1} of ${list.length}` : '';
+  $('#say').textContent = l ? l.text : '…';
+  updateUi();
+}
+function updateUi() {
+  const l = list[i], has = l && takes[l.key];
+  $('#rec').disabled = !l || !ready();
+  $('#play').disabled = !has; $('#del').disabled = !has;
+  $('#prev').disabled = i <= 0; $('#next').disabled = !l || i >= list.length - 1;
+  const before = l && MAN.made[l.key] ? (String(MAN.made[l.key]).startsWith('human:') ? 'Already read by ' + MAN.made[l.key].slice(6) + ' in the portal.' : 'In the portal now: a machine voice.') : 'In the portal now: the device voice.';
+  $('#state').textContent = !ready() ? 'First write your name and tick the agreement above.' : rec ? 'Recording… read the line, then press Stop.' : has ? '✓ Recorded on this device (' + (takes[l.key].ms / 1000).toFixed(1) + ' s). ' + before : before;
+  $('#nrec').textContent = Object.keys(takes).length;
+}
+
+// ---- recording ----
+async function mic() {
+  if (stream) return stream;
+  stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
+  ctx = new (window.AudioContext || window.webkitAudioContext)(); an = ctx.createAnalyser(); an.fftSize = 512; ctx.createMediaStreamSource(stream).connect(an);
+  const buf = new Uint8Array(an.fftSize);
+  const tick = () => { an.getByteTimeDomainData(buf); let p = 0; for (const v of buf) p = Math.max(p, Math.abs(v - 128)); $('#lvl').style.width = Math.min(100, p / 1.1) + '%'; $('#lvl').style.background = p > 120 ? '#c0392b' : '#2e7d4f'; raf = requestAnimationFrame(tick); };
+  tick(); return stream;
+}
+const MIME = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'].find((m) => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
+const EXT = MIME.includes('mp4') ? 'm4a' : MIME.includes('ogg') ? 'ogg' : 'webm';
+async function toggle() {
+  if (rec) { rec.stop(); return; }
+  const l = list[i]; if (!l || !ready()) return;
+  stopAll();
+  try { await mic(); } catch (e) { $('#state').textContent = 'The microphone could not be opened. Allow microphone access for this page and try again.'; return; }
+  chunks = []; const started = performance.now();
+  rec = new MediaRecorder(stream, MIME ? { mimeType: MIME, audioBitsPerSecond: 128000 } : undefined);
+  rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  rec.onstop = async () => {
+    const blob = new Blob(chunks, { type: rec.mimeType || MIME }); const ms = performance.now() - started; rec = null;
+    $('#rec').classList.remove('on'); $('#rec').textContent = '● Record again';
+    if (ms < 600) { updateUi(); return; }
+    takes[l.key] = { blob, ext: EXT, ms, at: Date.now() }; await tx('readwrite', (st) => st.put(takes[l.key], l.key));
+    drawChips(); updateUi(); play();
+  };
+  rec.start(); $('#rec').classList.add('on'); $('#rec').textContent = '■ Stop'; updateUi();
+}
+function play() { stopAll(); const t = takes[list[i] && list[i].key]; if (!t) return; player = new Audio(URL.createObjectURL(t.blob)); player.play(); }
+function stopAll() { if (player) { player.pause(); player = null; } }
+async function del() { const l = list[i]; if (!l || !takes[l.key]) return; delete takes[l.key]; await tx('readwrite', (st) => st.delete(l.key)); drawChips(); updateUi(); }
+function go(d) { if (rec) return; stopAll(); i = Math.max(0, Math.min(list.length - 1, i + d)); drawChips(); show(); $('#rec').textContent = '● Record'; }
+
+// ---- download: a plain .zip (no compression; audio is already compressed) ----
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = (u8) => { let c = 0xffffffff; for (let k = 0; k < u8.length; k++) c = CRC[(c ^ u8[k]) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+function zip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  const d = new Date(), dt = ((d.getFullYear() - 1980) << 9 | (d.getMonth() + 1) << 5 | d.getDate()), tm = (d.getHours() << 11 | d.getMinutes() << 5 | (d.getSeconds() >> 1));
+  for (const f of files) {
+    const name = enc.encode(f.name), data = f.data, crc = crc32(data);
+    const h = new DataView(new ArrayBuffer(30)); h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true); h.setUint16(10, tm, true); h.setUint16(12, dt, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+    parts.push(h.buffer, name, data);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, 0, true); c.setUint16(12, tm, true); c.setUint16(14, dt, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(c.buffer, name); off += 30 + name.length + data.length;
+  }
+  const size = central.reduce((a, b) => a + (b.byteLength ?? b.length), 0);
+  const e = new DataView(new ArrayBuffer(22)); e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, size, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...central, e.buffer], { type: 'application/zip' });
+}
+async function download() {
+  const keys = Object.keys(takes); if (!keys.length) { $('#dlnote').textContent = 'Nothing recorded yet.'; return; }
+  if (!ready()) { $('#dlnote').textContent = 'Write your name and tick the agreement first.'; return; }
+  const enc = new TextEncoder(), who = { name: $('#name').value.trim(), consent: true, consentText: $('label[for=consent]').innerText.trim(), date: new Date().toISOString(), lines: keys.length };
+  const files = [{ name: 'speaker.json', data: enc.encode(JSON.stringify(who, null, 2)) }];
+  for (const k of keys.sort()) files.push({ name: k + '.' + takes[k].ext, data: new Uint8Array(await takes[k].blob.arrayBuffer()) });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(zip(files)); a.download = 'learnreach-voice-' + who.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + who.date.slice(0, 10) + '.zip'; a.click();
+  $('#dlnote').textContent = 'Downloaded. Send this file to the LearnReach team.';
+}
+
+// ---- start ----
+(async () => {
+  try { const w = JSON.parse(localStorage.getItem('lr-record-who') || '{}'); $('#name').value = w.name || ''; $('#consent').checked = !!w.consent; } catch {}
+  ['input', 'change'].forEach((ev) => { $('#name').addEventListener(ev, saveWho); $('#consent').addEventListener(ev, saveWho); });
+  if (!window.MediaRecorder || !navigator.mediaDevices) $('#studio').insertAdjacentHTML('afterbegin', '<p class="warn">This browser cannot record. Please use Chrome on a phone, tablet or computer.</p>');
+  try {
+    [DATA, MAN] = await Promise.all([fetch('voice/lines.json', { cache: 'no-cache' }).then((r) => r.json()), fetch('voice/manifest.json', { cache: 'no-cache' }).then((r) => r.json()).catch(() => ({ files: {}, made: {} }))]);
+  } catch { $('#say').textContent = 'The list of lines could not be loaded. Check the internet connection and reload.'; return; }
+  takes = await loadTakes();
+  const mods = [...new Set(DATA.lines.flatMap((l) => l.mods || []))];
+  $('#mod').replaceChildren(...mods.map((m) => { const o = document.createElement('option'); o.value = m; o.textContent = MOD_NAMES[m] || m; return o; }));
+  const q = new URLSearchParams(location.search); $('#mod').value = q.get('module') || 'kis'; $('#lang').value = q.get('lang') || 'sw';
+  ['#lang', '#mod', '#todo-only'].forEach((s) => $(s).addEventListener('change', build));
+  $('#rec').onclick = toggle; $('#play').onclick = play; $('#del').onclick = del; $('#next').onclick = () => go(1); $('#prev').onclick = () => go(-1); $('#dl').onclick = download;
+  document.addEventListener('keydown', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return; if (e.code === 'Space') { e.preventDefault(); toggle(); } else if (e.key === 'ArrowRight') go(1); else if (e.key === 'ArrowLeft') go(-1); else if (e.key.toLowerCase() === 'p') play(); });
+  build();
+})();
+</script>
+</body>
+</html>

@@ -128,6 +128,8 @@ To record or re-record:
 2. Optional: save the voice IDs as repository variables `VOICE_EN` and `VOICE_SW`.
 3. Run **Actions → Record narration (ElevenLabs) → Run workflow**. Tick *dry run* first to see how many characters will be sent. Each run sends at most *max characters* (default 20,000) to protect your credits; run again to continue. Only new or changed lines are sent, and the site redeploys with the recordings. *Modules* records one module first (for example `kis` for Kiswahili), and *tuning* adjusts the voice (for example `speed=0.9,stability=0.6`); changing the voice or its tuning re-records.
 
+**Recording a real voice.** A person can read the lines in her own voice on [`teacher-portal/record.html`](https://hellenalianya-code.github.io/learn/teacher-portal/record.html) (Kiswahili module first by default). She writes her name, ticks the consent statement, records line by line on a phone or laptop, and downloads a zip. `node scripts/voice-import.mjs <zip>` cleans up each take (silence trimmed, loudness evened out), saves it as MP3 and marks it as hers, so a machine voice never replaces it.
+
 ## Design decisions
 
 - **Audio-visual first.** Lessons are designed to be watched and heard together on shared solar-powered screens and radios.

@@ -58,7 +58,8 @@ self.addEventListener('fetch', (e) => {
   const u = new URL(req.url);
   if (/supabase\.co$/.test(u.hostname)) return; // live data: always from the network
   const scope = new URL(self.registration.scope);
-  const isPage = req.mode === 'navigate' && u.origin === scope.origin && u.pathname.startsWith(scope.pathname);
+  // the portal itself (other pages here, such as record.html, are fetched normally)
+  const isPage = req.mode === 'navigate' && u.origin === scope.origin && (u.pathname === scope.pathname || u.pathname === scope.pathname + 'index.html');
   if (isPage || (u.origin === scope.origin && u.pathname === scope.pathname + 'index.html')) { e.respondWith(fromDeviceThenUpdate(e, PAGE, true)); return; }
   if (u.href.split('?')[0] === CONFIG) { e.respondWith(fromDeviceThenUpdate(e, CONFIG, false)); return; }
   // Recorded narration: each MP3 is kept after its first play, so lessons narrate with no internet.

@@ -2716,31 +2716,35 @@ fetch('voice/manifest.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json()
 // Every text the portal narrates, for recording (used by scripts/voice-build.mjs; not called by the page itself).
 window.lrVoiceTexts = function () {
   // each text also lists the modules it belongs to, so a recording run can do one module first
-  const out = new Map(), add = (langName, text, mods) => {
+  const out = new Map(), add = (langName, text, mods, lessonId) => {
     if (!text || !String(text).trim()) return; const k = vKey(langName, text);
-    const it = out.get(k) || { lang: langName === 'Swahili' ? 'sw' : 'en', text: String(text).replace(/\s+/g, ' ').trim(), key: k, mods: [] };
-    (mods || []).forEach((m) => { if (!it.mods.includes(m)) it.mods.push(m); }); out.set(k, it);
+    const it = out.get(k) || { lang: langName === 'Swahili' ? 'sw' : 'en', text: String(text).replace(/\s+/g, ' ').trim(), key: k, mods: [], lessons: [] };
+    (mods || []).forEach((m) => { if (!it.mods.includes(m)) it.mods.push(m); });
+    if (lessonId && !it.lessons.includes(lessonId)) it.lessons.push(lessonId); out.set(k, it);
   };
   const was = lang;
   try {
     for (const L of ['en', 'sw']) {
       lang = L; const uiName = L === 'sw' ? 'Swahili' : 'English';
       for (const l of LESSONS) {
-        const m = [l.mod];
-        add(l.lang, l.title, m); l.body.forEach((p) => add(l.lang, p, m));
-        if (COVERS[l.id]) add(l.lang, COVERS[l.id].goal(), m);
-        SEED_Q.filter((q) => q.lesson === l.id).forEach((q) => { add(l.lang, q.text, m); q.opts.forEach((o, i) => add(l.lang, String.fromCharCode(65 + i) + '. ' + o, m)); });
-        const a = actFor(l.id); if (a) { add(l.lang, tx(a.title), m); add(l.lang, t('actStartSlide'), m); }
+        const m = [l.mod], id = l.id;
+        add(l.lang, l.title, m, id); l.body.forEach((p) => add(l.lang, p, m, id));
+        if (COVERS[l.id]) add(l.lang, COVERS[l.id].goal(), m, id);
+        SEED_Q.filter((q) => q.lesson === l.id).forEach((q) => { add(l.lang, q.text, m, id); q.opts.forEach((o, i) => add(l.lang, String.fromCharCode(65 + i) + '. ' + o, m, id)); });
+        const a = actFor(l.id); if (a) { add(l.lang, tx(a.title), m, id); add(l.lang, t('actStartSlide'), m, id); }
       }
       for (const a of ACTIVITIES) {
         const m = [...new Set(a.lessons.map((id) => (LESSONS.find((l) => l.id === id) || {}).mod).filter(Boolean))];
-        add(uiName, tx(a.done), m); add(uiName, t('actRight'), m); add(uiName, t('actWrong'), m);
-        a.steps.forEach((s) => { add(uiName, tx(s.q), m); add(uiName, tx(s.cap), m); add(uiName, tx(s.hint), m); });
+        const id = a.lessons[0];
+        add(uiName, tx(a.done), m, id); add(uiName, t('actRight'), m, id); add(uiName, t('actWrong'), m, id);
+        a.steps.forEach((s) => { add(uiName, tx(s.q), m, id); add(uiName, tx(s.cap), m, id); add(uiName, tx(s.hint), m, id); });
       }
     }
   } finally { lang = was; }
   return [...out.values()];
 };
+// Lesson titles for the recording page (record.html)
+window.lrVoiceLessons = () => LESSONS.map((l) => ({ id: l.id, mod: l.mod, title: l.title, lang: l.lang, grade: l.grade }));
 
 // ---------- Narration (text to speech) ----------
 const synth = window.speechSynthesis;

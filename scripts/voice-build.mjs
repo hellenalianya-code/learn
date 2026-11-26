@@ -54,7 +54,8 @@ async function texts() {
   await p.goto('http://lr.test/teacher-portal/'); await p.fill('#u', 'user1'); await p.fill('#p', '1234'); await p.click('#login-btn');
   await p.waitForFunction(() => typeof window.lrVoiceTexts === 'function');
   const list = await p.evaluate(() => window.lrVoiceTexts());
-  await b.close(); return list;
+  const lessons = await p.evaluate(() => (window.lrVoiceLessons ? window.lrVoiceLessons() : []));
+  await b.close(); return { list, lessons };
 }
 
 async function record(item) {
@@ -72,13 +73,17 @@ async function record(item) {
   }
 }
 
-const list = await texts();
+const { list, lessons } = await texts();
 fs.mkdirSync(OUT, { recursive: true });
+// Every narrated line, for the recording page (teacher-portal/record.html), where a person can record them in her own voice.
+fs.writeFileSync(path.join(OUT, 'lines.json'), JSON.stringify({ lessons, lines: list.map(({ key, lang, text, mods, lessons: ls }) => ({ key, lang, text, mods, lessons: ls })) }) + '\n');
 const old = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : { files: {}, made: {} };
 old.made ||= {};
 const tuneSig = Object.keys(TUNE).sort().map((k) => k + '=' + TUNE[k]).join(',');
 const sig = (lang) => `${VOICE[lang]}|${MODEL}|${FORMAT}` + (tuneSig ? '|' + tuneSig : '');
-const have = (it) => old.files[it.key] && fs.existsSync(path.join(OUT, old.files[it.key])) && (DRY && !VOICE.en ? true : old.made[it.key] === sig(it.lang));
+// A person's own recording (made "human:…", from scripts/voice-import.mjs) is never replaced by a machine voice.
+const human = (it) => String(old.made[it.key] || '').startsWith('human:') && old.files[it.key] && fs.existsSync(path.join(OUT, old.files[it.key]));
+const have = (it) => human(it) || old.files[it.key] && fs.existsSync(path.join(OUT, old.files[it.key])) && (DRY && !VOICE.en ? true : old.made[it.key] === sig(it.lang));
 const todo = list.filter((it) => !have(it) && (!ONLY.length || (it.mods || []).some((m) => ONLY.includes(m))));
 if (ONLY.length) console.log(`Only modules: ${ONLY.join(', ')}.`);
 const total = list.reduce((a, it) => a + it.text.length, 0), todoChars = todo.reduce((a, it) => a + it.text.length, 0);
@@ -113,6 +118,6 @@ save();
 // recordings no longer used by the portal
 const keep = new Set(Object.values(files)); let removed = 0;
 for (const f of fs.readdirSync(OUT)) if (f.endsWith('.mp3') && !keep.has(f)) { fs.unlinkSync(path.join(OUT, f)); removed++; }
-const left = list.filter((it) => made[it.key] !== sig(it.lang)).length;
+const left = list.filter((it) => !String(made[it.key] || '').startsWith('human:') && made[it.key] !== sig(it.lang)).length;
 console.log(`Recorded ${n} (${sent} characters), ${failed} failed, ${removed} old files removed. ${left ? left + ' texts still to record' + (stopped ? ' (MAX_CHARS reached: run again to continue)' : '') + '.' : 'Every text has a recording.'}`);
 if (failed && !n) process.exit(1);

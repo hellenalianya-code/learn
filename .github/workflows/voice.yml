@@ -2,20 +2,23 @@ name: Record narration (ElevenLabs)
 
 # Records the lessons' narration as MP3s in teacher-portal/voice/ with ElevenLabs, then redeploys the site.
 # Run it from Actions → "Record narration (ElevenLabs)" → Run workflow.
-# Needs the repository secret ELEVENLABS_API_KEY. Default voice: "Yna Agalo - Kenyan Lady" (ijKilL5CnjXKMWDHOJH8).
+# Needs the repository secret ELEVENLABS_API_KEY. Default voice: "Alice - Clear, Engaging Educator" (a free default voice) (Xb7hH8MSUJpSbSDYk0k2).
 # The voice IDs can be typed in when running it,
 # or saved once as repository variables VOICE_EN / VOICE_SW (Settings → Secrets and variables → Actions → Variables).
 on:
   workflow_dispatch:
     inputs:
       voice_en:
-        description: "ElevenLabs Voice ID for English (blank = VOICE_EN, else Yna Agalo - Kenyan Lady)"
+        description: "ElevenLabs Voice ID for English (blank = VOICE_EN, else Alice)"
         required: false
       voice_sw:
         description: "Voice ID for Kiswahili (blank = VOICE_SW, else the English voice)"
         required: false
       modules:
         description: "Only these modules (kis = Kiswahili, lit = English, num = Maths, sci = Science, men/mind/safe/self/repro = Life Skills); blank = all"
+        required: false
+      tuning:
+        description: "Voice settings, e.g. speed=0.9,stability=0.6 (blank = the voice as it is; changing re-records)"
         required: false
       max_chars:
         description: "Most characters to send this run (protects your credits; run again to continue)"
@@ -48,11 +51,12 @@ jobs:
         run: node scripts/voice-build.mjs
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-          VOICE_EN: ${{ inputs.voice_en || vars.VOICE_EN || 'ijKilL5CnjXKMWDHOJH8' }}
-          VOICE_SW: ${{ inputs.voice_sw || vars.VOICE_SW || inputs.voice_en || vars.VOICE_EN || 'ijKilL5CnjXKMWDHOJH8' }}
+          VOICE_EN: ${{ inputs.voice_en || vars.VOICE_EN || 'Xb7hH8MSUJpSbSDYk0k2' }}
+          VOICE_SW: ${{ inputs.voice_sw || vars.VOICE_SW || inputs.voice_en || vars.VOICE_EN || 'Xb7hH8MSUJpSbSDYk0k2' }}
           MODEL: ${{ vars.ELEVENLABS_MODEL || 'eleven_v4' }}
           MAX_CHARS: ${{ inputs.max_chars }}
           MODULES: ${{ inputs.modules }}
+          TUNING: ${{ inputs.tuning || vars.VOICE_TUNING }}
           DRY_RUN: ${{ inputs.dry_run }}
       - name: Keep a copy of the recordings with this run (in case saving them fails)
         if: ${{ !inputs.dry_run }}

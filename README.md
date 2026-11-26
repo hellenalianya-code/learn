@@ -126,7 +126,7 @@ To record or re-record:
 
 1. Add the ElevenLabs API key as the repository secret `ELEVENLABS_API_KEY` (Settings → Secrets and variables → Actions). It is never put in the page.
 2. Optional: save the voice IDs as repository variables `VOICE_EN` and `VOICE_SW`.
-3. Run **Actions → Record narration (ElevenLabs) → Run workflow**. Tick *dry run* first to see how many characters will be sent. Each run sends at most *max characters* (default 20,000) to protect your credits; run again to continue. Only new or changed lines are sent, and the site redeploys with the recordings.
+3. Run **Actions → Record narration (ElevenLabs) → Run workflow**. Tick *dry run* first to see how many characters will be sent. Each run sends at most *max characters* (default 20,000) to protect your credits; run again to continue. Only new or changed lines are sent, and the site redeploys with the recordings. *Modules* records one module first (for example `kis` for Kiswahili), and *tuning* adjusts the voice (for example `speed=0.9,stability=0.6`); changing the voice or its tuning re-records.
 
 ## Design decisions
 

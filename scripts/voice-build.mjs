@@ -9,6 +9,8 @@
 //   FORMAT              default mp3_22050_32 (small files for low-bandwidth tablets)
 //   MAX_CHARS           stop after sending this many characters in one run (default 20000), to protect credits
 //   MODULES             record only these modules first, e.g. "kis" (Kiswahili) or "kis,lit"; blank = everything
+//   TUNING              voice settings, e.g. "speed=0.9,stability=0.6,similarity=0.8,style=0.1" (blank = the voice's own)
+//                       speed <1 is slower; stability 0–1 (higher = steadier); similarity 0–1; style 0–1. Changing it re-records.
 //   DRY_RUN=1           only count what would be recorded; no key needed
 import { chromium } from 'playwright';
 import fs from 'fs';
@@ -24,6 +26,14 @@ const VOICE = { en: (env.VOICE_EN || '').trim(), sw: (env.VOICE_SW || env.VOICE_
 const MODEL = (env.MODEL || 'eleven_v4').trim();
 const FORMAT = (env.FORMAT || 'mp3_22050_32').trim();
 const MAX = Number(env.MAX_CHARS || 20000);
+const TUNE = {};
+for (const part of (env.TUNING || '').split(',').map((x) => x.trim()).filter(Boolean)) {
+  const [k, v] = part.split('=').map((x) => x.trim()); const n = Number(v);
+  const name = { speed: 'speed', stability: 'stability', similarity: 'similarity_boost', style: 'style' }[k];
+  if (!name || !isFinite(n)) { console.error(`TUNING: did not understand "${part}" (use speed, stability, similarity, style)`); process.exit(1); }
+  TUNE[name] = n;
+}
+if (TUNE.speed !== undefined && (TUNE.speed < 0.7 || TUNE.speed > 1.2)) { console.error('TUNING: speed must be between 0.7 and 1.2'); process.exit(1); }
 const ONLY = (env.MODULES || '').split(',').map((x) => x.trim()).filter(Boolean);
 
 if (!DRY && !KEY) { console.error('ELEVENLABS_API_KEY is not set. Add it under Settings → Secrets and variables → Actions.'); process.exit(1); }
@@ -53,7 +63,7 @@ async function record(item) {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-      body: JSON.stringify({ text: item.text, model_id: MODEL, language_code: item.lang }),
+      body: JSON.stringify({ text: item.text, model_id: MODEL, language_code: item.lang, ...(Object.keys(TUNE).length ? { voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0, use_speaker_boost: true, ...TUNE } } : {}) }),
     });
     if (res.ok) return Buffer.from(await res.arrayBuffer());
     const msg = (await res.text()).slice(0, 300);
@@ -66,7 +76,8 @@ const list = await texts();
 fs.mkdirSync(OUT, { recursive: true });
 const old = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : { files: {}, made: {} };
 old.made ||= {};
-const sig = (lang) => `${VOICE[lang]}|${MODEL}|${FORMAT}`;
+const tuneSig = Object.keys(TUNE).sort().map((k) => k + '=' + TUNE[k]).join(',');
+const sig = (lang) => `${VOICE[lang]}|${MODEL}|${FORMAT}` + (tuneSig ? '|' + tuneSig : '');
 const have = (it) => old.files[it.key] && fs.existsSync(path.join(OUT, old.files[it.key])) && (DRY && !VOICE.en ? true : old.made[it.key] === sig(it.lang));
 const todo = list.filter((it) => !have(it) && (!ONLY.length || (it.mods || []).some((m) => ONLY.includes(m))));
 if (ONLY.length) console.log(`Only modules: ${ONLY.join(', ')}.`);
@@ -78,7 +89,7 @@ const files = {}, made = {};
 // keep every recording still in use (an older voice keeps playing until its new recording is made)
 for (const it of list) if (old.files[it.key] && fs.existsSync(path.join(OUT, old.files[it.key]))) { files[it.key] = old.files[it.key]; made[it.key] = old.made[it.key]; }
 let sent = 0, n = 0, failed = 0, stopped = false;
-const save = () => fs.writeFileSync(MANIFEST, JSON.stringify({ model: MODEL, format: FORMAT, voices: VOICE, files, made }, null, 0) + '\n');
+const save = () => fs.writeFileSync(MANIFEST, JSON.stringify({ model: MODEL, format: FORMAT, voices: VOICE, tuning: TUNE, files, made }, null, 0) + '\n');
 let i = 0;
 async function worker() {
   while (i < todo.length) {

@@ -90,6 +90,7 @@ async function worker() {
       failed++; console.error(`  ✗ ${it.key}: ${e.message}`);
       if (/40[13]/.test(e.message)) { console.error('The key was refused: check the secret and that it has Text to Speech access.'); i = todo.length; }
       if (/quota|credits/i.test(e.message)) { console.error('Out of ElevenLabs credits.'); i = todo.length; }
+      if (/ 402:|paid_plan_required|payment_required/.test(e.message)) { console.error('ElevenLabs needs a paid plan for this (see the message above).'); i = todo.length; }
     }
   }
 }

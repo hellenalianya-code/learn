@@ -963,6 +963,30 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
   .mj-sky { display: none; }
   .mj-ht { grid-template-columns: 1fr; } .mj-prog { grid-column: 1; grid-row: auto; flex-direction: row; max-width: none; }
 }
+
+/* ===== grade book covers ===== */
+.grade-tiles:has(.book) { grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 18px; }
+.grade-tiles .tile.book { --bk: #3d5fe0; --bk2: #2b45a8; position: relative; display: flex; flex-direction: column; aspect-ratio: 3 / 4.15; padding: 0 0 0 14px; border: 0; border-radius: 6px 14px 14px 6px; overflow: hidden; text-align: left; color: #fff;
+  background: linear-gradient(160deg, var(--bk), var(--bk2)); box-shadow: 0 2px 0 rgb(0 0 0 / .08), 6px 10px 22px rgb(20 48 45 / .22), inset -3px 0 0 rgb(255 255 255 / .12); transition: transform .18s, box-shadow .18s; }
+.grade-tiles .tile.book::before { display: none; }
+.grade-tiles .tile.book:hover { transform: translateY(-4px) rotate(-1deg); box-shadow: 0 2px 0 rgb(0 0 0 / .08), 10px 16px 30px rgb(20 48 45 / .28); }
+.grade-tiles .tile.book:focus-visible { outline: 4px solid #e08a14; outline-offset: 3px; }
+.bk-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: linear-gradient(90deg, rgb(0 0 0 / .3), rgb(0 0 0 / .08) 60%, rgb(255 255 255 / .25)); }
+.bk-top { display: flex; flex-direction: column; gap: 0; padding: 12px 12px 0; position: relative; z-index: 1; max-width: 72%; }
+.bk-brand { font-size: .68rem; font-weight: 800; letter-spacing: .06em; color: #ffe08a; text-transform: uppercase; }
+.bk-subj { font: 900 clamp(1.1rem, 2.2vw, 1.4rem)/1.05 var(--display); text-transform: uppercase; letter-spacing: .01em; overflow-wrap: normal; word-break: normal; }
+.bk-subj.long { font-size: clamp(.92rem, 1.7vw, 1.08rem); } .bk-subj.xlong { font-size: clamp(.8rem, 1.45vw, .95rem); }
+.bk-top.wide { max-width: 100%; }
+.bk-kind { font-size: .74rem; font-weight: 700; opacity: .9; margin-top: 2px; }
+.bk-num { position: absolute; right: 10px; top: 4px; font: 900 4.2rem/1 var(--display); color: #fff; text-shadow: 0 3px 0 rgb(0 0 0 / .18); }
+.bk-art { display: block; margin: 10px 10px 0 0; border-radius: 10px; overflow: hidden; flex: 1; min-height: 0; box-shadow: inset 0 0 0 3px rgb(255 255 255 / .55); background: #fff; }
+.bk-art svg { width: 100%; height: 100%; display: block; }
+.bk-foot { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px 10px 0; }
+.bk-grade { font: 800 1rem var(--display); }
+.bk-foot .chips { gap: 4px; }
+.bk-foot .chip { background: rgb(255 255 255 / .92); color: var(--bk2); border-color: transparent; font-size: .72rem; }
+@media (max-width: 600px) { .grade-tiles:has(.book) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .bk-num { font-size: 3rem; } .bk-subj { font-size: 1rem; } .bk-subj.long { font-size: .85rem; } .bk-subj.xlong { font-size: .74rem; } .bk-top { max-width: 70%; } }
+.bk-foot .chip.line { background: rgb(255 255 255 / .2); color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .6); }
 </style>
 
 <!-- LOGIN / REGISTER (Supabase) -->
@@ -2458,6 +2482,39 @@ function moduleJourney({ subj, m, ls, girls, life, g }) {
   wrap.append(ol);
   return wrap;
 }
+
+// ---- grade book covers ----
+const BK_COL = { maths: ['#3d5fe0', '#2b45a8'], english: ['#d9822b', '#a95f15'], kiswahili: ['#2f8a5b', '#1f6643'], science: ['#7b4bc4', '#5a3397'], life: ['#c2527a', '#8f3557'] };
+function coverArt(subj, g) {
+  const band = subj === 'life' ? 'life' : g <= 2 ? 'savanna' : g <= 4 ? 'village' : 'solar';
+  const SKYC = { savanna: ['#a9dcfb', '#e3f4ff'], village: ['#bfe6f2', '#eef8ef'], solar: ['#ffbf8a', '#ffe7cc'], life: ['#e6d8f6', '#ffeadf'] }[band];
+  const ground = { savanna: '<path d="M0 120 Q80 98 160 112 T300 106 V170 H0Z" fill="#f2d892"/><path d="M0 140 Q110 122 200 138 T300 132 V170 H0Z" fill="#e6bf62"/>' + '<g transform="translate(250 128) scale(.42)"><path d="M-3 0 L-1 -60 M-1 -60 Q-18 -78 -42 -84 M-1 -60 Q4 -80 26 -90" stroke="#5a3d24" stroke-width="7" fill="none" stroke-linecap="round"/><ellipse cx="-28" cy="-90" rx="42" ry="12" fill="#4d6b2a"/><ellipse cx="16" cy="-98" rx="54" ry="14" fill="#5f7f34"/></g>',
+    village: '<path d="M0 116 Q90 92 170 110 T300 100 V170 H0Z" fill="#bfe0a2"/><path d="M0 138 Q120 118 210 134 T300 128 V170 H0Z" fill="#8fc56f"/><g transform="translate(252 124) scale(.45)"><path d="M-60 0 Q-60 -62 0 -66 Q60 -62 60 0 Z" fill="#c9924f"/><path d="M-12 0 V-28 Q0 -36 12 -28 V0Z" fill="#4a2f17"/></g>',
+    solar: '<circle cx="150" cy="118" r="40" fill="#ffb26b" opacity=".9"/><path d="M0 118 Q90 96 170 112 T300 104 V170 H0Z" fill="#e2a37b"/><path d="M0 140 Q120 120 210 136 T300 130 V170 H0Z" fill="#c97f5c"/><g transform="translate(254 130) scale(.5)"><rect x="-40" y="-36" width="80" height="36" fill="#f3e3c8"/><path d="M-48 -34 L0 -60 L48 -34Z" fill="#9c5a3c"/><rect x="-34" y="-56" width="34" height="11" fill="#2f5ea8" transform="rotate(-25 -17 -50)"/><rect x="-8" y="-24" width="16" height="24" fill="#6b4a2b"/></g>',
+    life: '<path d="M0 118 Q90 96 170 112 T300 104 V170 H0Z" fill="#f3cbd5"/><path d="M0 140 Q120 120 210 136 T300 130 V170 H0Z" fill="#e6a9ba"/>' }[band];
+  const W = '#ffffff', ink = (BK_COL[subj] || BK_COL.maths)[1];
+  const motif = {
+    maths: '<g stroke="' + ink + '" stroke-width="3" fill="' + W + '"><path d="M150 26 L172 62 H128Z"/><circle cx="200" cy="48" r="17"/><rect x="88" y="34" width="30" height="30" rx="3"/></g><g font-family="Arial, sans-serif" font-weight="900" font-size="20" fill="' + W + '" stroke="' + ink + '" stroke-width="1" text-anchor="middle"><text x="40" y="44">+</text><text x="258" y="42">−</text><text x="44" y="84">×</text><text x="256" y="82">÷</text></g>',
+    english: '<g font-family="Arial, sans-serif" font-weight="900" font-size="26" text-anchor="middle">' + [['A', 96], ['B', 150], ['C', 204]].map(([l, x], i) => '<rect x="' + (x - 22) + '" y="' + (30 + (i % 2) * 12) + '" width="44" height="44" rx="6" fill="' + W + '" stroke="' + ink + '" stroke-width="3"/><text x="' + x + '" y="' + (61 + (i % 2) * 12) + '" fill="' + ink + '">' + l + '</text>').join('') + '</g>',
+    kiswahili: '<g stroke="' + ink + '" stroke-width="3" fill="' + W + '"><path d="M70 24 h90 a12 12 0 0 1 12 12 v26 a12 12 0 0 1 -12 12 h-56 l-16 14 v-14 h-18 a12 12 0 0 1 -12 -12 v-26 a12 12 0 0 1 12 -12z"/><path d="M168 54 h70 a12 12 0 0 1 12 12 v20 a12 12 0 0 1 -12 12 h-8 v12 l-14 -12 h-48 a12 12 0 0 1 -12 -12 v-20 a12 12 0 0 1 12 -12z"/></g><g font-family="Arial, sans-serif" font-weight="900" text-anchor="middle" fill="' + ink + '"><text x="115" y="56" font-size="18">a e i o u</text><text x="203" y="82" font-size="15">Habari!</text></g>',
+    science: '<g stroke="' + ink + '" stroke-width="3"><path d="M110 82 h40 l-6 22 h-28z" fill="#c97a4a"/><path d="M130 82 V52" fill="none"/><path d="M130 64 q-22 -4 -26 -24 q22 2 26 24z M130 58 q20 -6 24 -26 q-22 2 -24 26z" fill="#6fae48"/><circle cx="196" cy="56" r="20" fill="' + W + '" fill-opacity=".85"/><path d="M210 70 l18 18" stroke-width="6" stroke-linecap="round" fill="none"/></g>',
+    life: '<path d="M150 82 s-30 -18 -30 -38 a16 16 0 0 1 30 -8 a16 16 0 0 1 30 8 c0 20 -30 38 -30 38z" fill="' + W + '" stroke="' + ink + '" stroke-width="3"/>' + [[70, '#e0708f'], [230, '#f0b44a']].map(([x, c]) => '<g transform="translate(' + x + ' 70)"><circle r="7" cy="-10" fill="' + c + '"/><circle r="7" cx="-9" cy="-3" fill="' + c + '"/><circle r="7" cx="9" cy="-3" fill="' + c + '"/><circle r="7" cx="-5" cy="6" fill="' + c + '"/><circle r="7" cx="5" cy="6" fill="' + c + '"/><circle r="4" fill="#ffd66b"/></g>').join(''),
+  }[subj] || '';
+  const girl = '<g transform="translate(16 82)">' + g2(IC.girl('#b5476b'), .62) + '</g>';
+  return '<svg viewBox="0 0 300 170" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="bk-' + subj + '-' + g + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + SKYC[0] + '"/><stop offset="1" stop-color="' + SKYC[1] + '"/></linearGradient></defs><rect width="300" height="170" fill="url(#bk-' + subj + '-' + g + ')"/>' + ground + motif + girl + '</svg>';
+}
+function g2(svg, s) { return '<g transform="scale(' + s + ')">' + svg + '</g>'; }
+function bookCover(tile, subj, name, g, chips, kindLabel) {
+  const [c1, c2] = BK_COL[subj] || BK_COL.maths; tile.classList.add('book'); tile.style.setProperty('--bk', c1); tile.style.setProperty('--bk2', c2);
+  const longest = Math.max(...String(name).split(/\s+/).map((w) => w.length)), top = el('span', 'bk-top' + (g == null ? ' wide' : ''));
+  top.append(el('span', 'bk-brand', 'LearnReach'), el('span', 'bk-subj' + (longest > 10 ? ' xlong' : longest > 7 ? ' long' : ''), name), el('span', 'bk-kind', kindLabel || t('bkKind')));
+  const num = el('span', 'bk-num', g != null ? String(g) : ''); num.setAttribute('aria-hidden', 'true');
+  const art = el('span', 'bk-art'); art.innerHTML = coverArt(subj, g || 1);
+  const foot = el('span', 'bk-foot'); if (g != null) foot.append(el('span', 'bk-grade', t('grade') + ' ' + g)); foot.append(chips);
+  tile.append(el('span', 'bk-spine'), top, num, art, foot);
+}
+Object.assign(T.en, { bkKind: 'Pupils\' journey', bkTopic: 'Life Skills topic' });
+Object.assign(T.sw, { bkKind: 'Safari ya mwanafunzi', bkTopic: 'Mada ya Stadi za maisha' });
 function renderModules() {
   const box = $('#module-cards'), crumbs = $('#mod-crumbs'); box.replaceChildren(); crumbs.replaceChildren();
   const subj = modNav.subject ? SUBJECTS.find((x) => x.id === modNav.subject) : null;
@@ -2489,7 +2546,7 @@ function renderModules() {
     if (life) MODULES.filter((m) => m.subject === 'life').forEach((m) => {
       const ls = LESSONS.filter((l) => l.mod === m.id), tile = el('button', 'tile well'); tile.type = 'button'; tile.id = 'topic-' + m.id;
       const chips = el('div', 'chips'); chips.append(el('span', 'chip line', n('lessonOne', 'lessons', ls.length))); if (m.minAge) chips.append(el('span', 'chip line', t('age15')));
-      tile.append(el('h3', null, m.name[lang]), chips);
+      bookCover(tile, 'life', m.name[lang], null, chips, t('bkTopic'));
       tile.addEventListener('click', () => { modNav.key = m.id; renderModules(); }); grid.append(tile);
     });
     else {
@@ -2498,7 +2555,7 @@ function renderModules() {
         const ls = LESSONS.filter((l) => l.mod === m.id && l.grade === g), girls = STUDENTS.filter((s) => levelIn(s.id, subj.id) === g);
         const tile = el('button', 'tile'); tile.type = 'button'; tile.id = `grade-${subj.id}-${g}`;
         const chips = el('div', 'chips'); chips.append(el('span', 'chip line', n('lessonOne', 'lessons', ls.length)), el('span', 'chip' + (girls.length ? '' : ' line'), n('girlOne', 'girlsN', girls.length)));
-        tile.append(el('span', 'small muted', subj.name[lang]), el('span', 'big', `${t('grade')} ${g}`), chips);
+        bookCover(tile, subj.id, subj.name[lang], g, chips);
         tile.addEventListener('click', () => { modNav.key = g; renderModules(); }); grid.append(tile);
       });
     }

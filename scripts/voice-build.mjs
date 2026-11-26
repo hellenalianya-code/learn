@@ -94,7 +94,7 @@ async function worker() {
     }
   }
 }
-await Promise.all([worker(), worker(), worker()]);
+await Promise.all([worker(), worker()]); // the free plan allows 2 requests at a time
 save();
 // recordings no longer used by the portal
 const keep = new Set(Object.values(files)); let removed = 0;

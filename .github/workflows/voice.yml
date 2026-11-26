@@ -14,6 +14,9 @@ on:
       voice_sw:
         description: "Voice ID for Kiswahili (blank = VOICE_SW, else the English voice)"
         required: false
+      modules:
+        description: "Only these modules (kis = Kiswahili, lit = English, num = Maths, sci = Science, men/mind/safe/self/repro = Life Skills); blank = all"
+        required: false
       max_chars:
         description: "Most characters to send this run (protects your credits; run again to continue)"
         required: false
@@ -49,6 +52,7 @@ jobs:
           VOICE_SW: ${{ inputs.voice_sw || vars.VOICE_SW || inputs.voice_en || vars.VOICE_EN || 'ijKilL5CnjXKMWDHOJH8' }}
           MODEL: ${{ vars.ELEVENLABS_MODEL || 'eleven_v4' }}
           MAX_CHARS: ${{ inputs.max_chars }}
+          MODULES: ${{ inputs.modules }}
           DRY_RUN: ${{ inputs.dry_run }}
       - name: Commit the recordings
         id: commit

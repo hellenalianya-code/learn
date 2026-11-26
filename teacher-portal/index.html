@@ -2715,20 +2715,27 @@ function voiceFile(langName, text) { const k = vKey(langName, text); return VOIC
 fetch('voice/manifest.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).then((m) => { VOICE = m; }).catch(() => {});
 // Every text the portal narrates, for recording (used by scripts/voice-build.mjs; not called by the page itself).
 window.lrVoiceTexts = function () {
-  const out = new Map(), add = (langName, text) => { if (text && String(text).trim()) out.set(vKey(langName, text), { lang: langName === 'Swahili' ? 'sw' : 'en', text: String(text).replace(/\s+/g, ' ').trim(), key: vKey(langName, text) }); };
+  // each text also lists the modules it belongs to, so a recording run can do one module first
+  const out = new Map(), add = (langName, text, mods) => {
+    if (!text || !String(text).trim()) return; const k = vKey(langName, text);
+    const it = out.get(k) || { lang: langName === 'Swahili' ? 'sw' : 'en', text: String(text).replace(/\s+/g, ' ').trim(), key: k, mods: [] };
+    (mods || []).forEach((m) => { if (!it.mods.includes(m)) it.mods.push(m); }); out.set(k, it);
+  };
   const was = lang;
   try {
     for (const L of ['en', 'sw']) {
       lang = L; const uiName = L === 'sw' ? 'Swahili' : 'English';
       for (const l of LESSONS) {
-        add(l.lang, l.title); l.body.forEach((p) => add(l.lang, p));
-        if (COVERS[l.id]) add(l.lang, COVERS[l.id].goal());
-        SEED_Q.filter((q) => q.lesson === l.id).forEach((q) => { add(l.lang, q.text); q.opts.forEach((o, i) => add(l.lang, String.fromCharCode(65 + i) + '. ' + o)); });
-        const a = actFor(l.id); if (a) { add(l.lang, tx(a.title)); add(l.lang, t('actStartSlide')); }
+        const m = [l.mod];
+        add(l.lang, l.title, m); l.body.forEach((p) => add(l.lang, p, m));
+        if (COVERS[l.id]) add(l.lang, COVERS[l.id].goal(), m);
+        SEED_Q.filter((q) => q.lesson === l.id).forEach((q) => { add(l.lang, q.text, m); q.opts.forEach((o, i) => add(l.lang, String.fromCharCode(65 + i) + '. ' + o, m)); });
+        const a = actFor(l.id); if (a) { add(l.lang, tx(a.title), m); add(l.lang, t('actStartSlide'), m); }
       }
       for (const a of ACTIVITIES) {
-        add(uiName, tx(a.done)); add(uiName, t('actRight')); add(uiName, t('actWrong'));
-        a.steps.forEach((s) => { add(uiName, tx(s.q)); add(uiName, tx(s.cap)); add(uiName, tx(s.hint)); });
+        const m = [...new Set(a.lessons.map((id) => (LESSONS.find((l) => l.id === id) || {}).mod).filter(Boolean))];
+        add(uiName, tx(a.done), m); add(uiName, t('actRight'), m); add(uiName, t('actWrong'), m);
+        a.steps.forEach((s) => { add(uiName, tx(s.q), m); add(uiName, tx(s.cap), m); add(uiName, tx(s.hint), m); });
       }
     }
   } finally { lang = was; }

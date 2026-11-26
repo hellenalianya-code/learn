@@ -8,6 +8,7 @@
 //   MODEL               default eleven_v4 (speaks English and Kiswahili)
 //   FORMAT              default mp3_22050_32 (small files for low-bandwidth tablets)
 //   MAX_CHARS           stop after sending this many characters in one run (default 20000), to protect credits
+//   MODULES             record only these modules first, e.g. "kis" (Kiswahili) or "kis,lit"; blank = everything
 //   DRY_RUN=1           only count what would be recorded; no key needed
 import { chromium } from 'playwright';
 import fs from 'fs';
@@ -23,6 +24,7 @@ const VOICE = { en: (env.VOICE_EN || '').trim(), sw: (env.VOICE_SW || env.VOICE_
 const MODEL = (env.MODEL || 'eleven_v4').trim();
 const FORMAT = (env.FORMAT || 'mp3_22050_32').trim();
 const MAX = Number(env.MAX_CHARS || 20000);
+const ONLY = (env.MODULES || '').split(',').map((x) => x.trim()).filter(Boolean);
 
 if (!DRY && !KEY) { console.error('ELEVENLABS_API_KEY is not set. Add it under Settings → Secrets and variables → Actions.'); process.exit(1); }
 if (!DRY && !VOICE.en) { console.error('No voice ID. Set VOICE_EN (the Voice ID from the ElevenLabs Voice Library).'); process.exit(1); }
@@ -66,9 +68,10 @@ const old = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8
 old.made ||= {};
 const sig = (lang) => `${VOICE[lang]}|${MODEL}|${FORMAT}`;
 const have = (it) => old.files[it.key] && fs.existsSync(path.join(OUT, old.files[it.key])) && (DRY && !VOICE.en ? true : old.made[it.key] === sig(it.lang));
-const todo = list.filter((it) => !have(it));
+const todo = list.filter((it) => !have(it) && (!ONLY.length || (it.mods || []).some((m) => ONLY.includes(m))));
+if (ONLY.length) console.log(`Only modules: ${ONLY.join(', ')}.`);
 const total = list.reduce((a, it) => a + it.text.length, 0), todoChars = todo.reduce((a, it) => a + it.text.length, 0);
-console.log(`${list.length} narrated texts (${total} characters). Already recorded: ${list.length - todo.length}. To record: ${todo.length} (${todoChars} characters).`);
+console.log(`${list.length} narrated texts (${total} characters). Already recorded: ${list.filter(have).length}. To record: ${todo.length} (${todoChars} characters).`);
 if (DRY) { console.log('Dry run: nothing sent.'); process.exit(0); }
 
 const files = {}, made = {};

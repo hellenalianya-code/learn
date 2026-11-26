@@ -840,6 +840,59 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
 .ex-pk.done { background: #eef7f1; }
 .ex-pk:focus-visible { outline: 3px solid #e08a14; }
 #tab-exams { --tc: #0b8a78; }
+
+/* ===== exam review pop-up ===== */
+.pv { --c: #136f63; width: min(820px, 96vw); max-height: 92vh; padding: 0; border: 0; border-radius: 24px; box-shadow: 0 30px 80px rgb(10 30 40 / .35); color: #14302d; background: #fff; overflow: hidden; display: none; color-scheme: light; }
+.pv[open] { display: flex; flex-direction: column; }
+.pv::backdrop { background: rgb(15 35 45 / .55); backdrop-filter: blur(2px); }
+.pv-h { display: grid; grid-template-columns: auto 1fr auto auto; gap: 14px; align-items: center; padding: 16px 18px; background: linear-gradient(color-mix(in srgb, var(--c) 16%, #fff), #fff); box-shadow: inset 0 6px 0 var(--c); }
+.pv-h .pp-avatar { width: 54px; height: 54px; font-size: 1.1rem; }
+.pv-who h2 { margin: 0; font: 800 1.3rem var(--display); color: #1b2a5a; }
+.pv-who p { margin: 2px 0 0; color: #4f6461; }
+.pv-score { text-align: right; display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+.pv-score b { font: 800 1.6rem var(--display); color: #1b2a5a; }
+.pv-score span { display: flex; gap: 6px; align-items: center; font-weight: 700; color: #4f6461; }
+.pv-x { width: 40px; height: 40px; border-radius: 50%; border: 0; background: #eef3f5; font-size: 1.1rem; cursor: pointer; color: #1b2a5a; }
+.pv-x:focus-visible, .pv button:focus-visible { outline: 3px solid #e08a14; outline-offset: 2px; }
+.pv-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 18px; border-bottom: 1px solid #e3ebe9; }
+.pv-tag { font-weight: 800; color: #9a5b00; font-size: .85rem; }
+.pv-tag.real { color: #136f63; }
+.pv-filter { margin-left: auto; display: flex; gap: 6px; }
+.pv-filter button { border: 0; border-radius: 999px; padding: 6px 12px; font-weight: 800; background: #eef3f5; color: #1b2a5a; cursor: pointer; }
+.pv-filter button[aria-pressed="true"] { background: #1b2a5a; color: #fff; }
+.pv-how { flex-basis: 100%; margin: 0; color: #8a5300; }
+.pv-body { overflow: auto; padding: 14px 18px; background: #f6f9fb; flex: 1; }
+.pv-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.pv-q { background: #fff; border-radius: 16px; padding: 12px 14px; box-shadow: inset 5px 0 0 #1f7a4d, 0 2px 8px rgb(20 48 45 / .06); }
+.pv-q.w { box-shadow: inset 5px 0 0 #b3261e, 0 2px 8px rgb(20 48 45 / .06); } .pv-q.p { box-shadow: inset 5px 0 0 #b86e0b, 0 2px 8px rgb(20 48 45 / .06); }
+.pv-qh { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; }
+.pv-n { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; color: #fff; background: #1f7a4d; }
+.pv-q.w .pv-n { background: #b3261e; } .pv-q.p .pv-n { background: #b86e0b; }
+.pv-qt { font-weight: 700; font-size: 1.05rem; color: #1b2a5a; padding-top: 3px; }
+.pv-m { font: 800 .9rem var(--display); background: #eef3f5; border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+.pv-opts { list-style: none; margin: 10px 0 0 40px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pv-opts li { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; border: 1.5px solid #e3ebe9; border-radius: 12px; padding: 7px 10px; }
+.pv-opts li.ans { border-color: #1f7a4d; background: #e7f6ed; }
+.pv-opts li.her { border-color: #b3261e; background: #fdecea; }
+.pv-l { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-weight: 900; background: #eef3f5; color: #1b2a5a; }
+.pv-opts li.ans .pv-l { background: #1f7a4d; color: #fff; } .pv-opts li.her .pv-l { background: #b3261e; color: #fff; }
+.pv-tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.pv-t { font-size: .75rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; }
+.pv-t.ok { background: #1f7a4d; color: #fff; } .pv-t.no { background: #b3261e; color: #fff; }
+.pv-note { margin: 8px 0 0 40px; color: #8a5300; font-weight: 700; }
+.pv-mark { margin: 10px 0 0 40px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pv-mb { border: 1.5px solid #d6e2e8; background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: 800; cursor: pointer; }
+.pv-mb.r[aria-pressed="true"] { background: #1f7a4d; border-color: #1f7a4d; color: #fff; }
+.pv-mb.w[aria-pressed="true"] { background: #b3261e; border-color: #b3261e; color: #fff; }
+.pv-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 18px; border-top: 1px solid #e3ebe9; background: #fff; }
+.pv-foot .btn { width: auto; }
+.pv-total { margin-right: auto; display: flex; gap: 10px; align-items: baseline; color: #1b2a5a; }
+.pv-total b { font: 800 1.35rem var(--display); }
+.pp-open { all: unset; cursor: pointer; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 700; color: #1b2a5a; width: 100%; box-sizing: border-box; }
+.pp-open:focus-visible { outline: 3px solid #e08a14; outline-offset: 2px; border-radius: 8px; }
+.pp-open .pp-go { margin-left: auto; font-size: .8rem; color: #136f63; font-weight: 800; }
+@media (max-width: 640px) { .pv-h { grid-template-columns: auto 1fr auto; } .pv-score { grid-column: 1 / -1; align-items: flex-start; text-align: left; } .pv-opts, .pv-note, .pv-mark { margin-left: 0; } .pv-filter { margin-left: 0; } }
+@media print { .pv { display: none !important; } }
 </style>
 
 <!-- LOGIN / REGISTER (Supabase) -->
@@ -1153,6 +1206,12 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
   <div class="screen-stage" id="ex-stage"></div>
   <div class="screen-bar"><button class="btn ghost" id="ex-prev" type="button" hidden>← Back</button><span id="ex-step"></span><button class="btn sun" id="ex-next" type="button" disabled data-t="next">Next →</button></div>
 </div>
+<dialog class="pv" id="pv" aria-labelledby="pv-title">
+  <div class="pv-h"><span id="pv-av"></span><div class="pv-who"><h2 id="pv-title"></h2><p id="pv-sub" class="small"></p></div><div class="pv-score" id="pv-score"></div><button class="pv-x" type="button" aria-label="Close">✕</button></div>
+  <div class="pv-bar" id="pv-bar"></div>
+  <div class="pv-body" id="pv-body"></div>
+  <div class="pv-foot" id="pv-foot"></div>
+</dialog>
 <!-- STEP-BY-STEP ACTIVITY (light full screen) -->
 <div class="screen act" id="act" hidden role="dialog" aria-modal="true" aria-label="Step-by-step activity">
   <div class="screen-top"><span id="act-who"></span>
@@ -2781,9 +2840,95 @@ function studentDetail(mid, s) {
 $('#g-grade').addEventListener('change', () => renderGrades());
 $('#g-module').addEventListener('change', () => renderGrades());
 
+// ---- exam review pop-up ----
+Object.assign(T.en, { pvAll: 'All', pvRight: 'Right', pvWrong: 'Wrong', pvHer: 'Her answer', pvCorrect: 'Correct answer', pvTotal: 'Total', pvClose: 'Close', pvChange: 'Change the mark', pvMarkedR: 'Marked right by the teacher', pvMarkedW: 'Marked wrong by the teacher', pvEdited: 'mark changed', pvPartial: 'Part marks for working shown', pvNoAns: 'No answer recorded', pvDownload: 'Print', pvApproved: 'Approved' });
+Object.assign(T.sw, { pvAll: 'Yote', pvRight: 'Sahihi', pvWrong: 'Makosa', pvHer: 'Jibu lake', pvCorrect: 'Jibu sahihi', pvTotal: 'Jumla', pvClose: 'Funga', pvChange: 'Badilisha alama', pvMarkedR: 'Mwalimu amesahihisha sahihi', pvMarkedW: 'Mwalimu amesahihisha kosa', pvEdited: 'alama imebadilishwa', pvPartial: 'Alama za sehemu kwa hatua za kazi', pvNoAns: 'Hakuna jibu lililorekodiwa', pvDownload: 'Chapisha', pvApproved: 'Imeidhinishwa' });
+function orderFor(m) { // the answer order she saw on the tablet (exams made in the Exams tab)
+  try { if (!m.qids || m.mode === 'paper') return {}; const P = examPaper(m.subject, m.grade, termOf(m.date)), o = {}; P.qs.forEach((q, i) => { o[q.id] = P.orders[i]; }); return o; } catch (e) { return {}; }
+}
+let pv = null;
+function openPaper(o) { // o: { s, subj, grade, term, m, items, real, editable, onApprove, gbLink }
+  const dlg = $('#pv'); pv = { ...o, ov: { ...(o.m.override || {}) }, filter: 'all', order: orderFor(o.m) };
+  drawPaper(); if (!dlg.open) dlg.showModal(); dlg.querySelector('.pv-x').focus();
+}
+function pvScore() { const { items, editable, ov } = pv; return items.reduce((a, x) => a + (editable && ov[x.q.id] ? (ov[x.q.id] === 'r' ? x.max : 0) : x.got), 0); }
+function drawPaper() {
+  const { s, subj, grade, term, m, items, real, editable } = pv, dlg = $('#pv'), body = $('#pv-body');
+  const isRight = (x) => (editable && pv.ov[x.q.id] ? pv.ov[x.q.id] === 'r' : x.got === x.max);
+  // header
+  $('#pv-av').replaceChildren(avatarEl(s.name, rowByKey(s.id) || {}, 'pp-avatar'));
+  $('#pv-title').textContent = m.name + ' · ' + subjName(subj);
+  $('#pv-sub').textContent = s.name + ' · ' + t('grade') + ' ' + grade + ' · ' + termLabel(term) + (m.date ? ' · ' + fmtDate(m.date, { day: 'numeric', month: 'short', year: 'numeric' }) : '');
+  const sc = editable ? pvScore() : m.score, p100 = Math.round(100 * sc / m.out_of), L = levelOf(p100);
+  const scb = $('#pv-score'); scb.replaceChildren(el('b', null, sc + ' / ' + m.out_of)); const line = el('span'); line.append(document.createTextNode(p100 + '% '), lvBadge(p100), el('span', 'pp-pf ' + (p100 >= 50 ? 'ok' : 'no'), p100 >= 50 ? '✓ ' + t('ppPass') : '✗ ' + t('ppFail'))); scb.append(line);
+  dlg.style.setProperty('--c', SUBJ_COL[subj] || '#136f63');
+  // status + filter
+  const bar = $('#pv-bar'); bar.replaceChildren();
+  const tag = real ? (m.mode === 'paper' ? t('exPaperPaper') : t('exPaperTablet')) : t('ppSamplePaper');
+  bar.append(el('span', 'pv-tag' + (real ? ' real' : ''), tag + (m.status === 'pending' ? ' · ⏳ ' + t('exNotInGb') : m.status === 'approved' && real ? ' · ✓ ' + t('pvApproved') : '')));
+  const nR = items.filter(isRight).length, fl = el('div', 'pv-filter'); fl.setAttribute('role', 'group');
+  [['all', t('pvAll') + ' (' + items.length + ')'], ['r', '✓ ' + t('pvRight') + ' (' + nR + ')'], ['w', '✗ ' + t('pvWrong') + ' (' + (items.length - nR) + ')']].forEach(([k, lab]) => { const b = el('button', 'pv-f-' + k, lab); b.type = 'button'; b.id = 'pv-f-' + k; b.setAttribute('aria-pressed', String(pv.filter === k)); b.addEventListener('click', () => { pv.filter = k; drawPaper(); }); fl.append(b); });
+  bar.append(fl);
+  if (editable) bar.append(el('p', 'small pv-how', t('exReviewHow')));
+  // questions
+  body.replaceChildren(); const ol = el('ol', 'pv-list');
+  items.forEach((x, i) => {
+    const right = isRight(x), part = !editable && x.got > 0 && x.got < x.max, edited = editable && pv.ov[x.q.id];
+    if (pv.filter === 'r' && !right) return; if (pv.filter === 'w' && right) return;
+    const li = el('li', 'pv-q ' + (right ? 'r' : part ? 'p' : 'w')); li.id = 'pv-q-' + i;
+    const h = el('div', 'pv-qh'); h.append(el('span', 'pv-n', String(i + 1)), el('span', 'pv-qt', x.q.text), el('span', 'pv-m', (editable ? (right ? x.max : 0) : x.got) + ' / ' + x.max + ' ' + t('ppMarks')));
+    li.append(h);
+    const order = pv.order[x.q.id] || x.q.opts.map((_, k) => k), ul = el('ul', 'pv-opts');
+    order.forEach((k, pos) => {
+      const isAns = k === x.q.a, isHer = !x.paper && x.given === k, o = el('li', isAns ? 'ans' : isHer ? 'her' : '');
+      o.append(el('span', 'pv-l', String.fromCharCode(65 + pos)), el('span', 'pv-ot', x.q.opts[k]));
+      const tags = el('span', 'pv-tags');
+      if (isHer) tags.append(el('span', 'pv-t ' + (isAns ? 'ok' : 'no'), (isAns ? '✓ ' : '✗ ') + t('pvHer')));
+      if (isAns) tags.append(el('span', 'pv-t ok', t('pvCorrect')));
+      o.append(tags); ul.append(o);
+    });
+    li.append(ul);
+    const notes = el('div', 'small pv-note');
+    if (x.paper) notes.textContent = right ? t('pvMarkedR') : t('pvMarkedW');
+    else if (x.given == null || x.given < 0) notes.textContent = t('pvNoAns');
+    if (part) notes.textContent = t('pvPartial');
+    if (edited || (!editable && (m.override || {})[x.q.id])) notes.textContent = (notes.textContent ? notes.textContent + ' · ' : '') + ((m.override || {})[x.q.id] && !editable ? ((m.override[x.q.id] === 'r' ? t('pvMarkedR') : t('pvMarkedW'))) : t('pvEdited'));
+    if (notes.textContent) li.append(notes);
+    if (editable) {
+      const mk = el('div', 'pv-mark'); mk.append(el('span', 'small', t('pvChange') + ':'));
+      const auto = x.got === x.max ? 'r' : 'w';
+      [['r', '✓ ' + t('pvRight')], ['w', '✗ ' + t('pvWrong')]].forEach(([v, lab]) => { const b = el('button', 'pv-mb ' + v, lab); b.type = 'button'; b.id = 'pv-' + v + '-' + i; b.setAttribute('aria-pressed', String((pv.ov[x.q.id] || auto) === v));
+        b.addEventListener('click', () => { if (auto === v) delete pv.ov[x.q.id]; else pv.ov[x.q.id] = v; drawPaper(); document.getElementById('pv-' + v + '-' + i)?.focus(); }); mk.append(b); });
+      li.append(mk);
+    }
+    ol.append(li);
+  });
+  if (!ol.children.length) ol.append(el('li', 'pv-empty muted', items.length ? '–' : t('ppNoPaper')));
+  body.append(ol);
+  // footer
+  const f = $('#pv-foot'); f.replaceChildren();
+  const tot = el('div', 'pv-total'); tot.append(el('span', null, t('pvTotal')), el('b', null, (editable ? pvScore() : items.reduce((a, x) => a + x.got, 0)) + ' / ' + m.out_of)); f.append(tot);
+  if (editable && pv.onApprove) { const ap = btn('✓ ' + t('exApprove'), '', () => { pv.onApprove(pv.ov); $('#pv').close(); }); ap.id = 'pv-approve'; f.append(ap); }
+  if (pv.gbLink) { const g2 = btn(t('exView'), 'ghost', () => { $('#pv').close(); pv.gbLink(); }); g2.id = 'pv-gb'; f.append(g2); }
+  const cl = btn(t('pvClose'), 'ghost', () => $('#pv').close()); cl.id = 'pv-close'; f.append(cl);
+}
+$('#pv').addEventListener('close', () => { pv = null; });
+$('#pv').addEventListener('click', (e) => { if (e.target === $('#pv')) $('#pv').close(); });
+$('#pv .pv-x').addEventListener('click', () => $('#pv').close());
+function openExamPaper(s, subj, g, m) { // from the Exams tab or the Gradebook: a sat exam (tablet or paper), or a sample / typed-in mark
+  const term = termOf(m.date), r = rowByKey(s.id) || {};
+  const toGb = () => { show('grades'); $('#g-module').value = 'all'; gbTerm = term; gbOpen.add(s.id); renderGrades(); setTimeout(() => document.getElementById('gb-d-' + s.id)?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 60); };
+  const inGb = $('#view-grades').hidden;
+  if (!m.qids) { const sample = r.is_sample && /^(cat1|cat2|exam)-s\d\d-/.test(m.id || ''); openPaper({ s, subj, grade: g, term, m: { kind: 'exam', ...m }, items: sample ? samplePaper(s.id, subj, g, term, { kind: 'exam', ...m }) || [] : [], real: false, editable: false, gbLink: inGb ? toGb : null }); return; }
+  openPaper({ s, subj, grade: m.grade || g, term, m, items: realPaper(m), real: true, editable: m.status === 'pending',
+    onApprove: (ov) => { approveExam(s, m, ov); toast(t('exApproved') + ': ' + s.name); renderExams(); renderGrades(); renderClass(); },
+    gbLink: m.status === 'pending' || !inGb ? null : toGb });
+}
+
+
 // ---- end-of-term exams ----
-Object.assign(T.en, { tExams: 'Exams', exTitle: 'End-of-term exams', exSub: 'One exam for each grade and subject, made from the lessons taught this term. Girls sit it on the tablet, or on a printed paper that you mark in. The mark goes to her report card as the end-of-term exam.', exQs: 'questions', exMarks: '100 marks', exFrom: 'From', exTaught: 'lessons taught this term', exAllLessons: 'all Grade {g} lessons (none taught yet this term)', exDone: 'done', exAvg: 'Average', exSit: 'Sit on tablet', exPrint: 'Print paper (PDF)', exEnter: 'Enter paper marks', exNotYet: 'not yet', exPick: 'Who is sitting the exam?', exAgain: 'sit again replaces this result', exReady: 'Pass the tablet to {n}.', exStart: 'Start the exam', exHow: 'Read each question and tap your answer. You can go back. Nobody sees right or wrong until your teacher checks it.', exThanks: 'Well done, {n}! Your exam is saved.', exBackList: 'Next girl', exSubmit: 'Hand in', exPrev: '← Back', exQ: 'Question', exSaved: 'Exam saved', exPaperFor: 'Paper marks for', exGirl: 'Girl', exTick: 'Tick each question: right or wrong.', exSave: 'Save marks', exCancel: 'Cancel', exNeedAll: 'Mark every question first.', exName: 'End-of-term exam', exKey: 'Answer key', exNameLine: 'Name', exDateLine: 'Date', exInstr: 'Answer all questions. Circle the letter of the right answer. Each question shows its marks.', exPaperTablet: 'Tablet exam', exPaperPaper: 'Paper exam', exNoGirls: 'No girls in this grade.', exScoreNow: 'Score so far', exGrade: 'Grade', exAnswer: 'Answer', exTerm: 'Term', exReview: 'Review', exDetails: 'Details', exReviewBtn: 'Review in Exams', exWaiting: 'waiting for your approval', exToApprove: 'to approve', exApproveAll: 'Approve all', exApprove: 'Approve and send to Gradebook', exApproved: 'Approved, now in the Gradebook', exReviewHow: 'Marked by the tablet. Check her answers, change a mark if needed, then approve. Only approved exams go to the Gradebook and report card.', exNotInGb: 'Waiting for approval: not in the Gradebook or report card yet.', exLocked: 'already sat (a teacher can clear it for a retake)', exView: 'Open in Gradebook', exClear: 'Clear result', exClearSure: 'Tap again to clear', exCleared: 'Result cleared: {n} can sit this exam again', exRevision: '+ revision from other Grade {g} lessons' });
-Object.assign(T.sw, { tExams: 'Mitihani', exTitle: 'Mitihani ya mwisho wa muhula', exSub: 'Mtihani mmoja kwa kila darasa na somo, kutoka kwa masomo yaliyofundishwa muhula huu. Wasichana hufanya kwenye kishikwambi, au kwenye karatasi utakayosahihisha. Alama huenda kwenye ripoti yake kama mtihani wa mwisho wa muhula.', exQs: 'maswali', exMarks: 'alama 100', exFrom: 'Kutoka', exTaught: 'masomo yaliyofundishwa muhula huu', exAllLessons: 'masomo yote ya Darasa la {g} (hakuna lililofundishwa bado)', exDone: 'wamemaliza', exAvg: 'Wastani', exSit: 'Fanya kwenye kishikwambi', exPrint: 'Chapisha karatasi (PDF)', exEnter: 'Weka alama za karatasi', exNotYet: 'bado', exPick: 'Nani anafanya mtihani?', exAgain: 'kufanya tena kunabadilisha matokeo haya', exReady: 'Mpe {n} kishikwambi.', exStart: 'Anza mtihani', exHow: 'Soma kila swali na uguse jibu lako. Unaweza kurudi nyuma. Hakuna anayeona sahihi au kosa hadi mwalimu aangalie.', exThanks: 'Hongera, {n}! Mtihani wako umehifadhiwa.', exBackList: 'Msichana anayefuata', exSubmit: 'Wasilisha', exPrev: '← Nyuma', exQ: 'Swali', exSaved: 'Mtihani umehifadhiwa', exPaperFor: 'Alama za karatasi za', exGirl: 'Msichana', exTick: 'Weka alama kila swali: sahihi au kosa.', exSave: 'Hifadhi alama', exCancel: 'Ghairi', exNeedAll: 'Sahihisha kila swali kwanza.', exName: 'Mtihani wa mwisho wa muhula', exKey: 'Majibu', exNameLine: 'Jina', exDateLine: 'Tarehe', exInstr: 'Jibu maswali yote. Zungushia herufi ya jibu sahihi. Kila swali linaonyesha alama zake.', exPaperTablet: 'Mtihani wa kishikwambi', exPaperPaper: 'Mtihani wa karatasi', exNoGirls: 'Hakuna wasichana katika darasa hili.', exScoreNow: 'Alama hadi sasa', exGrade: 'Darasa', exAnswer: 'Jibu', exTerm: 'Muhula', exReview: 'Kagua', exDetails: 'Maelezo', exReviewBtn: 'Kagua kwenye Mitihani', exWaiting: 'yanasubiri idhini yako', exToApprove: 'idhinisha', exApproveAll: 'Idhinisha yote', exApprove: 'Idhinisha na tuma kwenye Daftari la alama', exApproved: 'Imeidhinishwa, sasa iko kwenye Daftari la alama', exReviewHow: 'Imesahihishwa na kishikwambi. Angalia majibu yake, badilisha alama ikihitajika, kisha idhinisha. Mitihani iliyoidhinishwa tu ndiyo huenda kwenye Daftari la alama na ripoti.', exNotInGb: 'Inasubiri idhini: bado haiko kwenye Daftari la alama wala ripoti.', exLocked: 'ameshafanya (mwalimu anaweza kufuta ili arudie)', exView: 'Fungua kwenye Daftari la alama', exClear: 'Futa matokeo', exClearSure: 'Gusa tena kufuta', exCleared: 'Matokeo yamefutwa: {n} anaweza kufanya mtihani huu tena', exRevision: '+ marudio kutoka masomo mengine ya Darasa la {g}' });
+Object.assign(T.en, { tExams: 'Exams', exTitle: 'End-of-term exams', exSub: 'One exam for each grade and subject, made from the lessons taught this term. Girls sit it on the tablet, or on a printed paper that you mark in. The mark goes to her report card as the end-of-term exam.', exQs: 'questions', exMarks: '100 marks', exFrom: 'From', exTaught: 'lessons taught this term', exAllLessons: 'all Grade {g} lessons (none taught yet this term)', exDone: 'done', exAvg: 'Average', exSit: 'Sit on tablet', exPrint: 'Print paper (PDF)', exEnter: 'Enter paper marks', exNotYet: 'not yet', exPick: 'Who is sitting the exam?', exAgain: 'sit again replaces this result', exReady: 'Pass the tablet to {n}.', exStart: 'Start the exam', exHow: 'Read each question and tap your answer. You can go back. Nobody sees right or wrong until your teacher checks it.', exThanks: 'Well done, {n}! Your exam is saved.', exBackList: 'Next girl', exSubmit: 'Hand in', exPrev: '← Back', exQ: 'Question', exSaved: 'Exam saved', exPaperFor: 'Paper marks for', exGirl: 'Girl', exTick: 'Tick each question: right or wrong.', exSave: 'Save marks', exCancel: 'Cancel', exNeedAll: 'Mark every question first.', exName: 'End-of-term exam', exKey: 'Answer key', exNameLine: 'Name', exDateLine: 'Date', exInstr: 'Answer all questions. Circle the letter of the right answer. Each question shows its marks.', exPaperTablet: 'Tablet exam', exPaperPaper: 'Paper exam', exNoGirls: 'No girls in this grade.', exScoreNow: 'Score so far', exGrade: 'Grade', exAnswer: 'Answer', exTerm: 'Term', exReview: 'Review', exDetails: 'Details', exReviewBtn: 'Review the exam', exWaiting: 'waiting for your approval', exToApprove: 'to approve', exApproveAll: 'Approve all', exApprove: 'Approve and send to Gradebook', exApproved: 'Approved, now in the Gradebook', exReviewHow: 'Marked by the tablet. Check her answers, change a mark if needed, then approve. Only approved exams go to the Gradebook and report card.', exNotInGb: 'Waiting for approval: not in the Gradebook or report card yet.', exLocked: 'already sat (a teacher can clear it for a retake)', exView: 'Open in Gradebook', exClear: 'Clear result', exClearSure: 'Tap again to clear', exCleared: 'Result cleared: {n} can sit this exam again', exRevision: '+ revision from other Grade {g} lessons' });
+Object.assign(T.sw, { tExams: 'Mitihani', exTitle: 'Mitihani ya mwisho wa muhula', exSub: 'Mtihani mmoja kwa kila darasa na somo, kutoka kwa masomo yaliyofundishwa muhula huu. Wasichana hufanya kwenye kishikwambi, au kwenye karatasi utakayosahihisha. Alama huenda kwenye ripoti yake kama mtihani wa mwisho wa muhula.', exQs: 'maswali', exMarks: 'alama 100', exFrom: 'Kutoka', exTaught: 'masomo yaliyofundishwa muhula huu', exAllLessons: 'masomo yote ya Darasa la {g} (hakuna lililofundishwa bado)', exDone: 'wamemaliza', exAvg: 'Wastani', exSit: 'Fanya kwenye kishikwambi', exPrint: 'Chapisha karatasi (PDF)', exEnter: 'Weka alama za karatasi', exNotYet: 'bado', exPick: 'Nani anafanya mtihani?', exAgain: 'kufanya tena kunabadilisha matokeo haya', exReady: 'Mpe {n} kishikwambi.', exStart: 'Anza mtihani', exHow: 'Soma kila swali na uguse jibu lako. Unaweza kurudi nyuma. Hakuna anayeona sahihi au kosa hadi mwalimu aangalie.', exThanks: 'Hongera, {n}! Mtihani wako umehifadhiwa.', exBackList: 'Msichana anayefuata', exSubmit: 'Wasilisha', exPrev: '← Nyuma', exQ: 'Swali', exSaved: 'Mtihani umehifadhiwa', exPaperFor: 'Alama za karatasi za', exGirl: 'Msichana', exTick: 'Weka alama kila swali: sahihi au kosa.', exSave: 'Hifadhi alama', exCancel: 'Ghairi', exNeedAll: 'Sahihisha kila swali kwanza.', exName: 'Mtihani wa mwisho wa muhula', exKey: 'Majibu', exNameLine: 'Jina', exDateLine: 'Tarehe', exInstr: 'Jibu maswali yote. Zungushia herufi ya jibu sahihi. Kila swali linaonyesha alama zake.', exPaperTablet: 'Mtihani wa kishikwambi', exPaperPaper: 'Mtihani wa karatasi', exNoGirls: 'Hakuna wasichana katika darasa hili.', exScoreNow: 'Alama hadi sasa', exGrade: 'Darasa', exAnswer: 'Jibu', exTerm: 'Muhula', exReview: 'Kagua', exDetails: 'Maelezo', exReviewBtn: 'Kagua mtihani', exWaiting: 'yanasubiri idhini yako', exToApprove: 'idhinisha', exApproveAll: 'Idhinisha yote', exApprove: 'Idhinisha na tuma kwenye Daftari la alama', exApproved: 'Imeidhinishwa, sasa iko kwenye Daftari la alama', exReviewHow: 'Imesahihishwa na kishikwambi. Angalia majibu yake, badilisha alama ikihitajika, kisha idhinisha. Mitihani iliyoidhinishwa tu ndiyo huenda kwenye Daftari la alama na ripoti.', exNotInGb: 'Inasubiri idhini: bado haiko kwenye Daftari la alama wala ripoti.', exLocked: 'ameshafanya (mwalimu anaweza kufuta ili arudie)', exView: 'Fungua kwenye Daftari la alama', exClear: 'Futa matokeo', exClearSure: 'Gusa tena kufuta', exCleared: 'Matokeo yamefutwa: {n} anaweza kufanya mtihani huu tena', exRevision: '+ marudio kutoka masomo mengine ya Darasa la {g}' });
 const exTermNow = () => termOf(todayIso());
 function examLessons(subj, g, term) {
   const taught = [...new Set(sessions.filter((s) => s.status === 'done' && s.date && termOf(s.date) === term).map((s) => s.lesson))].filter((id) => { const l = LESSONS.find((x) => x.id === id); return l && mod(l.mod).subject === subj && l.grade === g && quizQs(id).length; });
@@ -2837,8 +2982,8 @@ function renderExams() {
         li.append(el('span', 'ex-st', m ? p100 + '%' + (m.status === 'pending' ? ' · ' + t('exToApprove') : p100 >= 50 ? ' · ' + t('ppPass') : ' · ' + t('ppFail')) : t('exNotYet')));
         const acts2 = el('span', 'ex-ra'), info = el('div', 'ex-info'); info.hidden = true;
         if (m) {
-          const rv = btn(m.status === 'pending' ? t('exReview') : t('exDetails'), m.status === 'pending' ? 'sm' : 'ghost sm', () => { const open = info.hidden; list.querySelectorAll('.ex-info').forEach((o) => { o.hidden = true; }); info.hidden = !open; rv.setAttribute('aria-expanded', String(open)); if (open) examInfo(info, s, subj, g, m); });
-          rv.id = 'exg-' + subj + '-' + g + '-' + s.id; rv.setAttribute('aria-expanded', 'false');
+          const rv = btn(m.status === 'pending' ? t('exReview') : t('exDetails'), m.status === 'pending' ? 'sm' : 'ghost sm', () => openExamPaper(s, subj, g, m)); rv.setAttribute('aria-haspopup', 'dialog');
+          rv.id = 'exg-' + subj + '-' + g + '-' + s.id;
           let armed = false; const clr = btn(t('exClear'), 'ghost sm danger', () => {
             if (!armed) { armed = true; clr.textContent = t('exClearSure'); return; }
             const r = rowByKey(s.id); savePupil(r.id, { marks: (r.marks || []).filter((x) => !(x.kind === 'exam' && x.subject === subj && x.date && termOf(x.date) === term)) });
@@ -2994,34 +3139,24 @@ function realPaper(m) { // an exam sat in the Exams tab: her own answers (and an
     return { q, max: (m.maxes || [])[i] || 0, got: right ? (m.maxes || [])[i] || 0 : 0, given: m.mode === 'paper' ? (right ? q.a : -1) : a, paper: m.mode === 'paper' }; }).filter(Boolean);
 }
 function paperEl(pid, subj, grade, term, m, sample) {
-  const pctv = Math.round(100 * m.score / m.out_of), pass = pctv >= 50, det = el('details', 'pp-paper ' + (pass ? 'pass' : 'fail'));
-  const sm = el('summary'); sm.append(el('span', 'pp-pn', m.name), el('b', null, m.score + ' / ' + m.out_of), el('span', 'pp-pct', pctv + '%'), lvBadge(pctv), el('span', 'pp-pf ' + (pass ? 'ok' : 'no'), pass ? '✓ ' + t('ppPass') : '✗ ' + t('ppFail')));
+  const pctv = Math.round(100 * m.score / m.out_of), pass = pctv >= 50, det = el('div', 'pp-paper ' + (pass ? 'pass' : 'fail'));
+  const real = m.qids && m.answers ? realPaper(m) : null, items = real || (sample ? samplePaper(pid, subj, grade, term, m) : null);
+  const sm = el(items ? 'button' : 'div', items ? 'pp-open' : 'pp-open nope'); if (items) { sm.type = 'button'; sm.setAttribute('aria-haspopup', 'dialog'); }
+  sm.append(el('span', 'pp-pn', m.name), el('b', null, m.score + ' / ' + m.out_of), el('span', 'pp-pct', pctv + '%'), lvBadge(pctv), el('span', 'pp-pf ' + (pass ? 'ok' : 'no'), pass ? '✓ ' + t('ppPass') : '✗ ' + t('ppFail')));
   if (m.date) sm.append(el('span', 'small muted', fmtDate(m.date, { day: 'numeric', month: 'short', year: 'numeric' })));
   det.append(sm);
-  const real = m.qids && m.answers ? realPaper(m) : null;
-  const items = real || (sample ? samplePaper(pid, subj, grade, term, m) : null);
   if (!items) { det.append(el('p', 'small muted', t('ppNoPaper'))); return det; }
-  det.append(el('p', 'small pp-tag' + (real ? ' real' : ''), (real ? (m.mode === 'paper' ? t('exPaperPaper') : t('exPaperTablet')) : t('ppSamplePaper')) + ' · ' + items.length + ' ' + (lang === 'sw' ? 'maswali' : 'questions') + ' · ' + items.filter((x) => x.got === x.max).length + ' ' + t('gbRight')));
-  const ol = el('ol', 'gb-ql pp-ql');
-  items.forEach((x, i) => {
-    const full = x.got === x.max, part = x.got > 0 && !full, li = el('li', full ? 'r' : part ? 'p' : 'w');
-    li.append(el('span', 'gb-mark', full ? '✓' : part ? '½' : '✗'));
-    const body = el('div', 'pp-qb'); body.append(el('div', 'gb-qt', (i + 1) + '. ' + x.q.text));
-    const a = el('div', 'small');
-    if (full) a.append(el('span', 'ok', x.q.opts[x.q.a]));
-    else if (x.paper) { a.append(el('span', 'no', t('markWrong')), document.createTextNode('  ·  '), el('span', 'ok', t('gbCorrect') + ': ' + x.q.opts[x.q.a])); }
-    else { a.append(el('span', 'no', t('gbHer') + ': ' + (x.q.opts[x.given] ?? '–')), document.createTextNode('  ·  '), el('span', 'ok', t('gbCorrect') + ': ' + x.q.opts[x.q.a])); if (part) a.append(document.createTextNode('  ·  ' + t('ppPart'))); }
-    body.append(a); li.append(body, el('span', 'pp-qm', x.got + ' / ' + x.max)); ol.append(li);
-  });
-  const tot = el('div', 'pp-tot'); tot.append(el('span', null, (lang === 'sw' ? 'Jumla' : 'Total')), el('b', null, items.reduce((s2, x) => s2 + x.got, 0) + ' / ' + m.out_of));
-  det.append(ol, tot); return det;
+  sm.append(el('span', 'pp-go', (real ? (m.mode === 'paper' ? t('exPaperPaper') : t('exPaperTablet')) : t('ppSamplePaper')) + ' · ' + items.length + ' ' + (lang === 'sw' ? 'maswali' : 'questions') + ' →'));
+  const s = STUDENTS.find((x) => x.id === pid) || { id: pid, name: '' };
+  sm.addEventListener('click', () => (real ? openExamPaper(s, subj, grade, m) : openPaper({ s, subj, grade, term, m, items, real: false, editable: false })));
+  return det;
 }
 function papersFor(p, r, g, term, v) {
   const box = el('div', 'pp-papers'), grade = gradeAt(r, term) || levelIn(p.id);
   const rep = (r.reports || {})[term], savedSample = v.saved && rep && rep.source === 'sample';
   const ms = [...(v.catMs || []).map((m) => ({ kind: 'cat', ...m })), ...(v.examMs || []).map((m) => ({ kind: 'exam', ...m }))];
   const wait = (r.marks || []).find((m) => m.kind === 'exam' && m.subject === g && m.status === 'pending' && m.date && termOf(m.date) === term);
-  if (wait) { const w = el('div', 'ex-wait'); w.append(el('span', null, '⏳ ' + t('exName') + ': ' + t('exNotInGb'))); const go = btn(t('exReviewBtn'), 'sm', () => show('exams')); go.id = 'gb-review-' + p.id + '-' + g; w.append(go); box.append(w); }
+  if (wait) { const w = el('div', 'ex-wait'); w.append(el('span', null, '⏳ ' + t('exName') + ': ' + t('exNotInGb'))); const go = btn(t('exReviewBtn'), 'sm', () => openExamPaper(p, g, gradeAt(r, term) || levelIn(p.id), wait)); go.id = 'gb-review-' + p.id + '-' + g; w.append(go); box.append(w); }
   if (!ms.length) { box.append(el('p', 'small muted', t('ppNoMarks'))); return box; }
   ms.forEach((m) => { const sample = savedSample || (!v.saved && r.is_sample && /^(cat1|cat2|exam)-s\d\d-/.test(m.id || '')); box.append(paperEl(p.id, g, grade, term, m, sample)); });
   box.append(el('p', 'small muted', t('ppPassKey')));

@@ -987,6 +987,24 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
 .bk-foot .chip { background: rgb(255 255 255 / .92); color: var(--bk2); border-color: transparent; font-size: .72rem; }
 @media (max-width: 600px) { .grade-tiles:has(.book) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .bk-num { font-size: 3rem; } .bk-subj { font-size: 1rem; } .bk-subj.long { font-size: .85rem; } .bk-subj.xlong { font-size: .74rem; } .bk-top { max-width: 70%; } }
 .bk-foot .chip.line { background: rgb(255 255 255 / .2); color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .6); }
+
+/* ===== Plan a session: next on the syllabus (compact) ===== */
+.sy-mini { border-radius: 14px; background: #f3f8fd; padding: 8px 10px; }
+.sy-mini summary { cursor: pointer; font-weight: 800; color: #1b2a5a; display: flex; align-items: center; gap: 8px; }
+.sy-mini[open] summary { margin-bottom: 4px; }
+.sy-mini > p { margin: 0 0 6px; }
+.sy-ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 340px; overflow: auto; }
+.sy-card { --c: #136f63; display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 10px; padding: 6px 8px; box-shadow: inset 4px 0 0 var(--c); }
+.sy-card.planned { background: #eef4ff; } .sy-card.cat { box-shadow: inset 4px 0 0 #e08a14; } .sy-card.exam { box-shadow: inset 4px 0 0 #f2b51d; } .sy-card.done { box-shadow: inset 4px 0 0 #1f7a4d; }
+.sy-txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.sy-who { font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--c); }
+.sy-t { font-weight: 700; color: #1b2a5a; font-size: .9rem; line-height: 1.2; }
+.sy-st { color: #5a6e6b; }
+.sy-card .btn { width: auto; flex: none; }
+#plan-form.sy-flash { animation: syFlash 1.4s ease-out; }
+@keyframes syFlash { 0% { box-shadow: 0 0 0 0 rgb(246 196 83 / .9); } 40% { box-shadow: 0 0 0 10px rgb(246 196 83 / .45); } 100% { box-shadow: 0 0 0 0 rgb(246 196 83 / 0); } }
+#ps-picked { margin: 0; color: #8a5300; font-weight: 700; }
+#ps-picked:empty { display: none; }
 </style>
 
 <!-- LOGIN / REGISTER (Supabase) -->
@@ -1125,10 +1143,12 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
         </div>
         <form class="card" id="plan-form" novalidate>
           <h3 data-t="planH">Plan a session</h3>
+          <details class="sy-mini" id="sy-mini"><summary><span data-t="syH">Next on the syllabus</span> <span class="chip" id="sy-count"></span></summary><p class="small muted" data-t="sySubMini"></p><ul id="sy-list" class="sy-ul"></ul></details>
           <div class="field"><label for="ps-date" data-t="fDate">Date</label><input id="ps-date" type="date"></div>
           <div class="field"><label for="ps-time" data-t="fTime">Start time</label><input id="ps-time" type="time" value="15:30"></div>
           <div class="field"><label for="ps-lesson" data-t="qLesson">Lesson</label><select id="ps-lesson"></select></div>
           <p class="small muted" id="ps-who"></p>
+          <p class="small" id="ps-picked" aria-live="polite"></p>
           <div class="field"><label for="ps-place" data-t="fPlace">Where</label><input id="ps-place" value="Club room"></div>
           <p class="err" id="ps-err" role="alert"></p>
           <button class="btn" type="submit" style="align-self:flex-start" data-t="planBtn">Add to plan</button>
@@ -2012,7 +2032,9 @@ $('#ps-lesson').addEventListener('change', planWho);
 function renderPlanForm() {
   const sel = $('#ps-lesson'), v = sel.value;
   sel.replaceChildren(...groupOptions());
-  if (v) sel.value = v;
+  const nexts = new Set([1, 2, 3, 4, 5, 6].flatMap((g) => GRADED.map((s) => { const nx = girlsIn(g).length ? syllabusNext(s, g) : null; return nx && nx.kind === 'lesson' ? nx.l.id : null; })).filter(Boolean)); const ln = lifeNext(); if (ln) nexts.add(ln.l.id);
+  [...sel.options].forEach((o) => { if (taughtOn(o.value)) o.textContent = '✓ ' + o.textContent; else if (nexts.has(o.value)) o.textContent = '→ ' + o.textContent + ' (' + t('syNext') + ')'; });
+  if (v) sel.value = v; else { const first = [...sel.options].find((o) => nexts.has(o.value)); if (first) sel.value = first.value; }
   planWho();
   if (!$('#ps-date').value) $('#ps-date').value = addDays(1);
 }
@@ -2022,7 +2044,7 @@ $('#plan-form').addEventListener('submit', (e) => {
   if (!date) { $('#ps-err').textContent = t('needDate'); return; }
   $('#ps-err').textContent = '';
   sessions.push({ id: 's' + Date.now(), date, time, lesson: l, place, status: 'planned', attendance: [] });
-  save(); renderSessions(); renderClass(); toast(t('planned'));
+  $('#ps-picked').textContent = ''; save(); renderSessions(); renderClass(); toast(t('planned'));
 });
 
 function sessionCard(x, withNames) {
@@ -2064,7 +2086,61 @@ function sessionCard(x, withNames) {
   return c;
 }
 
+
+// ---- syllabus-guided sessions ----
+Object.assign(T.en, { syH: 'Next on the syllabus', sySub: 'What each grade learns next, from its journey in Modules. Plan it in one tap; when a lesson is taught, the journey moves on.', syPlan: 'Plan this lesson', syPlanned: 'Planned for {d}', syStart: 'Start class', syCat: '{c} is due', syCatHow: '{n} of {m} girls have marks', syAddMarks: 'Add marks', syExam: 'End-of-term exam', syExamGo: 'Go to the exam', syDoneT: 'Term complete', syDoneHow: 'Every lesson, CAT and the exam are done.', syLesson: 'Lesson {n} of {m}', syJourney: 'Journey', syPicked: 'Lesson chosen: pick a date and add it to the plan.', syNext: 'next', syTaughtMark: '✓', syLife: 'Life Skills', syAfter: 'Then: {l}', syPlanShort: 'Plan', syToPlan: 'to plan', sySubMini: 'The next step for each grade and subject, from its journey in Modules. Tap Plan to put that lesson in the form below.' });
+Object.assign(T.sw, { syH: 'Kinachofuata kwenye mtaala', sySub: 'Kile kila darasa linajifunza baadaye, kutoka kwa safari yake kwenye Moduli. Panga kwa mguso mmoja; somo likifundishwa, safari inasonga.', syPlan: 'Panga somo hili', syPlanned: 'Limepangwa {d}', syStart: 'Anza darasa', syCat: '{c} inakaribia', syCatHow: 'wasichana {n} kati ya {m} wana alama', syAddMarks: 'Weka alama', syExam: 'Mtihani wa mwisho wa muhula', syExamGo: 'Nenda kwenye mtihani', syDoneT: 'Muhula umekamilika', syDoneHow: 'Kila somo, CAT na mtihani vimekamilika.', syLesson: 'Somo {n} kati ya {m}', syJourney: 'Safari', syPicked: 'Somo limechaguliwa: chagua tarehe na uliongeze kwenye mpango.', syNext: 'linalofuata', syTaughtMark: '✓', syLife: 'Stadi za maisha', syAfter: 'Kisha: {l}', syPlanShort: 'Panga', syToPlan: 'za kupanga', sySubMini: 'Hatua inayofuata kwa kila darasa na somo, kutoka kwa safari yake kwenye Moduli. Gusa Panga kuweka somo hilo kwenye fomu hapa chini.' });
+function syllabusNext(subj, g) { // the next step on a grade's journey (same order as Modules: lessons, CAT 1 halfway, CAT 2, exam)
+  const term = termOf(todayIso()), m = MODULES.find((x) => x.subject === subj && x.area === 'learn'); if (!m) return null;
+  const ls = LESSONS.filter((l) => l.mod === m.id && l.grade === g), girls = girlsIn(g), half = Math.ceil(ls.length / 2), steps = [];
+  ls.forEach((l, i) => { steps.push({ kind: 'lesson', l, n: i + 1, of: ls.length }); if (i === half - 1) steps.push({ kind: 'cat', name: 'CAT 1' }); });
+  steps.push({ kind: 'cat', name: 'CAT 2' }, { kind: 'exam' });
+  for (const st of steps) {
+    if (st.kind === 'lesson') { if (taughtOn(st.l.id)) continue; st.planned = sessions.filter((x) => x.lesson === st.l.id && !isDone(x) && x.date >= todayIso()).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0] || null; st.then = ls[st.n] || null; return { ...st, m, girls }; }
+    if (st.kind === 'cat') { const mk = marksOf(girls, subj, term, (x) => x.kind === 'cat' && x.name === st.name); const got = mk.filter(([, x]) => x).length; if (girls.length && got === girls.length) continue; return { ...st, got, missing: mk.filter(([, x]) => !x).map(([s]) => s), m, girls }; }
+    if (st.kind === 'exam') { const mk = girls.map((s) => [s, examOf(s, subj, term)]); const ok2 = mk.filter(([, x]) => x && x.status !== 'pending').length; if (girls.length && ok2 === girls.length) continue; return { ...st, got: mk.filter(([, x]) => x).length, waiting: mk.filter(([, x]) => x && x.status === 'pending').length, m, girls }; }
+  }
+  return { kind: 'done', m, girls };
+}
+function lifeNext() { // the next Life Skills session: first topic lesson not yet taught
+  const ls = LESSONS.filter((l) => mod(l.mod).subject === 'life');
+  const l = ls.find((x) => !taughtOn(x.id)); if (!l) return null;
+  const planned = sessions.filter((x) => x.lesson === l.id && !isDone(x) && x.date >= todayIso()).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0] || null;
+  return { kind: 'lesson', l, planned, m: mod(l.mod), girls: eligibleFor(l.id) };
+}
+function pickInPlanner(id) {
+  const sel = $('#ps-lesson'); sel.value = id; planWho(); $('#ps-err').textContent = '';
+  const f = $('#plan-form'); f.classList.remove('sy-flash'); void f.offsetWidth; f.classList.add('sy-flash');
+  $('#ps-picked').textContent = t('syPicked'); $('#ps-date').focus();
+}
+function syCard(subjId, g, nx) {
+  const col = subjId === 'life' ? '#b5476b' : SUBJ_COL[subjId], li = el('li', 'sy-card ' + nx.kind); li.style.setProperty('--c', col); li.id = 'sy-' + subjId + (g ? '-' + g : '');
+  const who = el('span', 'sy-who', (g ? t('grade') + ' ' + g + ' · ' : '') + (subjId === 'life' ? t('syLife') : subjName(subjId)));
+  const what = el('span', 'sy-t'), st = el('span', 'sy-st small');
+  let act = null; const key = li.id.slice(3);
+  if (nx.kind === 'lesson') {
+    what.textContent = nx.l.title; st.textContent = (g ? t('syLesson').replace('{n}', nx.n).replace('{m}', nx.of) + ' · ' : '') + nx.girls.length + ' ' + t(nx.girls.length === 1 ? 'girlOne' : 'girlsN');
+    if (nx.planned) { li.classList.add('planned'); st.textContent = '📅 ' + t('syPlanned').replace('{d}', fmtDate(nx.planned.date, { weekday: 'short', day: 'numeric', month: 'short' })); act = btn(t('syStart'), 'ghost sm', () => openRegister(nx.planned.id)); act.id = 'sy-start-' + key; }
+    else { act = btn('＋ ' + t('syPlanShort'), 'sm', () => pickInPlanner(nx.l.id)); act.id = 'sy-plan-' + key; act.setAttribute('aria-label', t('syPlan') + ': ' + nx.l.title); }
+  } else if (nx.kind === 'cat') {
+    what.textContent = '🚩 ' + t('syCat').replace('{c}', nx.name); st.textContent = t('syCatHow').replace('{n}', nx.got).replace('{m}', nx.girls.length);
+    if (nx.missing.length) { act = btn(t('syAddMarks'), 'ghost sm', () => openPupil(nx.missing[0].id)); act.id = 'sy-marks-' + key; }
+  } else if (nx.kind === 'exam') {
+    what.textContent = '🏆 ' + t('syExam'); st.textContent = nx.got + ' / ' + nx.girls.length + ' ' + t('exDone');
+    act = btn(t('syExamGo'), 'ghost sm', () => { show('exams'); setTimeout(() => document.getElementById('ex-' + subjId + '-' + g)?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60); }); act.id = 'sy-exam-' + key;
+  } else { what.textContent = '🎉 ' + t('syDoneT'); st.textContent = t('syDoneHow'); }
+  const txt = el('span', 'sy-txt'); txt.append(who, what, st); li.append(txt);
+  if (act) li.append(act);
+  return li;
+}
+function renderSyllabus() {
+  const box = $('#sy-list'); if (!box) return; box.replaceChildren(); let n = 0;
+  [1, 2, 3, 4, 5, 6].forEach((g) => { if (!girlsIn(g).length) return; GRADED.forEach((s2) => { const nx = syllabusNext(s2, g); if (nx) { box.append(syCard(s2, g, nx)); if (nx.kind === 'lesson' && !nx.planned) n++; } }); });
+  const ln = lifeNext(); if (ln) { box.append(syCard('life', null, ln)); if (!ln.planned) n++; }
+  $('#sy-count').textContent = n + ' ' + t('syToPlan');
+}
 function renderSessions() {
+  renderSyllabus();
   const up = $('#ses-upcoming'); up.replaceChildren();
   const ups = upcoming();
   if (!ups.length) up.append(el('p', 'empty muted', t('noUpcoming')));

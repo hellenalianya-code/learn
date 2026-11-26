@@ -2702,6 +2702,39 @@ function renderLesson(id) {
   box.append(chips, el('h1', null, l.title), media, acts, el('p', 'small muted', t('videoNote')), ...(actFor(id) ? [actCard(id)] : []), body, qs);
 }
 
+
+// ---- recorded narration (ElevenLabs) ----
+// voice/manifest.json: { files: { "<lang>-<hash>": "<lang>-<hash>.mp3" } }, written by scripts/voice-build.mjs.
+let VOICE = null, vAudio = null, vGen = 0; const vBlobs = {};
+function vKey(langName, text) {
+  const s = (langName === 'Swahili' ? 'sw' : 'en') + '|' + String(text).replace(/\s+/g, ' ').trim();
+  let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return s.slice(0, 2) + '-' + h.toString(16).padStart(8, '0');
+}
+function voiceFile(langName, text) { const k = vKey(langName, text); return VOICE && VOICE.files && VOICE.files[k] ? 'voice/' + VOICE.files[k] : null; }
+fetch('voice/manifest.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).then((m) => { VOICE = m; }).catch(() => {});
+// Every text the portal narrates, for recording (used by scripts/voice-build.mjs; not called by the page itself).
+window.lrVoiceTexts = function () {
+  const out = new Map(), add = (langName, text) => { if (text && String(text).trim()) out.set(vKey(langName, text), { lang: langName === 'Swahili' ? 'sw' : 'en', text: String(text).replace(/\s+/g, ' ').trim(), key: vKey(langName, text) }); };
+  const was = lang;
+  try {
+    for (const L of ['en', 'sw']) {
+      lang = L; const uiName = L === 'sw' ? 'Swahili' : 'English';
+      for (const l of LESSONS) {
+        add(l.lang, l.title); l.body.forEach((p) => add(l.lang, p));
+        if (COVERS[l.id]) add(l.lang, COVERS[l.id].goal());
+        SEED_Q.filter((q) => q.lesson === l.id).forEach((q) => { add(l.lang, q.text); q.opts.forEach((o, i) => add(l.lang, String.fromCharCode(65 + i) + '. ' + o)); });
+        const a = actFor(l.id); if (a) { add(l.lang, tx(a.title)); add(l.lang, t('actStartSlide')); }
+      }
+      for (const a of ACTIVITIES) {
+        add(uiName, tx(a.done)); add(uiName, t('actRight')); add(uiName, t('actWrong'));
+        a.steps.forEach((s) => { add(uiName, tx(s.q)); add(uiName, tx(s.cap)); add(uiName, tx(s.hint)); });
+      }
+    }
+  } finally { lang = was; }
+  return [...out.values()];
+};
+
 // ---------- Narration (text to speech) ----------
 const synth = window.speechSynthesis;
 let speakingBtn = null;
@@ -2714,18 +2747,39 @@ function voiceFor(langName) {
   return v || null;
 }
 function speak(texts, langName, onPara, onEnd) {
-  if (!synth) { toast(t('noVoice')); onEnd && onEnd(); return; }
-  synth.cancel();
-  const v = voiceFor(langName);
-  texts.forEach((txt, i) => {
-    const u = new SpeechSynthesisUtterance(txt);
+  // One text at a time: its recording when there is one, else the device voice.
+  haltVoice(); const gen = vGen; let v, warned = false;
+  const next = (i) => {
+    if (gen !== vGen) return;
+    if (i >= texts.length) { onEnd && onEnd(); return; }
+    const txt = texts[i], file = voiceFile(langName, txt);
+    if (file) {
+      // fetched whole (not streamed) so the offline helper can keep a copy on the device
+      (vBlobs[file] ||= fetch(file).then((r) => { if (!r.ok) throw 0; return r.blob(); }).then((b) => URL.createObjectURL(b)).catch((e) => { delete vBlobs[file]; throw e; }))
+        .then((url) => { if (gen !== vGen) return; const a = new Audio(url); vAudio = a;
+      a.onplay = () => onPara && onPara(i);
+      a.onended = () => next(i + 1);
+      a.onerror = () => { if (vAudio === a) vAudio = null; device(i); };
+      a.play().catch(() => { if (vAudio === a) { vAudio = null; device(i); } }); })
+        .catch(() => device(i));
+      return;
+    }
+    device(i);
+  };
+  const device = (i) => {
+    if (gen !== vGen) return;
+    if (!synth) { if (!warned) { warned = true; toast(t('noVoice')); } next(i + 1); return; }
+    if (v === undefined) v = voiceFor(langName);
+    const u = new SpeechSynthesisUtterance(texts[i]);
     if (v) u.voice = v; u.lang = v ? v.lang : (langName === 'Swahili' ? 'sw-KE' : 'en-GB'); u.rate = 0.9;
     u.onstart = () => onPara && onPara(i);
-    if (i === texts.length - 1) { u.onend = () => onEnd && onEnd(); u.onerror = () => onEnd && onEnd(); }
+    u.onend = () => next(i + 1); u.onerror = () => next(i + 1);
     synth.speak(u);
-  });
+  };
+  next(0);
 }
-function stopSpeech() { try { synth && synth.cancel(); } catch {} if (speakingBtn) { speakingBtn.textContent = '♪ ' + t('listen'); speakingBtn = null; } document.querySelectorAll('.speaking').forEach((p) => p.classList.remove('speaking')); }
+function haltVoice() { vGen++; if (vAudio) { try { vAudio.onended = vAudio.onerror = null; vAudio.pause(); } catch {} vAudio = null; } try { synth && synth.cancel(); } catch {} }
+function stopSpeech() { haltVoice(); if (speakingBtn) { speakingBtn.textContent = '♪ ' + t('listen'); speakingBtn = null; } document.querySelectorAll('.speaking').forEach((p) => p.classList.remove('speaking')); }
 function toggleListen(l, b) {
   if (speakingBtn === b) { stopSpeech(); return; }
   stopSpeech(); speakingBtn = b; b.textContent = '■ ' + t('stop');

@@ -61,5 +61,10 @@ self.addEventListener('fetch', (e) => {
   const isPage = req.mode === 'navigate' && u.origin === scope.origin && u.pathname.startsWith(scope.pathname);
   if (isPage || (u.origin === scope.origin && u.pathname === scope.pathname + 'index.html')) { e.respondWith(fromDeviceThenUpdate(e, PAGE, true)); return; }
   if (u.href.split('?')[0] === CONFIG) { e.respondWith(fromDeviceThenUpdate(e, CONFIG, false)); return; }
+  // Recorded narration: each MP3 is kept after its first play, so lessons narrate with no internet.
+  if (u.origin === scope.origin && u.pathname.startsWith(scope.pathname + 'voice/')) {
+    if (u.pathname.endsWith('.mp3')) { e.respondWith(keepCopy(req)); return; }
+    if (u.pathname.endsWith('manifest.json')) { e.respondWith(fromDeviceThenUpdate(e, new URL('voice/manifest.json', scope).href, false)); return; }
+  }
   if (/^(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.jsdelivr\.net)$/.test(u.hostname)) { e.respondWith(keepCopy(req)); }
 });

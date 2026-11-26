@@ -1,0 +1,67 @@
+name: Record narration (ElevenLabs)
+
+# Records the lessons' narration as MP3s in teacher-portal/voice/ with ElevenLabs, then redeploys the site.
+# Run it from Actions → "Record narration (ElevenLabs)" → Run workflow.
+# Needs the repository secret ELEVENLABS_API_KEY. The voice IDs can be typed in when running it,
+# or saved once as repository variables VOICE_EN / VOICE_SW (Settings → Secrets and variables → Actions → Variables).
+on:
+  workflow_dispatch:
+    inputs:
+      voice_en:
+        description: "ElevenLabs Voice ID for English (blank = repository variable VOICE_EN)"
+        required: false
+      voice_sw:
+        description: "Voice ID for Kiswahili (blank = VOICE_SW, else the English voice)"
+        required: false
+      max_chars:
+        description: "Most characters to send this run (protects your credits; run again to continue)"
+        required: false
+        default: "20000"
+      dry_run:
+        description: "Only count what would be recorded (sends nothing)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: voice
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Record
+        run: node scripts/voice-build.mjs
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          VOICE_EN: ${{ inputs.voice_en || vars.VOICE_EN }}
+          VOICE_SW: ${{ inputs.voice_sw || vars.VOICE_SW || inputs.voice_en || vars.VOICE_EN }}
+          MODEL: ${{ vars.ELEVENLABS_MODEL || 'eleven_v4' }}
+          MAX_CHARS: ${{ inputs.max_chars }}
+          DRY_RUN: ${{ inputs.dry_run }}
+      - name: Commit the recordings
+        id: commit
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "hellenalianya-code"
+          git config user.email "352138320+hellenalianya-code@users.noreply.github.com"
+          git add teacher-portal/voice
+          if git diff --cached --quiet; then echo "No new recordings"; exit 0; fi
+          git commit -m "Record lesson narration (ElevenLabs)"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Redeploy the site with the recordings
+        if: steps.commit.outputs.changed == 'true'
+        run: gh workflow run ci.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}

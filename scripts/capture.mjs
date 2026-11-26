@@ -53,6 +53,7 @@ try {
   await p.click('#tab-grades'); await still(p, 'portal-gradebook');
   await p.locator('#grade-rows .gb-toggle').first().click(); await p.waitForTimeout(300); await still(p, 'gradebook-open');
   await p.click('#tab-exams'); await still(p, 'portal-exams');
+  await p.click('#tab-modules'); await p.click('#subj-maths'); await p.click('#grade-maths-4'); await p.waitForTimeout(400); await still(p, 'module-journey');
   await p.click('#tab-modules');
   await p.click('#subj-english'); await p.click('#grade-english-4');
   await p.locator('.lesson-row', { hasText: 'The solar radio' }).locator('.acts .btn').first().click(); // "The solar radio"

@@ -897,6 +897,72 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
 .pp-open .pp-go { margin-left: auto; font-size: .8rem; color: #136f63; font-weight: 800; }
 @media (max-width: 640px) { .pv-h { grid-template-columns: auto 1fr auto; } .pv-score { grid-column: 1 / -1; align-items: flex-start; text-align: left; } .pv-opts, .pv-note, .pv-mark { margin-left: 0; } .pv-filter { margin-left: 0; } }
 @media print { .pv { display: none !important; } }
+
+/* ===== Modules: the term's journey ===== */
+.mj { --c: #136f63; display: flex; flex-direction: column; gap: 10px; }
+.mj-hero { position: relative; overflow: hidden; border-radius: 24px; min-height: 230px; padding: 22px 24px 110px; color: #14302d; background: linear-gradient(#a9dcfb, #d9f0ff 60%, #eef8ff); box-shadow: 0 8px 26px rgb(20 48 45 / .1); }
+.mj-hero[data-scene="village"] { background: linear-gradient(#bfe6f2, #e3f5ea 65%, #f1faf0); } .mj-hero[data-scene="solar"] { background: linear-gradient(#ffc999, #ffe2c4 55%, #fff3e6); } .mj-hero[data-scene="life"] { background: linear-gradient(#e6d8f6, #f8e6ef 55%, #fff0e6); }
+.mj-scene { position: absolute; inset: 0; pointer-events: none; }
+.mj-sky { position: absolute; top: 0; right: 0; width: 100%; height: 160px; }
+.mj-ground { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 150px; }
+.mj-ht { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 6px 20px; align-items: start; }
+.mj-ht .eyebrow { grid-column: 1 / -1; color: #a2520a; }
+.mj-ht h2 { margin: 0; font: 800 clamp(1.5rem, 3.5vw, 2.2rem) var(--display); color: #1b2a5a; }
+.mj-ht > p { grid-column: 1; margin: 0; color: #3f5754; font-weight: 600; }
+.mj-prog { grid-column: 2; grid-row: 2 / span 2; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; max-width: 140px; }
+.mj-ring { position: relative; width: 84px; height: 84px; } .mj-ring svg { width: 100%; height: 100%; }
+.mj-ring b { position: absolute; inset: 0; display: grid; place-items: center; font: 800 1.2rem var(--display); color: #1b2a5a; }
+.mj-girls { grid-column: 1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.mj-girls > span { font-weight: 700; color: #3f5754; }
+.mj-avs { display: flex; flex-wrap: wrap; row-gap: 6px; } .mj-avs .mini-av { width: 36px; height: 36px; margin-left: -8px; box-shadow: 0 0 0 3px #fff; } .mj-avs .mini-av:first-child { margin-left: 0; }
+.mj-note { margin: 0 4px; }
+.mj-path { list-style: none; margin: 6px 0 0; padding: 10px 0 20px; position: relative; display: flex; flex-direction: column; gap: 18px; }
+.mj-path::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 0; border-left: 5px dashed color-mix(in srgb, var(--c) 35%, #fff); transform: translateX(-50%); }
+.mj-stop { position: relative; display: grid; grid-template-columns: 1fr 84px 1fr; align-items: center; }
+.mj-node { grid-column: 2; justify-self: center; width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; z-index: 1; background: #fff; color: var(--c); box-shadow: inset 0 0 0 4px var(--c), 0 6px 0 color-mix(in srgb, var(--c) 30%, #c9d3dc); }
+.mj-node svg { width: 34px; height: 34px; }
+.mj-stop.done .mj-node { background: var(--c); color: #fff; box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 60%, #000 25%); }
+.mj-stop.next .mj-node { box-shadow: inset 0 0 0 4px var(--c), 0 0 0 8px #f6c453, 0 8px 18px rgb(20 48 45 / .2); animation: mjPulse 2s ease-in-out infinite; }
+@keyframes mjPulse { 50% { box-shadow: inset 0 0 0 4px var(--c), 0 0 0 13px rgb(246 196 83 / .45), 0 8px 18px rgb(20 48 45 / .2); } }
+@media (prefers-reduced-motion: reduce) { .mj-stop.next .mj-node { animation: none; } }
+.mj-stop.todo .mj-node { color: #8a98a5; box-shadow: inset 0 0 0 4px #c9d3dc, 0 6px 0 #dde4ea; }
+.mj-stop.cat .mj-node { border-radius: 22px; width: 64px; height: 64px; }
+.mj-stop.cat .mj-node { color: #e08a14; box-shadow: inset 0 0 0 4px #e08a14, 0 6px 0 #f1cf98; }
+.mj-stop.cat.done .mj-node { background: #e08a14; color: #fff; box-shadow: 0 6px 0 #a7630a; }
+.mj-stop.cat.next .mj-node { box-shadow: inset 0 0 0 4px #e08a14, 0 0 0 8px #f6c453, 0 8px 18px rgb(20 48 45 / .2); }
+.mj-stop.exam .mj-node { width: 92px; height: 92px; color: #c99300; box-shadow: inset 0 0 0 5px #f2b51d, 0 7px 0 #e6c56a; }
+.mj-stop.exam.done .mj-node { background: #f2b51d; color: #fff; box-shadow: 0 7px 0 #b7820a; }
+.mj-stop.exam .mj-node svg { width: 46px; height: 46px; }
+.mj-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: 0 3px 0 rgb(20 48 45 / .05), 0 8px 22px rgb(20 48 45 / .08); display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.mj-stop.left .mj-card { grid-column: 1; grid-row: 1; margin-right: 6px; }
+.mj-stop.right .mj-card { grid-column: 3; grid-row: 1; margin-left: 6px; }
+.mj-stop.done .mj-card { box-shadow: inset 0 4px 0 var(--c), 0 3px 0 rgb(20 48 45 / .05), 0 8px 22px rgb(20 48 45 / .08); }
+.mj-stop.cat .mj-card { box-shadow: inset 0 4px 0 #e08a14, 0 8px 22px rgb(20 48 45 / .08); }
+.mj-stop.exam .mj-card { box-shadow: inset 0 4px 0 #f2b51d, 0 8px 22px rgb(20 48 45 / .08); background: linear-gradient(#fffaf0, #fff 80px); }
+.mj-k { font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--c); }
+.mj-stop.cat .mj-k { color: #a7630a; } .mj-stop.exam .mj-k { color: #9a7300; }
+.mj-card h4 { margin: 0; font: 800 1.1rem var(--display); color: #1b2a5a; }
+.mj-card .lesson-row { border-top: 0; padding: 2px 0; }
+.mj-stat { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: center; font-size: .85rem; color: #4f6461; }
+.mj-stat b { color: #1b2a5a; text-align: right; }
+.mj-bar { grid-column: 1 / -1; height: 8px; border-radius: 999px; background: #eef3f5; overflow: hidden; } .mj-bar i { display: block; height: 100%; background: var(--c); }
+.mj-marks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.mj-marks li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; background: #f8fafb; border-radius: 10px; padding: 4px 8px; font-weight: 600; }
+.mj-marks .mini-av { width: 28px; height: 28px; font-size: .7rem; }
+.mj-mk { border: 0; border-radius: 999px; padding: 3px 10px; font-weight: 800; font-size: .8rem; cursor: pointer; }
+.mj-mk.pass { background: #ddf3e6; color: #1f7a4d; } .mj-mk.fail { background: #fbe3e1; color: #b3261e; } .mj-mk.wait { background: #fdf0d5; color: #8a5300; }
+.mj-mk:focus-visible { outline: 3px solid #e08a14; }
+.mj-card .btn { width: auto; align-self: flex-start; }
+.mj-bubble { position: absolute; left: 50%; top: -26px; transform: translateX(-50%); background: #f6c453; color: #3a2a06; font-weight: 800; padding: 2px 12px; border-radius: 10px; font-size: .85rem; z-index: 2; }
+@media (max-width: 720px) {
+  .mj-path::before { left: 34px; }
+  .mj-stop { grid-template-columns: 68px 1fr; }
+  .mj-node { grid-column: 1; width: 56px; height: 56px; } .mj-stop.exam .mj-node { width: 64px; height: 64px; } .mj-stop.cat .mj-node { width: 52px; height: 52px; }
+  .mj-stop.left .mj-card, .mj-stop.right .mj-card { grid-column: 2; margin: 0; }
+  .mj-bubble { left: 34px; }
+  .mj-sky { display: none; }
+  .mj-ht { grid-template-columns: 1fr; } .mj-prog { grid-column: 1; grid-row: auto; flex-direction: row; max-width: none; }
+}
 </style>
 
 <!-- LOGIN / REGISTER (Supabase) -->
@@ -2313,6 +2379,85 @@ function lessonRow(l, m) {
   if (actFor(l.id)) acts.append(btn('★ ' + t('actShort'), 'ghost sm', () => openActivity(actFor(l.id).id, l.id, null, null)));
   r.append(ttl, acts); return r;
 }
+
+// ---- module journey ----
+Object.assign(T.en, { mjTitle: 'This term\'s journey', mjSub: 'The syllabus step by step: lessons, CATs and the end-of-term exam.', mjSteps: '{d} of {n} steps done', mjLesson: 'Lesson', mjTaught: 'Taught', mjNext: 'Next', mjNotYet: 'Not yet', mjQuiz: 'Class quiz', mjRight: 'right', mjCat: 'CAT', mjCatHow: 'Add CAT marks on each girl\'s report card (Students → her profile).', mjNoMarks: 'No marks yet', mjExam: 'End-of-term exam', mjGoExams: 'Go to the exam', mjClosed: 'Closed', mjMarking: 'Marking', mjOpen: 'Open', mjDone: 'done', mjFinish: 'Topic complete', mjGirls: 'Girls on this journey', mjAvg: 'Average', mjPass: 'passed', mjShow: 'Show marks', mjHide: 'Hide marks', mjNoGirls: 'No girls in this grade yet.', mjCatK: 'Continuous assessment test', mjSubLife: 'Each session step by step until the topic is complete.', mjFinishLine: 'Finish line' });
+Object.assign(T.sw, { mjTitle: 'Safari ya muhula huu', mjSub: 'Mtaala hatua kwa hatua: masomo, CAT na mtihani wa mwisho wa muhula.', mjSteps: 'hatua {d} kati ya {n} zimekamilika', mjLesson: 'Somo', mjTaught: 'Limefundishwa', mjNext: 'Linalofuata', mjNotYet: 'Bado', mjQuiz: 'Jaribio la darasa', mjRight: 'sahihi', mjCat: 'CAT', mjCatHow: 'Weka alama za CAT kwenye ripoti ya kila msichana (Wanafunzi → wasifu wake).', mjNoMarks: 'Bado hakuna alama', mjExam: 'Mtihani wa mwisho wa muhula', mjGoExams: 'Nenda kwenye mtihani', mjClosed: 'Umefungwa', mjMarking: 'Unasahihishwa', mjOpen: 'Wazi', mjDone: 'wamemaliza', mjFinish: 'Mada imekamilika', mjGirls: 'Wasichana katika safari hii', mjAvg: 'Wastani', mjPass: 'wamefaulu', mjShow: 'Onyesha alama', mjHide: 'Ficha alama', mjNoGirls: 'Bado hakuna wasichana katika darasa hili.', mjCatK: 'Jaribio la tathmini endelevu', mjSubLife: 'Kila kipindi hatua kwa hatua hadi mada ikamilike.', mjFinishLine: 'Mstari wa mwisho' });
+const MJ_IC = {
+  book: '<path d="M3.5 5a2 2 0 0 1 2-2H11v17H5.5a2 2 0 0 0-2 1zM20.5 5a2 2 0 0 0-2-2H13v17h5.5a2 2 0 0 1 2 1z" fill="currentColor"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  flag: '<path d="M6 21V4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M6 4h11l-2.5 4L17 12H6z" fill="currentColor"/>',
+  trophy: '<path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M10 14h4v3h-4zM8 20h8v-2H8z" fill="currentColor"/>',
+  heart: '<path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z" fill="currentColor"/>',
+};
+const mjIcon = (k) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + MJ_IC[k] + '</svg>';
+function taughtOn(id) { const d = sessions.filter((s) => s.status === 'done' && s.lesson === id && s.date).map((s) => s.date).sort(); return d.length ? d[d.length - 1] : null; }
+function quizStat(id, girls) { let r = 0, n = 0; girls.forEach((s) => { const x = results[id]?.[s.id]; if (!x) return; quizQs(id).forEach((q) => { if (q.id in x.answers) { n++; if (x.answers[q.id] === q.a) r++; } }); }); return n ? { r, n } : null; }
+function marksOf(girls, subj, term, test) { return girls.map((s) => { const r = rowByKey(s.id) || {}; const m = (r.marks || []).filter((x) => x.subject === subj && x.date && termOf(x.date) === term && test(x)).slice(-1)[0] || null; return [s, m]; }); }
+function moduleJourney({ subj, m, ls, girls, life, g }) {
+  const term = termOf(todayIso()), wrap = el('div', 'mj'), col = life ? '#b5476b' : SUBJ_COL[subj.id] || '#136f63';
+  wrap.style.setProperty('--c', col);
+  // the stops: lessons, with CAT 1 after the first half, CAT 2 after the rest, then the exam
+  const stops = [], half = Math.ceil(ls.length / 2);
+  ls.forEach((l, i) => { stops.push({ kind: 'lesson', l, n: i + 1 }); if (!life && i === half - 1) stops.push({ kind: 'cat', name: 'CAT 1' }); });
+  if (!life) { const extra = [...new Set(girls.flatMap((s) => ((rowByKey(s.id) || {}).marks || []).filter((x) => x.kind === 'cat' && x.subject === subj.id && x.date && termOf(x.date) === term).map((x) => x.name)))].filter((n2) => n2 !== 'CAT 1' && n2 !== 'CAT 2').sort();
+    ['CAT 2', ...extra].forEach((name) => stops.push({ kind: 'cat', name })); stops.push({ kind: 'exam' }); }
+  else stops.push({ kind: 'finish' });
+  // status of each stop
+  stops.forEach((st) => {
+    if (st.kind === 'lesson') { st.date = taughtOn(st.l.id); st.done = !!st.date; }
+    else if (st.kind === 'cat') { st.marks = marksOf(girls, subj.id, term, (x) => x.kind === 'cat' && x.name === st.name); st.got = st.marks.filter(([, mm]) => mm).length; st.done = girls.length > 0 && st.got === girls.length; }
+    else if (st.kind === 'exam') { st.marks = girls.map((s) => [s, examOf(s, subj.id, term)]); st.got = st.marks.filter(([, mm]) => mm).length; st.waiting = st.marks.filter(([, mm]) => mm && mm.status === 'pending').length; st.done = girls.length > 0 && st.got === girls.length && !st.waiting; }
+    else st.done = stops.filter((x) => x.kind === 'lesson').every((x) => x.done);
+  });
+  const nextI = stops.findIndex((x) => !x.done), nDone = stops.filter((x) => x.done).length;
+  // hero: the grade's scene, title, progress ring and the girls
+  const hero = el('div', 'mj-hero'); const sc = el('div', 'mj-scene'); sc.setAttribute('aria-hidden', 'true');
+  const sk = sceneOf(life ? null : { grade: g }); sc.innerHTML = '<svg class="mj-sky" viewBox="0 0 1600 300" preserveAspectRatio="xMaxYMin slice">' + SKY[sk]() + '</svg><svg class="mj-ground" viewBox="0 -90 1600 350" preserveAspectRatio="xMidYMax slice">' + GROUND[sk]() + '</svg>';
+  hero.dataset.scene = sk; hero.append(sc);
+  const ht = el('div', 'mj-ht'); ht.append(el('span', 'eyebrow', (life ? subj.name[lang] : subj.name[lang] + ' · ' + t('grade') + ' ' + g) + ' · ' + termLabel(term)), el('h2', null, life ? m.name[lang] : t('mjTitle')), el('p', null, t(life ? 'mjSubLife' : 'mjSub')));
+  const ring = el('div', 'mj-ring'); const C = 2 * Math.PI * 30, f = stops.length ? nDone / stops.length : 0;
+  ring.innerHTML = '<svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="30" fill="#fff" stroke="#e4ecef" stroke-width="8"/>' + (f ? '<circle cx="36" cy="36" r="30" fill="none" stroke="' + col + '" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + (C * f).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 36 36)"/>' : '') + '</svg>';
+  ring.append(el('b', null, nDone + '/' + stops.length)); ring.setAttribute('role', 'img'); ring.setAttribute('aria-label', t('mjSteps').replace('{d}', nDone).replace('{n}', stops.length));
+  const rt = el('div', 'mj-prog'); rt.append(ring, el('span', 'small', t('mjSteps').replace('{d}', nDone).replace('{n}', stops.length)));
+  const gw = el('div', 'mj-girls'); gw.append(el('span', 'small', t('mjGirls')));
+  const av = el('div', 'mj-avs'); if (girls.length) girls.forEach((s) => { const a = avatarEl(s.name, rowByKey(s.id) || {}, 'mini-av'); a.title = s.name; av.append(a); }); else av.append(el('span', 'small muted', t('mjNoGirls')));
+  gw.append(av); ht.append(rt, gw); hero.append(ht); wrap.append(hero);
+  if (!life) wrap.append(el('p', 'small muted mj-note', t('changeGradeNote')));
+  // the path
+  const ol = el('ol', 'mj-path');
+  stops.forEach((st, i) => {
+    const state = st.done ? 'done' : i === nextI ? 'next' : 'todo', li = el('li', 'mj-stop ' + st.kind + ' ' + state + (i % 2 ? ' right' : ' left'));
+    const node = el('span', 'mj-node'); node.innerHTML = mjIcon(st.done && st.kind === 'lesson' ? 'check' : st.kind === 'lesson' ? (life ? 'heart' : 'book') : st.kind === 'cat' ? 'flag' : st.kind === 'exam' ? 'trophy' : 'flag');
+    if (state === 'next') li.append(el('span', 'mj-bubble', t('mjNext')));
+    const card = el('div', 'mj-card');
+    if (st.kind === 'lesson') {
+      card.append(el('span', 'mj-k', t('mjLesson') + ' ' + st.n + ' · ' + (st.done ? '✓ ' + t('mjTaught') + ' ' + fmtDate(st.date, { day: 'numeric', month: 'short' }) : state === 'next' ? t('mjNext') : t('mjNotYet'))));
+      card.append(lessonRow(st.l, m));
+      const q = quizStat(st.l.id, girls); if (q && !life) { const qs = el('div', 'mj-stat'); qs.append(el('span', null, t('mjQuiz')), el('b', null, q.r + ' / ' + q.n + ' ' + t('mjRight') + ' (' + Math.round(100 * q.r / q.n) + '%)')); const bar = el('span', 'mj-bar'); const fi = el('i'); fi.style.width = Math.round(100 * q.r / q.n) + '%'; bar.append(fi); qs.append(bar); card.append(qs); }
+    } else if (st.kind === 'cat' || st.kind === 'exam') {
+      const isExam = st.kind === 'exam', got = st.marks.filter(([, mm]) => mm && mm.status !== 'pending'), pc = got.map(([, mm]) => Math.round(100 * mm.score / mm.out_of));
+      card.append(el('span', 'mj-k', isExam ? t('mjFinishLine') : t('mjCatK')), el('h4', null, isExam ? t('mjExam') + (st.done ? ' · 🔒 ' + t('mjClosed') : st.waiting ? ' · ⏳ ' + t('mjMarking') : st.got ? ' · ' + t('mjOpen') : '') : st.name));
+      const s2 = el('div', 'mj-stat'); s2.append(el('span', null, st.got + ' / ' + girls.length + ' ' + t('mjDone')), el('b', null, pc.length ? t('mjAvg') + ' ' + avgOf(pc) + '% · ' + pc.filter((x) => x >= 50).length + ' ' + t('mjPass') : t('mjNoMarks'))); card.append(s2);
+      if (got.length) {
+        const tg = btn(t('mjShow'), 'ghost sm', () => { const open = list.hidden; list.hidden = !open; tg.textContent = open ? t('mjHide') : t('mjShow'); tg.setAttribute('aria-expanded', String(open)); }); tg.setAttribute('aria-expanded', 'false'); tg.id = 'mj-t-' + (isExam ? 'exam' : st.name.replace(/\s+/g, ''));
+        const list = el('ul', 'mj-marks'); list.hidden = true;
+        st.marks.forEach(([s, mm]) => { const li2 = el('li'); li2.append(avatarEl(s.name, rowByKey(s.id) || {}, 'mini-av'), el('span', null, s.name));
+          if (!mm) li2.append(el('span', 'small muted', t('mjNotYet')));
+          else { const p100 = Math.round(100 * mm.score / mm.out_of), b2 = el('button', 'mj-mk ' + (mm.status === 'pending' ? 'wait' : p100 >= 50 ? 'pass' : 'fail'), mm.score + '/' + mm.out_of + ' · ' + p100 + '%'); b2.type = 'button'; b2.setAttribute('aria-haspopup', 'dialog');
+            b2.addEventListener('click', () => { if (isExam) openExamPaper(s, subj.id, g, mm); else { const sample = (rowByKey(s.id) || {}).is_sample && /^(cat1|cat2|exam)-s\d\d-/.test(mm.id || ''); openPaper({ s, subj: subj.id, grade: g, term, m: { kind: 'cat', ...mm }, items: sample ? samplePaper(s.id, subj.id, g, term, { kind: 'cat', ...mm }) || [] : [], real: false, editable: false }); } });
+            li2.append(b2); }
+          list.append(li2); });
+        card.append(tg, list);
+      }
+      if (isExam) { const go = btn(t('mjGoExams'), 'sm', () => { show('exams'); setTimeout(() => document.getElementById('ex-' + subj.id + '-' + g)?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60); }); go.id = 'mj-go-exam'; card.append(go); }
+      else card.append(el('p', 'small muted', t('mjCatHow')));
+    } else { card.append(el('span', 'mj-k', t('mjFinish')), el('h4', null, st.done ? '🎉 ' + t('mjFinish') : t('mjFinish'))); }
+    li.append(node, card); ol.append(li);
+  });
+  wrap.append(ol);
+  return wrap;
+}
 function renderModules() {
   const box = $('#module-cards'), crumbs = $('#mod-crumbs'); box.replaceChildren(); crumbs.replaceChildren();
   const subj = modNav.subject ? SUBJECTS.find((x) => x.id === modNav.subject) : null;
@@ -2364,6 +2509,7 @@ function renderModules() {
   if (life) { m = mod(modNav.key); ls = LESSONS.filter((l) => l.mod === m.id); title = m.name[lang]; }
   else { m = MODULES.find((x) => x.subject === subj.id); ls = LESSONS.filter((l) => l.mod === m.id && l.grade === modNav.key); title = `${t('grade')} ${modNav.key}`; girls = STUDENTS.filter((s) => levelIn(s.id, subj.id) === modNav.key); }
   crumb(title);
+  if (!life || true) { box.append(moduleJourney({ subj, m, ls, girls: girls || STUDENTS.filter((s) => !m.minAge || s.age >= m.minAge), life, g: modNav.key })); return; }
   const c = el('div', 'card' + (life ? ' well' : ''));
   const chips = el('div', 'chips'); chips.append(el('span', 'chip' + (life ? ' well' : ''), life ? t('attendance') : t('graded')), el('span', 'chip line', n('lessonOne', 'lessons', ls.length)));
   if (life) chips.append(el('span', 'chip av', t('avA'))); if (m.minAge) chips.append(el('span', 'chip line', t('age15')));

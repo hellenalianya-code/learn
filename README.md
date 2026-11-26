@@ -53,6 +53,10 @@ A teacher runs a girls' club session: she takes the register, presents a lesson 
 
 ![Opening a girl, entering a teacher score and marking Life Skills attendance](docs/images/demo-gradebook.gif)
 
+**Modules as a journey.** Inside each grade, the term's syllabus is a winding path in that grade's scene: lessons as stepping stones (taught, next, not yet, with each lesson's buttons and how the class did in the quiz), CAT 1 and CAT 2 as milestones with the girls' marks, and the end-of-term exam at the finish line. Tap a mark to see the paper behind it. Life Skills topics follow the same path to "Topic complete".
+
+![Maths Grade 4: the term's journey](docs/images/module-journey.png)
+
 **End-of-term exams.** The Exams tab has one exam for each grade and subject, made from the lessons taught that term (with revision from the grade's other lessons if the term was short). Girls sit it on the tablet one at a time, where it is marked automatically and no right or wrong is shown to them, or on a printed paper (PDF with an answer key) that the teacher marks in question by question. The mark goes to her report card as the end-of-term exam, and the Gradebook can open the exam to show every answer.
 
 ![Exams tab: an exam for each grade and subject, with who has sat it](docs/images/portal-exams.png)

@@ -802,6 +802,11 @@ select { border-radius: 12px; }
 button.ex-girl { border: 0; font: inherit; font-size: .8rem; cursor: pointer; }
 button.ex-girl[aria-expanded="true"] { box-shadow: 0 0 0 2px currentColor; }
 button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
+.ex-girl.wait { background: #fdf0d5; color: #8a5300; }
+.ex-wait { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #fdf0d5; color: #8a5300; border-radius: 12px; padding: 6px 10px; font-weight: 700; font-size: .85rem; }
+.ex-wait .btn { width: auto; }
+.ex-wait-t { color: #8a5300; font-weight: 700; }
+.ex-pk:disabled { opacity: .65; cursor: not-allowed; }
 .ex-info { background: #f8fafb; border-radius: 12px; padding: 8px 10px; }
 .ex-info p { margin: 0 0 6px; }
 .btn.danger { color: #b3261e; border-color: #f0c7c3; }
@@ -2766,8 +2771,8 @@ $('#g-grade').addEventListener('change', () => renderGrades());
 $('#g-module').addEventListener('change', () => renderGrades());
 
 // ---- end-of-term exams ----
-Object.assign(T.en, { tExams: 'Exams', exTitle: 'End-of-term exams', exSub: 'One exam for each grade and subject, made from the lessons taught this term. Girls sit it on the tablet, or on a printed paper that you mark in. The mark goes to her report card as the end-of-term exam.', exQs: 'questions', exMarks: '100 marks', exFrom: 'From', exTaught: 'lessons taught this term', exAllLessons: 'all Grade {g} lessons (none taught yet this term)', exDone: 'done', exAvg: 'Average', exSit: 'Sit on tablet', exPrint: 'Print paper (PDF)', exEnter: 'Enter paper marks', exNotYet: 'not yet', exPick: 'Who is sitting the exam?', exAgain: 'sit again replaces this result', exReady: 'Pass the tablet to {n}.', exStart: 'Start the exam', exHow: 'Read each question and tap your answer. You can go back. Nobody sees right or wrong until your teacher checks it.', exThanks: 'Well done, {n}! Your exam is saved.', exBackList: 'Next girl', exSubmit: 'Hand in', exPrev: '← Back', exQ: 'Question', exSaved: 'Exam saved', exPaperFor: 'Paper marks for', exGirl: 'Girl', exTick: 'Tick each question: right or wrong.', exSave: 'Save marks', exCancel: 'Cancel', exNeedAll: 'Mark every question first.', exName: 'End-of-term exam', exKey: 'Answer key', exNameLine: 'Name', exDateLine: 'Date', exInstr: 'Answer all questions. Circle the letter of the right answer. Each question shows its marks.', exPaperTablet: 'Tablet exam', exPaperPaper: 'Paper exam', exNoGirls: 'No girls in this grade.', exScoreNow: 'Score so far', exGrade: 'Grade', exAnswer: 'Answer', exTerm: 'Term', exView: 'Open in Gradebook', exClear: 'Clear result', exClearSure: 'Tap again to clear', exCleared: 'Result cleared: {n} can sit this exam again', exRevision: '+ revision from other Grade {g} lessons' });
-Object.assign(T.sw, { tExams: 'Mitihani', exTitle: 'Mitihani ya mwisho wa muhula', exSub: 'Mtihani mmoja kwa kila darasa na somo, kutoka kwa masomo yaliyofundishwa muhula huu. Wasichana hufanya kwenye kishikwambi, au kwenye karatasi utakayosahihisha. Alama huenda kwenye ripoti yake kama mtihani wa mwisho wa muhula.', exQs: 'maswali', exMarks: 'alama 100', exFrom: 'Kutoka', exTaught: 'masomo yaliyofundishwa muhula huu', exAllLessons: 'masomo yote ya Darasa la {g} (hakuna lililofundishwa bado)', exDone: 'wamemaliza', exAvg: 'Wastani', exSit: 'Fanya kwenye kishikwambi', exPrint: 'Chapisha karatasi (PDF)', exEnter: 'Weka alama za karatasi', exNotYet: 'bado', exPick: 'Nani anafanya mtihani?', exAgain: 'kufanya tena kunabadilisha matokeo haya', exReady: 'Mpe {n} kishikwambi.', exStart: 'Anza mtihani', exHow: 'Soma kila swali na uguse jibu lako. Unaweza kurudi nyuma. Hakuna anayeona sahihi au kosa hadi mwalimu aangalie.', exThanks: 'Hongera, {n}! Mtihani wako umehifadhiwa.', exBackList: 'Msichana anayefuata', exSubmit: 'Wasilisha', exPrev: '← Nyuma', exQ: 'Swali', exSaved: 'Mtihani umehifadhiwa', exPaperFor: 'Alama za karatasi za', exGirl: 'Msichana', exTick: 'Weka alama kila swali: sahihi au kosa.', exSave: 'Hifadhi alama', exCancel: 'Ghairi', exNeedAll: 'Sahihisha kila swali kwanza.', exName: 'Mtihani wa mwisho wa muhula', exKey: 'Majibu', exNameLine: 'Jina', exDateLine: 'Tarehe', exInstr: 'Jibu maswali yote. Zungushia herufi ya jibu sahihi. Kila swali linaonyesha alama zake.', exPaperTablet: 'Mtihani wa kishikwambi', exPaperPaper: 'Mtihani wa karatasi', exNoGirls: 'Hakuna wasichana katika darasa hili.', exScoreNow: 'Alama hadi sasa', exGrade: 'Darasa', exAnswer: 'Jibu', exTerm: 'Muhula', exView: 'Fungua kwenye Daftari la alama', exClear: 'Futa matokeo', exClearSure: 'Gusa tena kufuta', exCleared: 'Matokeo yamefutwa: {n} anaweza kufanya mtihani huu tena', exRevision: '+ marudio kutoka masomo mengine ya Darasa la {g}' });
+Object.assign(T.en, { tExams: 'Exams', exTitle: 'End-of-term exams', exSub: 'One exam for each grade and subject, made from the lessons taught this term. Girls sit it on the tablet, or on a printed paper that you mark in. The mark goes to her report card as the end-of-term exam.', exQs: 'questions', exMarks: '100 marks', exFrom: 'From', exTaught: 'lessons taught this term', exAllLessons: 'all Grade {g} lessons (none taught yet this term)', exDone: 'done', exAvg: 'Average', exSit: 'Sit on tablet', exPrint: 'Print paper (PDF)', exEnter: 'Enter paper marks', exNotYet: 'not yet', exPick: 'Who is sitting the exam?', exAgain: 'sit again replaces this result', exReady: 'Pass the tablet to {n}.', exStart: 'Start the exam', exHow: 'Read each question and tap your answer. You can go back. Nobody sees right or wrong until your teacher checks it.', exThanks: 'Well done, {n}! Your exam is saved.', exBackList: 'Next girl', exSubmit: 'Hand in', exPrev: '← Back', exQ: 'Question', exSaved: 'Exam saved', exPaperFor: 'Paper marks for', exGirl: 'Girl', exTick: 'Tick each question: right or wrong.', exSave: 'Save marks', exCancel: 'Cancel', exNeedAll: 'Mark every question first.', exName: 'End-of-term exam', exKey: 'Answer key', exNameLine: 'Name', exDateLine: 'Date', exInstr: 'Answer all questions. Circle the letter of the right answer. Each question shows its marks.', exPaperTablet: 'Tablet exam', exPaperPaper: 'Paper exam', exNoGirls: 'No girls in this grade.', exScoreNow: 'Score so far', exGrade: 'Grade', exAnswer: 'Answer', exTerm: 'Term', exReviewBtn: 'Review in Exams', exWaiting: 'waiting for your approval', exToApprove: 'to approve', exApproveAll: 'Approve all', exApprove: 'Approve and send to Gradebook', exApproved: 'Approved, now in the Gradebook', exReviewHow: 'Marked by the tablet. Check her answers, change a mark if needed, then approve. Only approved exams go to the Gradebook and report card.', exNotInGb: 'Waiting for approval: not in the Gradebook or report card yet.', exLocked: 'already sat (a teacher can clear it for a retake)', exView: 'Open in Gradebook', exClear: 'Clear result', exClearSure: 'Tap again to clear', exCleared: 'Result cleared: {n} can sit this exam again', exRevision: '+ revision from other Grade {g} lessons' });
+Object.assign(T.sw, { tExams: 'Mitihani', exTitle: 'Mitihani ya mwisho wa muhula', exSub: 'Mtihani mmoja kwa kila darasa na somo, kutoka kwa masomo yaliyofundishwa muhula huu. Wasichana hufanya kwenye kishikwambi, au kwenye karatasi utakayosahihisha. Alama huenda kwenye ripoti yake kama mtihani wa mwisho wa muhula.', exQs: 'maswali', exMarks: 'alama 100', exFrom: 'Kutoka', exTaught: 'masomo yaliyofundishwa muhula huu', exAllLessons: 'masomo yote ya Darasa la {g} (hakuna lililofundishwa bado)', exDone: 'wamemaliza', exAvg: 'Wastani', exSit: 'Fanya kwenye kishikwambi', exPrint: 'Chapisha karatasi (PDF)', exEnter: 'Weka alama za karatasi', exNotYet: 'bado', exPick: 'Nani anafanya mtihani?', exAgain: 'kufanya tena kunabadilisha matokeo haya', exReady: 'Mpe {n} kishikwambi.', exStart: 'Anza mtihani', exHow: 'Soma kila swali na uguse jibu lako. Unaweza kurudi nyuma. Hakuna anayeona sahihi au kosa hadi mwalimu aangalie.', exThanks: 'Hongera, {n}! Mtihani wako umehifadhiwa.', exBackList: 'Msichana anayefuata', exSubmit: 'Wasilisha', exPrev: '← Nyuma', exQ: 'Swali', exSaved: 'Mtihani umehifadhiwa', exPaperFor: 'Alama za karatasi za', exGirl: 'Msichana', exTick: 'Weka alama kila swali: sahihi au kosa.', exSave: 'Hifadhi alama', exCancel: 'Ghairi', exNeedAll: 'Sahihisha kila swali kwanza.', exName: 'Mtihani wa mwisho wa muhula', exKey: 'Majibu', exNameLine: 'Jina', exDateLine: 'Tarehe', exInstr: 'Jibu maswali yote. Zungushia herufi ya jibu sahihi. Kila swali linaonyesha alama zake.', exPaperTablet: 'Mtihani wa kishikwambi', exPaperPaper: 'Mtihani wa karatasi', exNoGirls: 'Hakuna wasichana katika darasa hili.', exScoreNow: 'Alama hadi sasa', exGrade: 'Darasa', exAnswer: 'Jibu', exTerm: 'Muhula', exReviewBtn: 'Kagua kwenye Mitihani', exWaiting: 'yanasubiri idhini yako', exToApprove: 'idhinisha', exApproveAll: 'Idhinisha yote', exApprove: 'Idhinisha na tuma kwenye Daftari la alama', exApproved: 'Imeidhinishwa, sasa iko kwenye Daftari la alama', exReviewHow: 'Imesahihishwa na kishikwambi. Angalia majibu yake, badilisha alama ikihitajika, kisha idhinisha. Mitihani iliyoidhinishwa tu ndiyo huenda kwenye Daftari la alama na ripoti.', exNotInGb: 'Inasubiri idhini: bado haiko kwenye Daftari la alama wala ripoti.', exLocked: 'ameshafanya (mwalimu anaweza kufuta ili arudie)', exView: 'Fungua kwenye Daftari la alama', exClear: 'Futa matokeo', exClearSure: 'Gusa tena kufuta', exCleared: 'Matokeo yamefutwa: {n} anaweza kufanya mtihani huu tena', exRevision: '+ marudio kutoka masomo mengine ya Darasa la {g}' });
 const exTermNow = () => termOf(todayIso());
 function examLessons(subj, g, term) {
   const taught = [...new Set(sessions.filter((s) => s.status === 'done' && s.date && termOf(s.date) === term).map((s) => s.lesson))].filter((id) => { const l = LESSONS.find((x) => x.id === id); return l && mod(l.mod).subject === subj && l.grade === g && quizQs(id).length; });
@@ -2790,7 +2795,8 @@ const examOf = (s, subj, term) => { const r = rowByKey(s.id); return ((r && r.ma
 function saveExam(s, paper, answers, mode) {
   const r = rowByKey(s.id); if (!r) return null;
   const score = paper.qs.reduce((a, q, i) => a + (mode === 'paper' ? (answers[q.id] === 'r' ? paper.maxes[i] : 0) : (answers[q.id] === q.a ? paper.maxes[i] : 0)), 0);
-  const m = { id: 'ext-' + paper.term + '-' + paper.subj + '-' + s.id, kind: 'exam', subject: paper.subj, name: t('exName'), out_of: 100, date: todayIso(), score, grade: paper.g, mode, qids: paper.qs.map((q) => q.id), maxes: paper.maxes, answers: { ...answers } };
+  // tablet exams wait for the teacher to approve them; paper exams were marked by the teacher, so they count at once
+  const m = { id: 'ext-' + paper.term + '-' + paper.subj + '-' + s.id, kind: 'exam', subject: paper.subj, name: t('exName'), out_of: 100, date: todayIso(), score, grade: paper.g, mode, status: mode === 'tablet' ? 'pending' : 'approved', ...(mode === 'tablet' ? {} : { approved_at: todayIso() }), qids: paper.qs.map((q) => q.id), maxes: paper.maxes, answers: { ...answers } };
   const keep = (r.marks || []).filter((x) => !(x.kind === 'exam' && x.subject === paper.subj && x.date && termOf(x.date) === paper.term));
   savePupil(r.id, { marks: [...keep, m] }); return m;
 }
@@ -2804,16 +2810,17 @@ function renderExams() {
     const grid = el('div', 'ex-cards');
     GRADED.forEach((subj) => {
       const paper = examPaper(subj, g, term), c = el('article', 'ex-card'); c.style.setProperty('--c', SUBJ_COL[subj]); c.id = 'ex-' + subj + '-' + g;
-      const done = girls.map((s) => [s, examOf(s, subj, term)]), nd = done.filter(([, m]) => m).length;
-      const av = done.filter(([, m]) => m).map(([, m]) => Math.round(100 * m.score / m.out_of));
+      const done = girls.map((s) => [s, examOf(s, subj, term)]), nd = done.filter(([, m]) => m).length, waiting = done.filter(([, m]) => m && m.status === 'pending');
+      const av = done.filter(([, m]) => m && m.status !== 'pending').map(([, m]) => Math.round(100 * m.score / m.out_of));
       const hd = el('div', 'ex-h'); hd.append(el('h4', null, subjName(subj)), el('span', 'small muted', paper.qs.length + ' ' + t('exQs') + ' · ' + t('exMarks')));
       c.append(hd);
       c.append(el('p', 'small ex-from', t('exFrom') + ': ' + paper.src.ids.map((id) => lesson(id).title).join(', ') + ' · ' + (paper.src.taught ? t('exTaught') + ((paper.src.extra || []).length ? ' ' + t('exRevision').replace('{g}', g) : '') : t('exAllLessons').replace('{g}', g))));
       const prog = el('div', 'ex-prog'); const bar = el('span', 'ex-bar'); const fill = el('i'); fill.style.width = (girls.length ? 100 * nd / girls.length : 0) + '%'; bar.append(fill);
       prog.append(bar, el('span', 'small', nd + ' / ' + girls.length + ' ' + t('exDone') + (av.length ? ' · ' + t('exAvg') + ' ' + avgOf(av) + '%' : ''))); c.append(prog);
+      if (waiting.length) { const w = el('div', 'ex-wait'); w.append(el('span', null, '⏳ ' + waiting.length + ' ' + t('exWaiting'))); const ab = btn(t('exApproveAll'), 'sm', () => { waiting.forEach(([s, m]) => approveExam(s, m, m.override || {})); toast(t('exApproved')); renderExams(); renderGrades(); renderClass(); }); ab.id = 'ex-appall-' + subj + '-' + g; w.append(ab); c.append(w); }
       const chips = el('div', 'ex-girls');
       const info = el('div', 'ex-info'); info.hidden = true;
-      done.forEach(([s, m]) => { const p100 = m ? Math.round(100 * m.score / m.out_of) : null; const ch = el(m ? 'button' : 'span', 'ex-girl ' + (m ? (p100 >= 50 ? 'pass' : 'fail') : 'todo')); ch.append(el('b', null, s.name.split(' ')[0]), el('span', null, m ? p100 + '%' : t('exNotYet')));
+      done.forEach(([s, m]) => { const p100 = m ? Math.round(100 * m.score / m.out_of) : null; const ch = el(m ? 'button' : 'span', 'ex-girl ' + (m ? (m.status === 'pending' ? 'wait' : p100 >= 50 ? 'pass' : 'fail') : 'todo')); ch.append(el('b', null, s.name.split(' ')[0]), el('span', null, m ? p100 + '%' + (m.status === 'pending' ? ' · ' + t('exToApprove') : '') : t('exNotYet')));
         if (m) { ch.type = 'button'; ch.id = 'exg-' + subj + '-' + g + '-' + s.id; ch.setAttribute('aria-expanded', 'false'); ch.addEventListener('click', () => { const open = ch.getAttribute('aria-expanded') !== 'true'; chips.querySelectorAll('[aria-expanded]').forEach((o) => o.setAttribute('aria-expanded', 'false')); ch.setAttribute('aria-expanded', String(open)); info.hidden = !open; if (open) examInfo(info, s, subj, g, m); }); }
         chips.append(ch); });
       c.append(chips, info);
@@ -2829,6 +2836,23 @@ function renderExams() {
   if (!box.children.length) box.append(el('p', 'empty muted', t('exNoGirls')));
 }
 // --- one girl's result: open it in the Gradebook, or clear it so she can sit again ---
+function scoreWith(m, ov) { return m.qids.reduce((a, id, i) => { const q = questions.find((x) => x.id === id); if (!q) return a; const right = ov[id] ? ov[id] === 'r' : m.mode === 'paper' ? m.answers[id] === 'r' : m.answers[id] === q.a; return a + (right ? (m.maxes[i] || 0) : 0); }, 0); }
+function approveExam(s, m, ov) { const r = rowByKey(s.id); if (!r) return; const score = m.qids ? scoreWith(m, ov) : m.score; savePupil(r.id, { marks: (r.marks || []).map((x) => (x.id === m.id ? { ...x, status: 'approved', approved_at: todayIso(), override: ov, score } : x)) }); }
+function examReview(box, s, subj, g, m) {
+  const ov = { ...(m.override || {}) }, tot = el('b', 'ex-tot');
+  const sum = () => { tot.textContent = t('exScoreNow') + ': ' + scoreWith(m, ov) + ' / 100'; };
+  box.append(el('p', 'small muted', t('exReviewHow')));
+  const ol = el('ol', 'ex-ml');
+  m.qids.forEach((id, i) => { const q = questions.find((x) => x.id === id); if (!q) return; const auto = m.answers[id] === q.a, li = el('li');
+    const tx = el('span', 'ex-mq', (i + 1) + '. ' + q.text); const a = el('span', 'small'); a.append(el('span', auto ? 'ok' : 'no', t('gbHer') + ': ' + (q.opts[m.answers[id]] ?? '–')), document.createTextNode(auto ? '' : '  ·  ' + t('gbCorrect') + ': ' + q.opts[q.a]), document.createTextNode('  ·  ' + (m.maxes[i] || 0) + ' ' + t('ppMarks')));
+    const grp = el('div', 'mark'); grp.setAttribute('role', 'group'); grp.setAttribute('aria-label', t('exQ') + ' ' + (i + 1));
+    [['r', '✓'], ['w', '✗']].forEach(([v, sym]) => { const b = el('button', v, sym); b.type = 'button'; b.id = 'exr-' + v + '-' + i; const cur = ov[id] || (auto ? 'r' : 'w'); b.setAttribute('aria-pressed', String(cur === v)); b.setAttribute('aria-label', (v === 'r' ? t('markRight') : t('markWrong')) + ' · ' + t('exQ') + ' ' + (i + 1));
+      b.addEventListener('click', () => { if ((auto ? 'r' : 'w') === v) delete ov[id]; else ov[id] = v; grp.querySelectorAll('button').forEach((o) => o.setAttribute('aria-pressed', String(o === b))); sum(); }); grp.append(b); });
+    li.append(tx, a, grp); ol.append(li); });
+  sum(); const bar = el('div', 'ex-mbar');
+  const ap = btn('✓ ' + t('exApprove'), 'sm', () => { approveExam(s, m, ov); toast(t('exApproved') + ': ' + s.name); renderExams(); renderGrades(); renderClass(); }); ap.id = 'exa-' + subj + '-' + g + '-' + s.id;
+  bar.append(tot, ap); box.append(ol, bar);
+}
 function examInfo(box, s, subj, g, m) {
   box.replaceChildren(); const p100 = Math.round(100 * m.score / m.out_of);
   box.append(el('p', 'small', s.name + ' · ' + m.score + ' / ' + m.out_of + ' (' + p100 + '%) · ' + (m.mode === 'paper' ? t('exPaperPaper') : m.mode === 'tablet' ? t('exPaperTablet') : t('ppSamplePaper')) + ' · ' + fmtDate(m.date, { day: 'numeric', month: 'short', year: 'numeric' })));
@@ -2839,6 +2863,7 @@ function examInfo(box, s, subj, g, m) {
     const r = rowByKey(s.id); savePupil(r.id, { marks: (r.marks || []).filter((x) => !(x.kind === 'exam' && x.subject === subj && x.date && termOf(x.date) === termOf(m.date))) });
     toast(t('exCleared').replace('{n}', s.name)); renderExams(); renderClass();
   }); clr.id = 'exc-' + subj + '-' + g + '-' + s.id;
+  if (m.status === 'pending') { view.remove(); row.append(clr); box.append(el('p', 'small ex-wait-t', '⏳ ' + t('exNotInGb'))); examReview(box, s, subj, g, m); box.append(row); return; }
   row.append(view, clr); box.append(row);
 }
 // --- paper: enter marks question by question ---
@@ -2874,8 +2899,8 @@ function drawExam() {
   if (!ex.girl) {
     st.append(el('span', 'eyebrow', t('exName')), el('h2', null, t('exPick')));
     const list = el('div', 'ex-pick');
-    girlsIn(P.g).forEach((s) => { const m = examOf(s, P.subj, P.term); const b = el('button', 'ex-pk' + (m ? ' done' : '')); b.type = 'button'; b.id = 'exp-' + s.id;
-      b.append(avatarEl(s.name, rowByKey(s.id) || {}, 'mini-av'), el('b', null, s.name), el('span', 'small', m ? '✓ ' + t('exDone') + ' · ' + t('exAgain') : t('exNotYet')));
+    girlsIn(P.g).forEach((s) => { const m = examOf(s, P.subj, P.term); const b = el('button', 'ex-pk' + (m ? ' done' : '')); b.type = 'button'; b.id = 'exp-' + s.id; b.disabled = !!m;
+      b.append(avatarEl(s.name, rowByKey(s.id) || {}, 'mini-av'), el('b', null, s.name), el('span', 'small', m ? '✓ ' + t('exDone') + ' · ' + t('exLocked') : t('exNotYet')));
       b.addEventListener('click', () => { ex.girl = s; ex.i = -1; ex.answers = {}; drawExam(); }); list.append(b); });
     st.append(list); $('#ex-step').textContent = ''; next.hidden = true; return;
   }
@@ -2944,8 +2969,8 @@ function samplePaper(pid, subj, grade, term, m) {
     return { q: x.q, lesson: x.l, max: max[i], got: got[i], given: got[i] === max[i] ? x.q.a : wrongs[hashStr(seed + '|w' + i) % wrongs.length] };
   });
 }
-function realPaper(m) { // an exam sat in the Exams tab: her own answers
-  return m.qids.map((id, i) => { const q = questions.find((x) => x.id === id); if (!q) return null; const a = m.answers[id], right = m.mode === 'paper' ? a === 'r' : a === q.a; const wr = q.opts.map((_, k) => k).filter((k) => k !== q.a);
+function realPaper(m) { // an exam sat in the Exams tab: her own answers (and any mark the teacher changed when approving)
+  return m.qids.map((id, i) => { const q = questions.find((x) => x.id === id); if (!q) return null; const a = m.answers[id], ov = (m.override || {})[id], right = ov ? ov === 'r' : m.mode === 'paper' ? a === 'r' : a === q.a; const wr = q.opts.map((_, k) => k).filter((k) => k !== q.a);
     return { q, max: (m.maxes || [])[i] || 0, got: right ? (m.maxes || [])[i] || 0 : 0, given: m.mode === 'paper' ? (right ? q.a : -1) : a, paper: m.mode === 'paper' }; }).filter(Boolean);
 }
 function paperEl(pid, subj, grade, term, m, sample) {
@@ -2975,6 +3000,8 @@ function papersFor(p, r, g, term, v) {
   const box = el('div', 'pp-papers'), grade = gradeAt(r, term) || levelIn(p.id);
   const rep = (r.reports || {})[term], savedSample = v.saved && rep && rep.source === 'sample';
   const ms = [...(v.catMs || []).map((m) => ({ kind: 'cat', ...m })), ...(v.examMs || []).map((m) => ({ kind: 'exam', ...m }))];
+  const wait = (r.marks || []).find((m) => m.kind === 'exam' && m.subject === g && m.status === 'pending' && m.date && termOf(m.date) === term);
+  if (wait) { const w = el('div', 'ex-wait'); w.append(el('span', null, '⏳ ' + t('exName') + ': ' + t('exNotInGb'))); const go = btn(t('exReviewBtn'), 'sm', () => show('exams')); go.id = 'gb-review-' + p.id + '-' + g; w.append(go); box.append(w); }
   if (!ms.length) { box.append(el('p', 'small muted', t('ppNoMarks'))); return box; }
   ms.forEach((m) => { const sample = savedSample || (!v.saved && r.is_sample && /^(cat1|cat2|exam)-s\d\d-/.test(m.id || '')); box.append(paperEl(p.id, g, grade, term, m, sample)); });
   box.append(el('p', 'small muted', t('ppPassKey')));
@@ -3861,7 +3888,7 @@ let rcTerm = null;
 function termOf(d) { const s = String(d || '').slice(0, 10); if (!s) return null; const md = s.slice(5); return s.slice(0, 4) + '-' + (md <= '04-20' ? 1 : md <= '08-15' ? 2 : 3); }
 const termLabel = (k) => t('rcTerm').replace('{n}', k.split('-')[1]) + ' ' + k.split('-')[0];
 function rcData(p, r, term) {
-  const marks = (r.marks || []).filter((m) => termOf(m.date) === term);
+  const marks = (r.marks || []).filter((m) => termOf(m.date) === term && m.status !== 'pending'); // tablet exams count once a teacher approves them
   const rows = GRADED.map((g) => {
     let right = 0, total = 0;
     LESSONS.filter((l) => mod(l.mod).subject === g).forEach((l) => { const res = results[l.id]?.[p.id]; if (!res || termOf(res.at) !== term) return; const sc = scoreOf(l.id, p.id); if (sc) { right += sc.right; total += sc.total; } });

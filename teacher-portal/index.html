@@ -1005,10 +1005,77 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
 @keyframes syFlash { 0% { box-shadow: 0 0 0 0 rgb(246 196 83 / .9); } 40% { box-shadow: 0 0 0 10px rgb(246 196 83 / .45); } 100% { box-shadow: 0 0 0 0 rgb(246 196 83 / 0); } }
 #ps-picked { margin: 0; color: #8a5300; font-weight: 700; }
 #ps-picked:empty { display: none; }
+
+/* ===== Signed-out page: about LearnReach ===== */
+#login-screen.lp { display: block; }
+#login-screen.lp[hidden] { display: none; }
+.lp-top.login { max-width: none; width: 100%; min-height: 100vh; display: grid; place-items: center; padding: 40px 20px 170px; }
+.lp-hero { width: 100%; max-width: 1080px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 420px); gap: clamp(24px, 5vw, 64px); align-items: center; }
+.lp-intro { display: flex; flex-direction: column; gap: 16px; }
+.lp-kicker { margin: 0; font-weight: 800; letter-spacing: .02em; color: #136f63; font-size: .9rem; text-transform: uppercase; }
+.lp-h { font-size: clamp(2rem, 4.4vw, 3.2rem); color: #1b2a5a; line-height: 1.05; }
+.lp-sub { margin: 0; font-size: 1.12rem; color: #2c4250; max-width: 46ch; }
+.lp-chips { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.lp-chips li { display: inline-flex; align-items: center; gap: 7px; background: rgb(255 255 255 / .82); border-radius: 999px; padding: 6px 13px 6px 9px; font-weight: 700; font-size: .9rem; color: #1b2a5a; box-shadow: 0 2px 0 rgb(20 48 45 / .06); }
+.lp-chips svg { width: 18px; height: 18px; fill: none; stroke: #136f63; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lp-chips b { font-size: .72rem; color: #fff; background: #136f63; border-radius: 6px; padding: 1px 5px; }
+.lp-more { align-self: flex-start; font-weight: 800; color: #136f63; text-decoration: none; border-bottom: 2px solid currentColor; }
+.lp-sec { padding: clamp(48px, 7vw, 84px) 0; background: #fffdf7; }
+.lp-sec.lp-alt { background: #eef7f4; }
+.lp-sec .wrap { display: flex; flex-direction: column; gap: 14px; }
+.lp-eyebrow, .lp-who p.lp-eyebrow { margin: 0; font-weight: 800; color: #b5476b; text-transform: uppercase; font-size: .85rem; letter-spacing: .04em; }
+.lp-sec h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); color: #1b2a5a; max-width: 28ch; }
+.lp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 16px; margin-top: 10px; }
+.lp-card { background: #fff; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 3px 0 rgb(20 48 45 / .05), 0 10px 26px rgb(20 48 45 / .07); border-top: 5px solid var(--c); }
+.lp-card svg { width: 40px; height: 40px; padding: 8px; border-radius: 12px; background: color-mix(in srgb, var(--c) 12%, #fff); fill: none; stroke: var(--c); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lp-card svg .fill { fill: var(--c); stroke: none; }
+.lp-card h3 { font-size: 1.12rem; color: #1b2a5a; }
+.lp-card p, .lp-steps p, .lp-who p { margin: 0; color: #3d5360; }
+.lp-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 18px; }
+.lp-stats div { background: #fff3d6; border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; }
+.lp-stats b { font-family: var(--display); font-size: 2rem; color: #1b2a5a; line-height: 1.1; }
+.lp-stats span { color: #6b4b10; font-weight: 700; font-size: .92rem; }
+.lp-steps { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; counter-reset: lpstep; }
+.lp-steps li { counter-increment: lpstep; background: #fff; border-radius: 22px; padding: 20px 20px 22px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 3px 0 rgb(20 48 45 / .05); }
+.lp-steps li::before { content: counter(lpstep); width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #136f63; color: #fff; font-family: var(--display); font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; }
+.lp-steps h3 { font-size: 1.08rem; color: #1b2a5a; }
+.lp-who { display: grid !important; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 48px); align-items: start; }
+.lp-who > div { display: flex; flex-direction: column; gap: 12px; }
+.lp-links { display: flex; gap: 18px; flex-wrap: wrap; }
+.lp-links a { font-weight: 800; color: #136f63; }
+.lp-values { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.lp-values li { display: flex; gap: 12px; align-items: flex-start; background: #fff; border-radius: 18px; padding: 14px 16px; box-shadow: 0 3px 0 rgb(20 48 45 / .05); }
+.lp-values svg { width: 34px; height: 34px; flex: none; padding: 6px; border-radius: 10px; background: #e6f3ef; fill: none; stroke: #136f63; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lp-values div { display: flex; flex-direction: column; gap: 2px; }
+.lp-values b { color: #1b2a5a; } .lp-values span { color: #3d5360; font-size: .95rem; }
+.lp-foot { background: #1b2a5a; color: #dfe7ff; padding: 18px 0; font-size: .92rem; }
+.lp-foot .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 860px) {
+  .lp-hero { grid-template-columns: 1fr; }
+  .lp-top.login { padding-top: 28px; place-items: start center; }
+  .lp-who { grid-template-columns: 1fr; }
+  .lp-sub { font-size: 1.02rem; }
+}
+@media (prefers-reduced-motion: no-preference) { html:has(#login-screen:not([hidden])) { scroll-behavior: smooth; } }
+
 </style>
 
-<!-- LOGIN / REGISTER (Supabase) -->
-<div id="login-screen" class="login wrap">
+<!-- SIGNED-OUT PAGE: about LearnReach + sign-in / register (Supabase) -->
+<div id="login-screen" class="lp">
+ <div class="login wrap lp-top">
+  <div class="lp-hero">
+   <div class="lp-intro">
+    <p class="lp-kicker" data-t="lpKicker">Vivanet Solutions Ltd · Open source</p>
+    <h2 class="lp-h" data-t="lpTitle">Learning and wellbeing that reaches every girl</h2>
+    <p class="lp-sub" data-t="lpSub">LearnReach brings lessons and trusted health information to girls in underserved communities, on solar-powered TVs, projectors and radios, with or without internet.</p>
+    <ul class="lp-chips">
+     <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span data-t="lpChipSolar">Solar-powered</span></li>
+     <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg><span data-t="lpChipOffline">Works offline</span></li>
+     <li><b>EN · SW</b><span data-t="lpChipLang">English and Kiswahili</span></li>
+     <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg><span data-t="lpChipOpen">Free and open source</span></li>
+    </ul>
+    <a class="lp-more" href="#lp-what"><span data-t="lpMore">See what we do</span> ↓</a>
+   </div>
   <div class="login-card">
     <div class="row">
       <div class="brand"><span class="sunmark" aria-hidden="true"></span>LearnReach <small>Teacher</small></div>
@@ -1059,6 +1126,59 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
     <p class="demo" id="demo-note" hidden><span data-t="demoNote">Demo mode, no server connected. Test account:</span> <code>user1</code> / <code>1234</code></p>
     <p class="demo" id="auth-msg" role="status" hidden></p>
   </div>
+  </div>
+ </div>
+
+ <section class="lp-sec" id="lp-what" aria-labelledby="lp-what-h">
+  <div class="wrap">
+   <p class="lp-eyebrow" data-t="lpWhatEy">What we do</p>
+   <h2 id="lp-what-h" data-t="lpWhatH">Everything a girls' club needs, on one solar screen</h2>
+   <div class="lp-grid">
+    <article class="lp-card" style="--c:#2f63d6"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/><path d="M10 8l4 2-4 2z" class="fill"/></svg><h3 data-t="lpW1h">Lessons on the classroom screen</h3><p data-t="lpW1p">Maths, English, Kiswahili and Science for Grades 1 to 6, narrated so every girl can follow, on a TV, a projector or the radio.</p></article>
+    <article class="lp-card" style="--c:#b5476b"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><h3 data-t="lpW2h">Health and wellbeing for girls</h3><p data-t="lpW2p">Age-appropriate sessions on menstrual health, mental wellbeing, personal safety and confidence, and reproductive health for girls aged 15 and over.</p></article>
+    <article class="lp-card" style="--c:#c27a12"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><h3 data-t="lpW3h">Works without internet</h3><p data-t="lpW3p">Lessons, narration and class records stay on the device, so sessions run on solar power far from any network. Everything syncs when a connection comes back.</p></article>
+    <article class="lp-card" style="--c:#136f63"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><h3 data-t="lpW4h">Progress, kept private</h3><p data-t="lpW4p">Teachers track attendance, CATs and exams in one gradebook. Wellbeing answers are never recorded, and real girls appear by their initials only.</p></article>
+   </div>
+   <div class="lp-stats" aria-label="LearnReach in numbers">
+    <div><b id="lp-n-mods">5</b><span data-t="lpStatMods">subjects and topics</span></div>
+    <div><b id="lp-n-lessons">57</b><span data-t="lpStatLessons">narrated lessons</span></div>
+    <div><b>1–6</b><span data-t="lpStatGrades">grades, by the CBC</span></div>
+    <div><b>2</b><span data-t="lpStatLangs">languages, English and Kiswahili</span></div>
+   </div>
+  </div>
+ </section>
+
+ <section class="lp-sec lp-alt" aria-labelledby="lp-how-h">
+  <div class="wrap">
+   <p class="lp-eyebrow" data-t="lpHowEy">How it works</p>
+   <h2 id="lp-how-h" data-t="lpHowH">From the syllabus to the screen in four steps</h2>
+   <ol class="lp-steps">
+    <li><h3 data-t="lpS1h">Register once</h3><p data-t="lpS1p">A teacher or facilitator creates an account with internet. After that the portal opens offline on the same device.</p></li>
+    <li><h3 data-t="lpS2h">Plan from the syllabus</h3><p data-t="lpS2p">LearnReach shows which lesson comes next for each grade. Plan the session in a minute.</p></li>
+    <li><h3 data-t="lpS3h">Present to the class</h3><p data-t="lpS3p">Show the lesson on the solar TV or projector with narration, then quizzes and activities the girls do together.</p></li>
+    <li><h3 data-t="lpS4h">See every girl grow</h3><p data-t="lpS4p">CATs and end-of-term exams flow into the gradebook after the teacher approves them, with a report card for each term.</p></li>
+   </ol>
+  </div>
+ </section>
+
+ <section class="lp-sec" aria-labelledby="lp-who-h">
+  <div class="wrap lp-who">
+   <div>
+    <p class="lp-eyebrow" data-t="lpWhoEy">Who we are</p>
+    <h2 id="lp-who-h" data-t="lpWhoH">Built by Vivanet Solutions Ltd, open to everyone</h2>
+    <p data-t="lpWhoP1">LearnReach is a solar-powered learning and wellbeing initiative of Vivanet Solutions Ltd for children in underserved and marginalised communities, with a particular focus on adolescent girls.</p>
+    <p data-t="lpWhoP2">It is open source, so schools, NGOs and development organisations can adopt it, adapt it to their community and help improve it. Our vision: quality information for every child, whatever their location, electricity or internet.</p>
+    <p class="lp-links"><a href="https://github.com/hellenalianya-code/learn" rel="noopener" data-t="lpCode">See the code on GitHub</a><a href="#login-screen" data-t="lpToSignIn">Teacher sign-in ↑</a></p>
+   </div>
+   <ul class="lp-values">
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><div><b data-t="lpV1h">Child data protection</b><span data-t="lpV1p">Only what a teacher needs, kept on the device; no photos of real children.</span></div></li>
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg><div><b data-t="lpV2h">Made for low connectivity</b><span data-t="lpV2p">Light pages that keep working on a phone, a tablet or an old laptop.</span></div></li>
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><div><b data-t="lpV3h">Coming next</b><span data-t="lpV3p">More languages and AI-assisted help to find information in your own language.</span></div></li>
+   </ul>
+  </div>
+ </section>
+
+ <footer class="lp-foot"><div class="wrap"><span>© 2026 Vivanet Solutions Ltd · LearnReach</span><span data-t="lpFoot">Open source under the MIT licence</span></div></footer>
 </div>
 
 <!-- APP -->
@@ -1727,6 +1847,59 @@ function loadState() {
   loadVideos();
 }
 const save = () => { store.set(uk('grades'), grades); store.set(uk('attendance'), attendance); store.set(uk('questions'), questions.filter((q) => !SEED_IDS.has(q.id))); store.set(uk('presented'), presented); store.set(uk('sessions'), sessions); store.set(uk('results'), results); store.set(uk('levels'), levels); };
+
+
+// ---- signed-out page text (EN / SW) ----
+Object.assign(T.en, {
+  lpKicker: 'Vivanet Solutions Ltd · Open source', lpTitle: 'Learning and wellbeing that reaches every girl',
+  lpSub: 'LearnReach brings lessons and trusted health information to girls in underserved communities, on solar-powered TVs, projectors and radios, with or without internet.',
+  lpChipSolar: 'Solar-powered', lpChipOffline: 'Works offline', lpChipLang: 'English and Kiswahili', lpChipOpen: 'Free and open source', lpMore: 'See what we do',
+  lpWhatEy: 'What we do', lpWhatH: "Everything a girls' club needs, on one solar screen",
+  lpW1h: 'Lessons on the classroom screen', lpW1p: 'Maths, English, Kiswahili and Science for Grades 1 to 6, narrated so every girl can follow, on a TV, a projector or the radio.',
+  lpW2h: 'Health and wellbeing for girls', lpW2p: 'Age-appropriate sessions on menstrual health, mental wellbeing, personal safety and confidence, and reproductive health for girls aged 15 and over.',
+  lpW3h: 'Works without internet', lpW3p: 'Lessons, narration and class records stay on the device, so sessions run on solar power far from any network. Everything syncs when a connection comes back.',
+  lpW4h: 'Progress, kept private', lpW4p: 'Teachers track attendance, CATs and exams in one gradebook. Wellbeing answers are never recorded, and real girls appear by their initials only.',
+  lpStatMods: 'subjects and topics', lpStatLessons: 'narrated lessons', lpStatGrades: 'grades, by the CBC', lpStatLangs: 'languages, English and Kiswahili',
+  lpHowEy: 'How it works', lpHowH: 'From the syllabus to the screen in four steps',
+  lpS1h: 'Register once', lpS1p: 'A teacher or facilitator creates an account with internet. After that the portal opens offline on the same device.',
+  lpS2h: 'Plan from the syllabus', lpS2p: 'LearnReach shows which lesson comes next for each grade. Plan the session in a minute.',
+  lpS3h: 'Present to the class', lpS3p: 'Show the lesson on the solar TV or projector with narration, then quizzes and activities the girls do together.',
+  lpS4h: 'See every girl grow', lpS4p: 'CATs and end-of-term exams flow into the gradebook after the teacher approves them, with a report card for each term.',
+  lpWhoEy: 'Who we are', lpWhoH: 'Built by Vivanet Solutions Ltd, open to everyone',
+  lpWhoP1: 'LearnReach is a solar-powered learning and wellbeing initiative of Vivanet Solutions Ltd for children in underserved and marginalised communities, with a particular focus on adolescent girls.',
+  lpWhoP2: 'It is open source, so schools, NGOs and development organisations can adopt it, adapt it to their community and help improve it. Our vision: quality information for every child, whatever their location, electricity or internet.',
+  lpCode: 'See the code on GitHub', lpToSignIn: 'Teacher sign-in ↑',
+  lpV1h: 'Child data protection', lpV1p: 'Only what a teacher needs, kept on the device; no photos of real children.',
+  lpV2h: 'Made for low connectivity', lpV2p: 'Light pages that keep working on a phone, a tablet or an old laptop.',
+  lpV3h: 'Coming next', lpV3p: 'More languages and AI-assisted help to find information in your own language.',
+  lpFoot: 'Open source under the MIT licence',
+});
+Object.assign(T.sw, {
+  lpKicker: 'Vivanet Solutions Ltd · Programu huria', lpTitle: 'Elimu na ustawi unaomfikia kila msichana',
+  lpSub: 'LearnReach inawaletea wasichana wa jamii zisizohudumiwa vya kutosha masomo na taarifa za afya zinazoaminika, kwenye TV, projekta na redio zinazotumia nishati ya jua, iwe kuna intaneti au la.',
+  lpChipSolar: 'Nishati ya jua', lpChipOffline: 'Inafanya kazi bila intaneti', lpChipLang: 'Kiingereza na Kiswahili', lpChipOpen: 'Bure na huria', lpMore: 'Tazama tunachofanya',
+  lpWhatEy: 'Tunachofanya', lpWhatH: 'Kila kitu klabu ya wasichana inachohitaji, kwenye skrini moja ya jua',
+  lpW1h: 'Masomo kwenye skrini ya darasa', lpW1p: 'Hisabati, Kiingereza, Kiswahili na Sayansi kwa Gredi 1 hadi 6, yakisomwa kwa sauti ili kila msichana afuatilie, kwenye TV, projekta au redio.',
+  lpW2h: 'Afya na ustawi wa wasichana', lpW2p: 'Vipindi vinavyofaa umri kuhusu afya ya hedhi, afya ya akili, usalama binafsi na kujiamini, na afya ya uzazi kwa wasichana wa miaka 15 na zaidi.',
+  lpW3h: 'Inafanya kazi bila intaneti', lpW3p: 'Masomo, sauti na kumbukumbu za darasa hukaa kwenye kifaa, kwa hiyo vipindi vinaendeshwa kwa nishati ya jua mbali na mtandao. Kila kitu husawazishwa mtandao ukirudi.',
+  lpW4h: 'Maendeleo, kwa faragha', lpW4p: 'Walimu hufuatilia mahudhurio, CAT na mitihani katika daftari moja la alama. Majibu ya ustawi hayahifadhiwi kamwe, na wasichana halisi huonyeshwa kwa herufi za kwanza za majina yao tu.',
+  lpStatMods: 'masomo na mada', lpStatLessons: 'masomo yenye sauti', lpStatGrades: 'gredi, kwa mtaala wa CBC', lpStatLangs: 'lugha, Kiingereza na Kiswahili',
+  lpHowEy: 'Jinsi inavyofanya kazi', lpHowH: 'Kutoka mtaala hadi skrini kwa hatua nne',
+  lpS1h: 'Jisajili mara moja', lpS1p: 'Mwalimu au mwezeshaji hufungua akaunti akiwa na intaneti. Baada ya hapo lango hufunguka bila intaneti kwenye kifaa hicho hicho.',
+  lpS2h: 'Panga kwa mtaala', lpS2p: 'LearnReach inaonyesha somo linalofuata kwa kila gredi. Panga kipindi kwa dakika moja.',
+  lpS3h: 'Onyesha darasani', lpS3p: 'Onyesha somo kwenye TV ya jua au projekta pamoja na sauti, kisha maswali na shughuli wasichana wanazofanya pamoja.',
+  lpS4h: 'Ona kila msichana akikua', lpS4p: 'CAT na mitihani ya mwisho wa muhula huingia kwenye daftari la alama mwalimu akiziidhinisha, pamoja na ripoti ya kila muhula.',
+  lpWhoEy: 'Sisi ni nani', lpWhoH: 'Imejengwa na Vivanet Solutions Ltd, wazi kwa kila mtu',
+  lpWhoP1: 'LearnReach ni mpango wa elimu na ustawi unaotumia nishati ya jua wa Vivanet Solutions Ltd kwa watoto wa jamii zisizohudumiwa vya kutosha na zilizotengwa, hasa wasichana balehe.',
+  lpWhoP2: 'Ni programu huria, kwa hiyo shule, mashirika yasiyo ya kiserikali na mashirika ya maendeleo yanaweza kuitumia, kuirekebisha kwa jamii yao na kusaidia kuiboresha. Ndoto yetu: taarifa bora kwa kila mtoto, popote alipo, awe na umeme au intaneti au la.',
+  lpCode: 'Tazama msimbo kwenye GitHub', lpToSignIn: 'Kuingia kwa mwalimu ↑',
+  lpV1h: 'Ulinzi wa data za watoto', lpV1p: 'Ni kile tu mwalimu anachohitaji, kinachohifadhiwa kwenye kifaa; hakuna picha za watoto halisi.',
+  lpV2h: 'Imeundwa kwa mtandao hafifu', lpV2p: 'Kurasa nyepesi zinazoendelea kufanya kazi kwenye simu, tableti au kompyuta ya zamani.',
+  lpV3h: 'Kinachokuja', lpV3p: 'Lugha zaidi na msaada wa akili bandia kupata taarifa kwa lugha yako mwenyewe.',
+  lpFoot: 'Programu huria chini ya leseni ya MIT',
+});
+// numbers on the signed-out page come from the lessons themselves
+setTimeout(() => { try { const n = document.getElementById('lp-n-lessons'), m = document.getElementById('lp-n-mods'); if (n) n.textContent = LESSONS.length; if (m) m.textContent = SUBJECTS.length; } catch {} }, 0);
 
 function applyLang() {
   document.documentElement.lang = lang;

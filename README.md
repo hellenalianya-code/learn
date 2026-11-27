@@ -75,12 +75,13 @@ Milestones, learners and sessions, pilot sites, the content library, module comp
 - **Audio-visual lessons:** present any lesson as narrated slides; reading lessons have a Listen button for radio or speaker use. Every lesson is in English and Kiswahili.
 - **Lesson pictures:** original drawings on all slides of the Grade 1–2 Maths, Science and English lessons (shapes, counting, the senses, plants, animals, letters), with Kiswahili labels. They work offline.
 - **Step-by-step picture activities:** for example "How to wear a pad" and one Maths activity per grade.
+- **Teachers add lessons:** a "＋ Add a lesson" button on every syllabus journey in Modules (and in the session planner) adds a lesson at the right place: slides, quiz questions and a video or audio, uploaded or as a YouTube, Google Drive or Vimeo link that plays inside LearnReach. It is in her syllabus at once and shared with other teachers unless she unticks it; no approval, but the admin is notified on the Admin page and can hide a lesson.
 - **Sessions:** start class, take the register (present, late, absent), present, then a short class quiz on the shared device.
 - **End-of-term exams:** one per grade and subject from the lessons taught that term; sat on the tablet (auto-marked) or on a printed paper the teacher marks in; feeds the report card. Catch-up lists show who missed which lesson.
 - **Students and profiles:** club list with level and attendance bar; profiles saved online (Supabase) with guardian consent before sensitive details; report card per term (class questions, CATs, exams later); Close term saves every girl's report; past paper reports can be added.
 - **Teacher analytics:** attendance by week, subject results, girls who need attention, questions to reteach, girls at each grade.
 - **Girls' wellbeing:** menstrual health, mental wellbeing, personal safety and reproductive health (15+), never graded.
-- **Accounts:** teachers register and sign in (Supabase); admins see sign-ins on the Admin page.
+- **Accounts:** teachers register and sign in (Supabase); admins see sign-ins and the lessons teachers added on the Admin page.
 - **Works offline:** the portal opens without internet and uploads changes when the connection comes back.
 
 ## Project structure

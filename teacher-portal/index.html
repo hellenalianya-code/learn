@@ -1058,6 +1058,52 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
 }
 @media (prefers-reduced-motion: no-preference) { html:has(#login-screen:not([hidden])) { scroll-behavior: smooth; } }
 
+
+/* ===== Teacher-added lessons ===== */
+.tl-dlg { width: min(860px, 96vw); }
+.tl-h { grid-template-columns: auto 1fr auto auto; }
+.tl-ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--c); color: #fff; font: 800 1.6rem var(--display); }
+.tl-form { display: flex; flex-direction: column; gap: 14px; overflow: auto; padding: 16px 18px; }
+.tl-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.tl-row .field[hidden] { display: none; }
+.tl-form textarea { width: 100%; font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; resize: vertical; min-height: 140px; }
+.tl-form fieldset { border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px 14px; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.tl-form legend { font-weight: 800; color: #1b2a5a; padding: 0 6px; }
+.tl-radios { display: flex; gap: 8px; flex-wrap: wrap; }
+.tl-radio { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-weight: 700; cursor: pointer; }
+.tl-radio:has(input:checked) { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, #fff); }
+.tl-pane[hidden] { display: none; }
+.tl-pane { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.tl-pane input[type=url] { width: 100%; }
+.tl-linkinfo { margin: 0; color: #2e7d4f; font-weight: 700; } .tl-linkinfo.bad { color: #b3261e; }
+.tl-qlist { display: flex; flex-direction: column; gap: 10px; }
+.tl-q { background: #f7faf9; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.tl-q .tl-qtext { font-weight: 700; }
+.tl-opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px; }
+.tl-opt { display: flex; align-items: center; gap: 6px; }
+.tl-opt input[type=radio] { width: 20px; height: 20px; accent-color: #2e7d4f; flex: none; }
+.tl-opt input.tl-otext { flex: 1; min-width: 0; }
+.tl-q .btn { align-self: flex-end; }
+.tl-share { display: flex; gap: 10px; align-items: flex-start; background: #eef7f4; border-radius: 14px; padding: 12px 14px; cursor: pointer; }
+.tl-share input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: #136f63; }
+.tl-share span { display: flex; flex-direction: column; gap: 2px; }
+.tl-foot { display: flex; align-items: center; gap: 8px; padding: 12px 18px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.tl-foot .grow { flex: 1; } .tl-foot .err { margin: 0; }
+.tl-badge { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.tl-who { font-size: .82rem; font-weight: 800; border-radius: 999px; padding: 3px 10px; background: #fff3d6; color: #6b4b10; }
+.tl-who.mine { background: #e3f3e8; color: #1f6b43; }
+.tl-add { margin-top: 4px; align-self: flex-start; }
+.tl-media { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.tl-media iframe, .tl-media video { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 16px; background: #0d1b1e; }
+.tl-media audio { width: 100%; }
+.tl-media.big { width: min(1100px, 92vw); margin: 0 auto; align-items: stretch; }
+.tl-media.big iframe, .tl-media.big video { max-height: 70vh; }
+.tl-net { background: #fff4e5; border-radius: 12px; padding: 12px 14px; font-weight: 700; color: #6b4b10; margin: 0; }
+.mj-stop.tl-flash .mj-card { animation: syFlash 1.4s ease 2; }
+#ps-newlesson { margin-top: 4px; align-self: flex-start; }
+.adm-new { font-size: .8rem; font-weight: 800; color: #fff; background: #b5476b; border-radius: 999px; padding: 4px 10px; text-decoration: none; white-space: nowrap; }
+.adm-new[hidden] { display: none; }
+
 </style>
 
 <!-- SIGNED-OUT PAGE: about LearnReach + sign-in / register (Supabase) -->
@@ -1194,7 +1240,7 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
           </div>
           <span class="offline-chip" id="offline-chip" hidden data-t="offlineChip">Offline</span>
           <span class="who" id="who"></span>
-          <a class="btn ghost sm" id="admin-link" href="../admin/" hidden data-t="adminL">Admin</a>
+          <a class="btn ghost sm" id="admin-link" href="../admin/" hidden data-t="adminL">Admin</a><a class="adm-new" id="adm-new" href="../admin/#lessons-sec" hidden></a>
           <button class="btn ghost sm" id="logout" type="button" data-t="signOut">Sign out</button>
         </div>
       </div>
@@ -1266,7 +1312,7 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
           <details class="sy-mini" id="sy-mini"><summary><span data-t="syH">Next on the syllabus</span> <span class="chip" id="sy-count"></span></summary><p class="small muted" data-t="sySubMini"></p><ul id="sy-list" class="sy-ul"></ul></details>
           <div class="field"><label for="ps-date" data-t="fDate">Date</label><input id="ps-date" type="date"></div>
           <div class="field"><label for="ps-time" data-t="fTime">Start time</label><input id="ps-time" type="time" value="15:30"></div>
-          <div class="field"><label for="ps-lesson" data-t="qLesson">Lesson</label><select id="ps-lesson"></select></div>
+          <div class="field"><label for="ps-lesson" data-t="qLesson">Lesson</label><select id="ps-lesson"></select><button type="button" class="linkbtn small" id="ps-newlesson" data-t="tlNewInPlanner">＋ Add a new lesson to the syllabus</button></div>
           <p class="small muted" id="ps-who"></p>
           <p class="small" id="ps-picked" aria-live="polite"></p>
           <div class="field"><label for="ps-place" data-t="fPlace">Where</label><input id="ps-place" value="Club room"></div>
@@ -1446,6 +1492,13 @@ button.ex-girl:focus-visible { outline: 3px solid #e08a14; }
   <div class="pv-body" id="pv-body"></div>
   <div class="pv-foot" id="pv-foot"></div>
 </dialog>
+<!-- ADD / EDIT A LESSON -->
+<dialog class="pv tl-dlg" id="tl-dlg" aria-labelledby="tl-h">
+  <div class="pv-h tl-h"><span class="tl-ic" aria-hidden="true">＋</span><div class="pv-who"><h2 id="tl-h"></h2><p class="small" id="tl-sub"></p></div><span></span><button class="pv-x" type="button" id="tl-x" aria-label="Close">✕</button></div>
+  <form class="pv-body tl-form" id="tl-form" novalidate></form>
+  <div class="pv-foot tl-foot"><p class="err" id="tl-err" role="alert"></p><span class="grow"></span><button class="btn ghost" type="button" id="tl-del" hidden></button><button class="btn ghost" type="button" id="tl-cancel"></button><button class="btn" type="submit" form="tl-form" id="tl-save"></button></div>
+</dialog>
+<input type="file" id="tl-file" accept="video/*,audio/*" hidden>
 <!-- STEP-BY-STEP ACTIVITY (light full screen) -->
 <div class="screen act" id="act" hidden role="dialog" aria-modal="true" aria-label="Step-by-step activity">
   <div class="screen-top"><span id="act-who"></span>
@@ -1846,7 +1899,7 @@ function loadState() {
   results = store.get(uk('results'), null) || seedResults();
   loadVideos();
 }
-const save = () => { store.set(uk('grades'), grades); store.set(uk('attendance'), attendance); store.set(uk('questions'), questions.filter((q) => !SEED_IDS.has(q.id))); store.set(uk('presented'), presented); store.set(uk('sessions'), sessions); store.set(uk('results'), results); store.set(uk('levels'), levels); };
+const save = () => { store.set(uk('grades'), grades); store.set(uk('attendance'), attendance); store.set(uk('questions'), questions.filter((q) => !SEED_IDS.has(q.id) && !q.tl)); store.set(uk('presented'), presented); store.set(uk('sessions'), sessions); store.set(uk('results'), results); store.set(uk('levels'), levels); };
 
 
 // ---- signed-out page text (EN / SW) ----
@@ -1973,14 +2026,14 @@ async function afterSignIn(au) {
   enterApp(me, false);
 }
 function enterApp(u, offline) {
-  user = u; loadRoster(); loadState(); mergeLevels(); authMsg('');
+  user = u; loadRoster(); loadState(); tlLoad(); mergeLevels(); authMsg('');
   $('#login-screen').hidden = true; $('#app').hidden = false;
   $('#teacher-name').textContent = user.name;
   $('#class-line').textContent = [user.site, `${lang === 'sw' ? 'Umri' : 'Ages'} ${user.ages}`].filter(Boolean).join(' · ');
   $('#who').textContent = user.email || '';
   $('#offline-chip').hidden = !offline;
   $('#admin-link').hidden = user.role !== 'admin';
-  show('class'); renderAll(); updateSyncLine(); syncPupils();
+  show('class'); renderAll(); updateSyncLine(); syncPupils(); syncLessons();
   if (offline) toast(t('offlineIn'));
 }
 
@@ -2312,6 +2365,263 @@ function renderSyllabus() {
   const ln = lifeNext(); if (ln) { box.append(syCard('life', null, ln)); if (!ln.planned) n++; }
   $('#sy-count').textContent = n + ' ' + t('syToPlan');
 }
+
+// ---- teacher-added lessons ----
+Object.assign(T.en, { tlAdd: 'Add a lesson', tlAddH: 'Add a lesson to the syllabus', tlEditH: 'Edit your lesson', tlSubAdd: 'It appears in your syllabus straight away.', tlSubject: 'Subject', tlGrade: 'Grade', tlTopic: 'Life Skills topic', tlAfter: 'Place it after', tlFirst: 'At the start', tlTitle: 'Lesson title', tlLang: 'Language of the lesson', tlType: 'Type', tlMin: 'Minutes', tlBody: 'What the lesson says', tlBodyHint: 'Each paragraph becomes one slide on the classroom screen. Leave an empty line between paragraphs.', tlMedia: 'Video or audio (optional)', tlNone: 'None', tlLink: 'Link', tlUpload: 'Upload a file', tlLinkPh: 'Paste a YouTube, Google Drive or Vimeo link, or a link to a video or audio file', tlChoose: 'Choose a video or audio file', tlFileNote: 'Up to 50 MB. It is kept on this device too, so it plays without internet.', tlCurrent: 'Current file:', tlQs: 'Quiz questions (optional)', tlQ: 'Question', tlOpt: 'Choice', tlRight: 'Correct', tlAddQ: '＋ Add a question', tlRemoveQ: 'Remove', tlShare: 'Share this lesson with all LearnReach teachers', tlShareHint: 'Other teachers will see it in the same place in their syllabus. The admin is told about every new lesson.', tlSave: 'Save lesson', tlCancel: 'Cancel', tlDelete: 'Delete lesson', tlConfirmDel: 'Tap again to delete', tlSaved: 'Lesson saved. It is in the syllabus now.', tlDeleted: 'Lesson deleted', tlNeedTitle: 'Write a title for the lesson.', tlNeedBody: 'Write at least one paragraph for the lesson.', tlBadLink: 'That link does not look right. Copy the whole address from the browser.', tlTooBig: 'That file is bigger than 50 MB. Choose a smaller one or use a link.', tlNeedFile: 'Choose a file to upload, or pick None.', tlQIncomplete: 'Each question needs its text, two choices and the correct one ticked.', tlYours: 'Your lesson', tlOnlyYou: 'only you', tlSharedBy: 'Added by {n}', tlEdit: '✎ Edit', tlHideMine: 'Hide from my syllabus', tlHidden: 'Hidden from your syllabus', tlYT: 'YouTube video', tlDrive: 'Google Drive file', tlVimeo: 'Vimeo video', tlFileLink: 'Video or audio file', tlOtherLink: 'Web page (some sites do not allow playing inside LearnReach)', tlNeedsNet: 'This video needs internet. Connect to play it here.', tlOpenNew: 'Open in a new tab', tlUploading: 'The file is uploading; other teachers can play it once it is online.', tlKeep: 'Keep for offline', tlKept: 'Saved on this device for offline use', tlSyncErr: 'A lesson could not be saved online. It is kept on this device.', tlNewInPlanner: '＋ Add a new lesson to the syllabus', tlAdmNew: '{n} new lessons', tlTaughtNoDel: 'This lesson has been taught, so it stays in the class record. You can still edit it.', Reading: 'Reading', Video: 'Video', Audio: 'Audio' });
+Object.assign(T.sw, { tlAdd: 'Ongeza somo', tlAddH: 'Ongeza somo kwenye mtaala', tlEditH: 'Hariri somo lako', tlSubAdd: 'Linaonekana kwenye mtaala wako mara moja.', tlSubject: 'Somo', tlGrade: 'Gredi', tlTopic: 'Mada ya Stadi za maisha', tlAfter: 'Liweke baada ya', tlFirst: 'Mwanzoni', tlTitle: 'Kichwa cha somo', tlLang: 'Lugha ya somo', tlType: 'Aina', tlMin: 'Dakika', tlBody: 'Maudhui ya somo', tlBodyHint: 'Kila aya inakuwa slaidi moja kwenye skrini ya darasa. Acha mstari mtupu kati ya aya.', tlMedia: 'Video au sauti (si lazima)', tlNone: 'Hakuna', tlLink: 'Kiungo', tlUpload: 'Pakia faili', tlLinkPh: 'Bandika kiungo cha YouTube, Google Drive au Vimeo, au kiungo cha faili ya video au sauti', tlChoose: 'Chagua faili ya video au sauti', tlFileNote: 'Hadi MB 50. Inahifadhiwa pia kwenye kifaa hiki, kwa hiyo inacheza bila intaneti.', tlCurrent: 'Faili ya sasa:', tlQs: 'Maswali ya jaribio (si lazima)', tlQ: 'Swali', tlOpt: 'Chaguo', tlRight: 'Sahihi', tlAddQ: '＋ Ongeza swali', tlRemoveQ: 'Ondoa', tlShare: 'Shiriki somo hili na walimu wote wa LearnReach', tlShareHint: 'Walimu wengine wataliona mahali hapo hapo kwenye mtaala wao. Msimamizi huarifiwa kuhusu kila somo jipya.', tlSave: 'Hifadhi somo', tlCancel: 'Ghairi', tlDelete: 'Futa somo', tlConfirmDel: 'Gusa tena kufuta', tlSaved: 'Somo limehifadhiwa. Liko kwenye mtaala sasa.', tlDeleted: 'Somo limefutwa', tlNeedTitle: 'Andika kichwa cha somo.', tlNeedBody: 'Andika angalau aya moja ya somo.', tlBadLink: 'Kiungo hicho hakionekani sawa. Nakili anwani nzima kutoka kwenye kivinjari.', tlTooBig: 'Faili hiyo ni kubwa kuliko MB 50. Chagua ndogo zaidi au tumia kiungo.', tlNeedFile: 'Chagua faili ya kupakia, au chagua Hakuna.', tlQIncomplete: 'Kila swali linahitaji maandishi, chaguo mbili na jibu sahihi limewekwa alama.', tlYours: 'Somo lako', tlOnlyYou: 'wewe tu', tlSharedBy: 'Limeongezwa na {n}', tlEdit: '✎ Hariri', tlHideMine: 'Ficha kwenye mtaala wangu', tlHidden: 'Limefichwa kwenye mtaala wako', tlYT: 'Video ya YouTube', tlDrive: 'Faili ya Google Drive', tlVimeo: 'Video ya Vimeo', tlFileLink: 'Faili ya video au sauti', tlOtherLink: 'Ukurasa wa wavuti (baadhi ya tovuti haziruhusu kucheza ndani ya LearnReach)', tlNeedsNet: 'Video hii inahitaji intaneti. Unganisha ili uicheze hapa.', tlOpenNew: 'Fungua kwenye kichupo kipya', tlUploading: 'Faili inapakiwa; walimu wengine wataicheza ikishafika mtandaoni.', tlKeep: 'Hifadhi kwa matumizi bila intaneti', tlKept: 'Imehifadhiwa kwenye kifaa hiki kwa matumizi bila intaneti', tlSyncErr: 'Somo halikuweza kuhifadhiwa mtandaoni. Limehifadhiwa kwenye kifaa hiki.', tlNewInPlanner: '＋ Ongeza somo jipya kwenye mtaala', tlAdmNew: 'masomo mapya {n}', tlTaughtNoDel: 'Somo hili limeshafundishwa, kwa hiyo linabaki kwenye kumbukumbu za darasa. Bado unaweza kulihariri.', Reading: 'Kusoma', Video: 'Video', Audio: 'Sauti' });
+
+let tLessons = [], tlSyncing = false;
+const tlKey = () => 'tlessons_' + (DEMO ? 'demo' : (user && user.id));
+const tlQKey = () => 'tlQueue_' + (DEMO ? 'demo' : (user && user.id));
+const tlHideKey = () => 'tlHidden_' + (DEMO ? 'demo' : (user && user.id));
+const tlUid = () => (DEMO ? 'demo' : user && user.id);
+const tlUuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
+const tlMine = (r) => r.teacher_id === tlUid();
+function tlLoad() { tLessons = store.get(tlKey(), []); applyTeacherLessons(); }
+function tlPersist() { store.set(tlKey(), tLessons); }
+function tlQueue(item) { const q = store.get(tlQKey(), []).filter((x) => !(x.id === item.id && x.op === item.op)); q.push(item); store.set(tlQKey(), q); }
+
+// Put the visible teacher lessons into LESSONS (after the lesson each one follows) and their questions into the question bank.
+function applyTeacherLessons() {
+  for (let i = LESSONS.length - 1; i >= 0; i--) if (LESSONS[i].tl) LESSONS.splice(i, 1);
+  if (Array.isArray(questions)) questions = questions.filter((q) => !q.tl);
+  const hid = new Set(store.get(tlHideKey(), []));
+  const used = new Set((typeof sessions !== 'undefined' && Array.isArray(sessions) ? sessions : []).map((x) => x.lesson));
+  let pending = tLessons.filter((r) => tlMine(r) || used.has('tl-' + r.id) || (r.shared && !r.hidden && !hid.has(r.id))).slice().sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+  const place = (r, force) => {
+    const l = biLesson({ id: 'tl-' + r.id, mod: r.mod, format: r.format || 'Reading', min: r.minutes || 20, title: r.title, lang: r.lang, body: Array.isArray(r.body) ? r.body : [], tl: r });
+    if (r.grade) l.grade = r.grade;
+    const same = (x) => x.mod === r.mod && (r.grade ? x.grade === r.grade : true);
+    let idx;
+    if (!r.after_id) { idx = LESSONS.findIndex(same); if (idx < 0) idx = LESSONS.length; }
+    else { const a = LESSONS.findIndex((x) => x.id === r.after_id); if (a < 0 && !force) return false; if (a >= 0) idx = a + 1; else { const last = LESSONS.map((x, i) => (same(x) ? i : -1)).filter((i) => i >= 0).pop(); idx = last == null ? LESSONS.length : last + 1; } }
+    LESSONS.splice(idx, 0, l);
+    if (Array.isArray(questions)) (r.questions || []).forEach((q, i) => { if (q && q.text && Array.isArray(q.opts) && q.opts.length >= 2) questions.push({ id: 'tlq-' + r.id + '-' + i, lesson: l.id, type: 'mc', text: q.text, opts: q.opts, a: q.a | 0, tl: true }); });
+    return true;
+  };
+  for (let pass = 0; pass < 6 && pending.length; pass++) pending = pending.filter((r) => !place(r, false));
+  pending.forEach((r) => place(r, true));
+}
+
+// ---- sync with Supabase (send what was saved offline, then fetch every lesson this teacher may see) ----
+async function syncLessons() {
+  if (DEMO || !sb || !user || tlSyncing) return;
+  if (!online()) return;
+  tlSyncing = true; const keep = [];
+  try {
+    const q = store.get(tlQKey(), []);
+    for (const it of q) {
+      try {
+        let error = null;
+        if (it.op === 'upload') {
+          const row = tLessons.find((r) => r.id === it.id), blob = await idbDo('readonly', (st) => st.get('tl-' + it.id));
+          if (row && blob && row.media && row.media.kind === 'file') {
+            const path = tlUid() + '/' + it.id + '-' + String(row.media.name || 'media').toLowerCase().replace(/[^a-z0-9.]+/g, '-').slice(-60);
+            ({ error } = await sb.storage.from('lesson-media').upload(path, blob, { upsert: true, contentType: blob.type || row.media.type || undefined }));
+            if (!error) { const { data } = sb.storage.from('lesson-media').getPublicUrl(path); row.media = { ...row.media, url: data.publicUrl, path, pending: false }; tlPersist(); }
+          }
+        } else if (it.op === 'up') {
+          const row = tLessons.find((r) => r.id === it.id);
+          if (row) { const { hidden, admin_seen, ...send } = row; ({ error } = await sb.from('teacher_lessons').upsert(send, { onConflict: 'id' })); }
+        } else if (it.op === 'delfile') {
+          if (it.path) ({ error } = await sb.storage.from('lesson-media').remove([it.path]));
+        } else if (it.op === 'del') {
+          ({ error } = await sb.from('teacher_lessons').delete().eq('id', it.id));
+          if (!error && it.path) await sb.storage.from('lesson-media').remove([it.path]);
+        }
+        if (error) { if (['42501', '23514', '23502', '22P02', '23505'].includes(String(error.code || ''))) { console.warn('lesson sync', error); toast(t('tlSyncErr')); } else keep.push(it); } // keep it and try again later (offline, or the table is not set up yet)
+      } catch { keep.push(it); }
+    }
+    const sent = new Set(q.map((x) => x.op + x.id));
+    store.set(tlQKey(), store.get(tlQKey(), []).filter((x) => !sent.has(x.op + x.id)).concat(keep));
+    const { data, error } = await sb.from('teacher_lessons').select('*').order('created_at');
+    if (!error && Array.isArray(data)) {
+      const waiting = new Set(store.get(tlQKey(), []).map((x) => x.id)), gone = new Set(store.get(tlQKey(), []).filter((x) => x.op === 'del').map((x) => x.id));
+      const local = new Map(tLessons.map((r) => [r.id, r]));
+      tLessons = data.filter((r) => !gone.has(r.id)).map((r) => (waiting.has(r.id) && local.get(r.id)) || r);
+      local.forEach((r, id) => { if (!gone.has(id) && !tLessons.some((x) => x.id === id) && (waiting.has(id) || sessions.some((x) => x.lesson === 'tl-' + id))) tLessons.push(r); });
+      tlPersist(); applyTeacherLessons(); if (user) renderAll();
+      // the admin sees how many teacher lessons she has not looked at yet
+      const an = $('#adm-new'); if (an) { const n = user.role === 'admin' ? data.filter((r) => !r.admin_seen).length : 0; an.hidden = !n; an.textContent = n ? '🔔 ' + t('tlAdmNew').replace('{n}', n) : ''; }
+    }
+  } catch { /* try again when online */ } finally { tlSyncing = false; }
+}
+window.addEventListener('online', () => syncLessons());
+
+// ---- media: a link that plays inside LearnReach, or an uploaded file ----
+function tlLinkInfo(url) {
+  let u; try { u = new URL(String(url || '').trim()); } catch { return null; }
+  if (!/^https?:$/.test(u.protocol)) return null;
+  const h = u.hostname.replace(/^www\.|^m\./, '');
+  let id;
+  if (h === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+  else if (/(^|\.)youtube(-nocookie)?\.com$/.test(h)) id = u.searchParams.get('v') || (u.pathname.match(/\/(embed|shorts|live|v)\/([\w-]{6,})/) || [])[2];
+  if (id && /^[\w-]{6,}$/.test(id)) { const st = parseInt(u.searchParams.get('t') || u.searchParams.get('start') || '0', 10) || 0; return { kind: 'youtube', src: 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0&modestbranding=1' + (st ? '&start=' + st : ''), label: 'tlYT' }; }
+  if (h === 'drive.google.com' || h === 'docs.google.com') { const d = (u.pathname.match(/\/d\/([\w-]{10,})/) || [])[1] || u.searchParams.get('id'); if (d) return { kind: 'drive', src: 'https://drive.google.com/file/d/' + d + '/preview', label: 'tlDrive' }; }
+  if (h === 'vimeo.com' || h === 'player.vimeo.com') { const v = (u.pathname.match(/(\d{6,})/) || [])[1]; if (v) return { kind: 'vimeo', src: 'https://player.vimeo.com/video/' + v, label: 'tlVimeo' }; }
+  if (/\.(mp4|webm|ogv|ogg|mov|m4v)$/i.test(u.pathname)) return { kind: 'file', src: u.href, type: 'video', label: 'tlFileLink' };
+  if (/\.(mp3|m4a|aac|wav|oga|opus)$/i.test(u.pathname)) return { kind: 'file', src: u.href, type: 'audio', label: 'tlFileLink' };
+  return { kind: 'link', src: u.href, label: 'tlOtherLink' };
+}
+function tlHasMedia(l) { const md = l && l.tl && l.tl.media; return !!(md && (md.url || md.kind === 'file')); }
+function tlMediaEl(l, big) {
+  const md = l && l.tl && l.tl.media; if (!md) return null;
+  const box = el('div', 'tl-media' + (big ? ' big' : ''));
+  const local = videoUrls[l.id];
+  if (md.kind === 'file' || (md.kind !== 'link' && tlLinkInfo(md.url)?.kind === 'file')) {
+    const src = local || md.url; if (!src) { box.append(el('p', 'small muted', t('tlUploading'))); return box; }
+    const isAudio = /^audio\//.test(md.type || '') || tlLinkInfo(md.url)?.type === 'audio';
+    const v = el(isAudio ? 'audio' : 'video'); v.controls = true; v.preload = 'metadata'; v.src = src; v.setAttribute('playsinline', ''); box.append(v);
+    if (!local && md.url && !big) { const k = btn('⬇ ' + t('tlKeep'), 'ghost sm', async () => { try { const b = await (await fetch(md.url)).blob(); await idbDo('readwrite', (st) => st.put(b, l.id)); videoUrls[l.id] = URL.createObjectURL(b); toast(t('tlKept')); k.remove(); } catch { toast(t('videoFail')); } }); box.append(k); }
+    return box;
+  }
+  const info = tlLinkInfo(md.url); if (!info) return null;
+  if (!online()) { box.append(el('p', 'tl-net', '📶 ' + t('tlNeedsNet'))); return box; }
+  const fr = el('iframe'); fr.src = info.src; fr.title = l.title; fr.loading = 'lazy'; fr.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; fr.allowFullscreen = true; fr.referrerPolicy = 'strict-origin-when-cross-origin';
+  box.append(fr);
+  if (info.kind === 'link') { const a = el('a', 'small', t('tlOpenNew') + ' ↗'); a.href = info.src; a.target = '_blank'; a.rel = 'noopener'; box.append(a); }
+  return box;
+}
+
+// ---- badges and actions on a teacher lesson (journey card, lesson page) ----
+function tlInfo(l) {
+  const r = l.tl, d = el('div', 'tl-badge');
+  if (tlMine(r)) { d.append(el('span', 'tl-who mine', '✎ ' + t('tlYours') + (r.shared ? '' : ' · ' + t('tlOnlyYou')))); d.append(btn(t('tlEdit'), 'ghost sm', () => openLessonForm({ id: r.id }))); }
+  else { d.append(el('span', 'tl-who', '👩🏾‍🏫 ' + t('tlSharedBy').replace('{n}', r.teacher_name || '—'))); d.append(btn(t('tlHideMine'), 'ghost sm', () => { store.set(tlHideKey(), [...new Set([...store.get(tlHideKey(), []), r.id])]); applyTeacherLessons(); renderAll(); if (!$('#view-lesson').hidden) show('modules'); toast(t('tlHidden')); })); }
+  return d;
+}
+function tlAddBtn(ctx) { const b = btn('＋ ' + t('tlAdd'), 'sm sun tl-add', () => openLessonForm(ctx)); b.id = 'tl-add-' + (ctx.grade ? ctx.subject + '-' + ctx.grade : ctx.mod); return b; }
+
+// ---- the form ----
+let tlCtx = null, tlFile = null;
+function tlLessonsAt(modId, grade, skipId) { return LESSONS.filter((x) => x.mod === modId && (grade ? x.grade === grade : true) && x.id !== skipId); }
+function openLessonForm(ctx) {
+  const row = ctx.id ? tLessons.find((r) => r.id === ctx.id) : null;
+  const subj = row ? row.subject : ctx.subject || 'maths';
+  tlCtx = { ...ctx, row }; tlFile = null;
+  const f = $('#tl-form'); f.replaceChildren();
+  const field = (label, input, hint, id) => { const w = el('div', 'field'); const lb = el('label', null, label); if (id) lb.htmlFor = id; w.append(lb, input); if (hint) w.append(el('span', 'small muted', hint)); return w; };
+  const sel = (id, opts, v) => { const s = el('select'); s.id = id; opts.forEach(([val, txt]) => s.append(new Option(txt, val))); if (v != null) s.value = String(v); return s; };
+  // where: subject, grade or topic, place after
+  const sS = sel('tl-subj', SUBJECTS.map((s) => [s.id, s.name[lang]]), subj);
+  const sG = sel('tl-grade', [1, 2, 3, 4, 5, 6].map((g) => [g, t('grade') + ' ' + g]), row ? row.grade : ctx.grade || 1);
+  const sT = sel('tl-topic', MODULES.filter((m) => m.area === 'well').map((m) => [m.id, m.name[lang]]), row ? row.mod : (MODULES.find((m) => m.id === ctx.mod && m.area === 'well') || {}).id || 'men');
+  const sA = sel('tl-after', []);
+  const wG = field(t('tlGrade'), sG, null, 'tl-grade'), wT = field(t('tlTopic'), sT, null, 'tl-topic');
+  const refill = (keep) => {
+    const life = sS.value === 'life'; wG.hidden = life; wT.hidden = !life;
+    const m = life ? mod(sT.value) : MODULES.find((x) => x.subject === sS.value && x.area === 'learn');
+    const list = tlLessonsAt(m.id, life ? null : +sG.value, row ? 'tl-' + row.id : null);
+    sA.replaceChildren(new Option(t('tlFirst'), ''), ...list.map((x, i) => new Option((i + 1) + '. ' + x.title, x.id)));
+    const want = keep !== undefined ? keep : list.length ? list[list.length - 1].id : '';
+    sA.value = [...sA.options].some((o) => o.value === want) ? want : (list.length ? list[list.length - 1].id : '');
+    const fixed = FIXED_LANG[sS.value]; sL.disabled = !!fixed; if (fixed) sL.value = fixed;
+  };
+  const sL = sel('tl-lang', [['English', LANGS[lang].English], ['Swahili', LANGS[lang].Swahili]], row ? row.lang : FIXED_LANG[subj] || (lang === 'sw' ? 'Swahili' : 'English'));
+  sS.addEventListener('change', () => refill()); sG.addEventListener('change', () => refill()); sT.addEventListener('change', () => refill());
+  const where = el('div', 'tl-row'); where.append(field(t('tlSubject'), sS, null, 'tl-subj'), wG, wT, field(t('tlAfter'), sA, null, 'tl-after'));
+  // what
+  const iT = el('input'); iT.id = 'tl-title'; iT.maxLength = 160; iT.value = row ? row.title : ''; iT.autocomplete = 'off';
+  const sF = sel('tl-format', ['Reading', 'Video', 'Audio'].map((x) => [x, t(x)]), row ? row.format : 'Reading');
+  const iM = el('input'); iM.id = 'tl-min'; iM.type = 'number'; iM.min = 5; iM.max = 180; iM.step = 5; iM.value = row ? row.minutes : 20;
+  const meta = el('div', 'tl-row'); meta.append(field(t('tlLang'), sL, null, 'tl-lang'), field(t('tlType'), sF, null, 'tl-format'), field(t('tlMin'), iM, null, 'tl-min'));
+  const tB = el('textarea'); tB.id = 'tl-body'; tB.rows = 7; tB.value = row ? (row.body || []).join('\n\n') : '';
+  // media
+  const md = row && row.media;
+  const mWrap = el('fieldset', 'tl-mediaf'); mWrap.append(el('legend', null, t('tlMedia')));
+  const radios = el('div', 'tl-radios'); let mode = md ? (md.kind === 'file' ? 'file' : 'link') : 'none';
+  const iL = el('input'); iL.id = 'tl-link'; iL.type = 'url'; iL.placeholder = t('tlLinkPh'); iL.value = md && md.kind !== 'file' ? md.url || '' : ''; iL.autocomplete = 'off';
+  const lInfo = el('p', 'small tl-linkinfo'); const showInfo = () => { const i = tlLinkInfo(iL.value); lInfo.textContent = !iL.value.trim() ? '' : i ? '✓ ' + t(i.label) : '✗ ' + t('tlBadLink'); lInfo.classList.toggle('bad', !!iL.value.trim() && !i); if (i && i.kind !== 'link' && $('#tl-format') && $('#tl-format').value === 'Reading') $('#tl-format').value = i.type === 'audio' ? 'Audio' : 'Video'; };
+  iL.addEventListener('input', showInfo); showInfo();
+  const pick = btn('📁 ' + t('tlChoose'), 'ghost sm', () => $('#tl-file').click()); pick.id = 'tl-pick';
+  const fName = el('span', 'small', md && md.kind === 'file' ? t('tlCurrent') + ' ' + (md.name || '') : '');
+  const pL = el('div', 'tl-pane'); pL.append(iL, lInfo);
+  const pF = el('div', 'tl-pane'); pF.append(pick, fName, el('p', 'small muted', t('tlFileNote')));
+  [['none', t('tlNone')], ['link', t('tlLink')], ['file', t('tlUpload')]].forEach(([v, txt]) => { const lb = el('label', 'tl-radio'); const r = el('input'); r.type = 'radio'; r.name = 'tl-mode'; r.value = v; r.checked = v === mode; r.id = 'tl-mode-' + v; r.addEventListener('change', () => { mode = v; pL.hidden = v !== 'link'; pF.hidden = v !== 'file'; }); lb.append(r, document.createTextNode(' ' + txt)); radios.append(lb); });
+  pL.hidden = mode !== 'link'; pF.hidden = mode !== 'file';
+  mWrap.append(radios, pL, pF);
+  $('#tl-file').onchange = (e) => { const file = e.target.files[0]; e.target.value = ''; if (!file) return; if (file.size > 50 * 1024 * 1024) { $('#tl-err').textContent = t('tlTooBig'); return; } tlFile = file; fName.textContent = '✓ ' + file.name + ' (' + (file.size / 1048576).toFixed(1) + ' MB)'; $('#tl-err').textContent = ''; if (/^audio\//.test(file.type)) sF.value = 'Audio'; else if (/^video\//.test(file.type)) sF.value = 'Video'; };
+  // questions
+  const qWrap = el('fieldset', 'tl-qs'); qWrap.append(el('legend', null, t('tlQs')));
+  const qList = el('div', 'tl-qlist');
+  const addQ = (q) => {
+    const n = qList.children.length; if (n >= 10) return;
+    const card = el('div', 'tl-q'); const qi = el('input', 'tl-qtext'); qi.placeholder = t('tlQ') + ' ' + (n + 1); qi.value = q ? q.text : ''; qi.setAttribute('aria-label', t('tlQ') + ' ' + (n + 1));
+    const opts = el('div', 'tl-opts'); const nm = 'tl-right-' + Date.now() + '-' + n;
+    for (let i = 0; i < 4; i++) { const o = el('label', 'tl-opt'); const r = el('input'); r.type = 'radio'; r.name = nm; r.value = i; r.checked = q ? (q.a | 0) === i : i === 0; r.title = t('tlRight'); r.setAttribute('aria-label', t('tlRight') + ' ' + String.fromCharCode(65 + i)); const oi = el('input', 'tl-otext'); oi.placeholder = t('tlOpt') + ' ' + String.fromCharCode(65 + i); oi.value = q && q.opts[i] || ''; o.append(r, oi); opts.append(o); }
+    const rm = btn(t('tlRemoveQ'), 'ghost sm', () => card.remove());
+    card.append(qi, opts, rm); qList.append(card);
+  };
+  (row ? row.questions || [] : []).forEach(addQ);
+  const addQb = btn(t('tlAddQ'), 'ghost sm', () => { addQ(null); qList.lastChild?.querySelector('input')?.focus(); }); addQb.id = 'tl-addq';
+  qWrap.append(qList, addQb);
+  // sharing
+  const sh = el('label', 'tl-share'); const cb = el('input'); cb.type = 'checkbox'; cb.id = 'tl-shared'; cb.checked = row ? !!row.shared : true;
+  const shTxt = el('span'); shTxt.append(el('b', null, t('tlShare')), el('span', 'small muted', t('tlShareHint'))); sh.append(cb, shTxt);
+  f.append(where, field(t('tlTitle'), iT, null, 'tl-title'), meta, field(t('tlBody'), tB, t('tlBodyHint'), 'tl-body'), mWrap, qWrap, sh);
+  refill(row ? row.after_id || '' : ctx.after);
+  // header and buttons
+  $('#tl-h').textContent = row ? t('tlEditH') : t('tlAddH'); $('#tl-sub').textContent = row ? row.title : t('tlSubAdd');
+  $('#tl-save').textContent = t('tlSave'); $('#tl-cancel').textContent = t('tlCancel'); $('#tl-err').textContent = '';
+  const del = $('#tl-del'); del.hidden = !row; del.textContent = t('tlDelete'); delete del.dataset.armed;
+  const dlg = $('#tl-dlg'); dlg.style.setProperty('--c', sS.value === 'life' ? '#b5476b' : SUBJ_COL[sS.value] || '#136f63');
+  if (!dlg.open) dlg.showModal(); setTimeout(() => (row ? iT : iT).focus(), 30);
+}
+function tlCollect() {
+  const life = $('#tl-subj').value === 'life', subject = $('#tl-subj').value;
+  const m = life ? mod($('#tl-topic').value) : MODULES.find((x) => x.subject === subject && x.area === 'learn');
+  const title = $('#tl-title').value.trim(), body = $('#tl-body').value.split(/\n\s*\n/).map((p) => p.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  if (!title) return { err: t('tlNeedTitle'), focus: '#tl-title' };
+  if (!body.length) return { err: t('tlNeedBody'), focus: '#tl-body' };
+  const mode = (document.querySelector('input[name="tl-mode"]:checked') || {}).value || 'none';
+  const row = tlCtx.row; let media = null;
+  if (mode === 'link') { const v = $('#tl-link').value.trim(); const i = tlLinkInfo(v); if (!i) return { err: t('tlBadLink'), focus: '#tl-link' }; media = { kind: i.kind, url: v, type: i.type || null }; }
+  if (mode === 'file') { if (tlFile) media = { kind: 'file', name: tlFile.name, type: tlFile.type, size: tlFile.size, pending: true }; else if (row && row.media && row.media.kind === 'file') media = row.media; else return { err: t('tlNeedFile'), focus: '#tl-pick' }; }
+  const qs = []; let bad = false;
+  document.querySelectorAll('#tl-form .tl-q').forEach((c) => {
+    const text = c.querySelector('.tl-qtext').value.trim(), inputs = [...c.querySelectorAll('.tl-otext')], right = +((c.querySelector('input[type=radio]:checked') || {}).value || 0);
+    if (!text && inputs.every((x) => !x.value.trim())) return;
+    const opts = [], map = {}; inputs.forEach((x, i) => { const v = x.value.trim(); if (v) { map[i] = opts.length; opts.push(v); } });
+    if (!text || opts.length < 2 || !(right in map)) { bad = true; return; }
+    qs.push({ text, opts, a: map[right] });
+  });
+  if (bad) return { err: t('tlQIncomplete') };
+  const now = new Date().toISOString();
+  return { row: { id: row ? row.id : tlUuid(), teacher_id: row ? row.teacher_id : tlUid(), teacher_name: (user && user.name) || '', subject, mod: m.id, grade: life ? null : +$('#tl-grade').value, after_id: $('#tl-after').value || null, title, lang: $('#tl-lang').value, format: $('#tl-format').value, minutes: Math.max(5, Math.min(180, +$('#tl-min').value || 20)), body, questions: qs, media, shared: $('#tl-shared').checked, created_at: row ? row.created_at : now, updated_at: now } };
+}
+$('#tl-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const c = tlCollect(); if (c.err) { $('#tl-err').textContent = c.err; if (c.focus) $(c.focus)?.focus(); return; }
+  const r = c.row, old = tLessons.find((x) => x.id === r.id);
+  if (old && old.media && old.media.path && (!r.media || r.media.path !== old.media.path) && tlFile) tlQueue({ op: 'delfile', id: r.id, path: old.media.path });
+  if (tlFile) { try { await idbDo('readwrite', (st) => st.put(tlFile, 'tl-' + r.id)); if (videoUrls['tl-' + r.id]) URL.revokeObjectURL(videoUrls['tl-' + r.id]); videoUrls['tl-' + r.id] = URL.createObjectURL(tlFile); } catch {} if (!DEMO) tlQueue({ op: 'upload', id: r.id }); }
+  else if (old && old.media && old.media.kind === 'file' && (!r.media || r.media.kind !== 'file')) { try { await idbDo('readwrite', (st) => st.delete('tl-' + r.id)); } catch {} delete videoUrls['tl-' + r.id]; }
+  if (DEMO && r.media && r.media.kind === 'file') r.media.pending = false;
+  if (old) Object.assign(old, r); else tLessons.push(r);
+  tlPersist(); if (!DEMO) tlQueue({ op: 'up', id: r.id });
+  applyTeacherLessons();
+  $('#tl-dlg').close(); toast(t('tlSaved'));
+  if (tlCtx.fromPlanner) { renderAll(); pickInPlanner('tl-' + r.id); }
+  else { if (r.subject === 'life') { modNav.subject = 'life'; modNav.key = r.mod; } else { modNav.subject = r.subject; modNav.key = r.grade; } renderAll(); if (!$('#view-lesson').hidden && currentLesson === 'tl-' + r.id) renderLesson(currentLesson); else show('modules'); setTimeout(() => { const n = [...document.querySelectorAll('.mj-stop.lesson')].find((x) => x.querySelector('.lesson-row button')?.textContent === r.title); n?.scrollIntoView({ block: 'center', behavior: 'smooth' }); n?.classList.add('tl-flash'); }, 80); }
+  syncLessons();
+});
+$('#tl-del').addEventListener('click', async (e) => {
+  const b = e.currentTarget, r = tlCtx && tlCtx.row; if (!r) return;
+  if (sessions.some((x) => x.lesson === 'tl-' + r.id && isDone(x))) { $('#tl-err').textContent = t('tlTaughtNoDel'); return; }
+  if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = t('tlConfirmDel'); setTimeout(() => { if (b.dataset.armed) { delete b.dataset.armed; b.textContent = t('tlDelete'); } }, 3000); return; }
+  sessions = sessions.filter((x) => x.lesson !== 'tl-' + r.id); save();
+  tLessons = tLessons.filter((x) => x.id !== r.id); tlPersist();
+  store.set(tlQKey(), store.get(tlQKey(), []).filter((x) => x.id !== r.id));
+  if (!DEMO) tlQueue({ op: 'del', id: r.id, path: r.media && r.media.path || null });
+  try { await idbDo('readwrite', (st) => st.delete('tl-' + r.id)); } catch {} delete videoUrls['tl-' + r.id];
+  applyTeacherLessons(); $('#tl-dlg').close(); toast(t('tlDeleted'));
+  if (!$('#view-lesson').hidden && currentLesson === 'tl-' + r.id) show('modules');
+  renderAll(); syncLessons();
+});
+$('#tl-cancel').addEventListener('click', () => $('#tl-dlg').close());
+$('#tl-x').addEventListener('click', () => $('#tl-dlg').close());
+$('#ps-newlesson').addEventListener('click', () => { const l = lesson($('#ps-lesson').value), m = l ? mod(l.mod) : null; openLessonForm(m ? { subject: m.subject, grade: l.grade || null, mod: m.id, after: l.id, fromPlanner: true } : { subject: 'maths', grade: 1, fromPlanner: true }); });
+
 function renderSessions() {
   renderSyllabus();
   const up = $('#ses-upcoming'); up.replaceChildren();
@@ -2695,7 +3005,7 @@ function moduleJourney({ subj, m, ls, girls, life, g }) {
   const rt = el('div', 'mj-prog'); rt.append(ring, el('span', 'small', t('mjSteps').replace('{d}', nDone).replace('{n}', stops.length)));
   const gw = el('div', 'mj-girls'); gw.append(el('span', 'small', t('mjGirls')));
   const av = el('div', 'mj-avs'); if (girls.length) girls.forEach((s) => { const a = avatarEl(s.name, rowByKey(s.id) || {}, 'mini-av'); a.title = s.name; av.append(a); }); else av.append(el('span', 'small muted', t('mjNoGirls')));
-  gw.append(av); ht.append(rt, gw); hero.append(ht); wrap.append(hero);
+  gw.append(av); ht.append(rt, gw, tlAddBtn({ subject: subj.id, grade: life ? null : g, mod: m.id, after: ls.length ? ls[ls.length - 1].id : '' })); hero.append(ht); wrap.append(hero);
   if (!life) wrap.append(el('p', 'small muted mj-note', t('changeGradeNote')));
   // the path
   const ol = el('ol', 'mj-path');
@@ -2706,7 +3016,7 @@ function moduleJourney({ subj, m, ls, girls, life, g }) {
     const card = el('div', 'mj-card');
     if (st.kind === 'lesson') {
       card.append(el('span', 'mj-k', t('mjLesson') + ' ' + st.n + ' · ' + (st.done ? '✓ ' + t('mjTaught') + ' ' + fmtDate(st.date, { day: 'numeric', month: 'short' }) : state === 'next' ? t('mjNext') : t('mjNotYet'))));
-      card.append(lessonRow(st.l, m));
+      card.append(lessonRow(st.l, m)); if (st.l.tl) card.append(tlInfo(st.l));
       const q = quizStat(st.l.id, girls); if (q && !life) { const qs = el('div', 'mj-stat'); qs.append(el('span', null, t('mjQuiz')), el('b', null, q.r + ' / ' + q.n + ' ' + t('mjRight') + ' (' + Math.round(100 * q.r / q.n) + '%)')); const bar = el('span', 'mj-bar'); const fi = el('i'); fi.style.width = Math.round(100 * q.r / q.n) + '%'; bar.append(fi); qs.append(bar); card.append(qs); }
     } else if (st.kind === 'cat' || st.kind === 'exam') {
       const isExam = st.kind === 'exam', got = st.marks.filter(([, mm]) => mm && mm.status !== 'pending'), pc = got.map(([, mm]) => Math.round(100 * mm.score / mm.out_of));
@@ -2860,7 +3170,8 @@ function renderLesson(id) {
   chips.append(el('span', 'chip' + (m.area === 'well' ? ' well' : ''), lessonTag(l)), el('span', 'chip', FORMAT[lang][l.format]), el('span', 'chip line', LANGS[lang][l.lang]), el('span', 'chip line', `${l.min} ${t('min')}`));
   if (videoUrls[id]) chips.append(el('span', 'chip av', '▶ ' + t('hasVideo')));
   let media;
-  if (videoUrls[id]) { media = el('video', 'lesson-video'); media.controls = true; media.preload = 'metadata'; media.src = videoUrls[id]; media.setAttribute('playsinline', ''); }
+  if (l.tl && tlHasMedia(l)) { media = tlMediaEl(l); }
+  else if (videoUrls[id]) { media = el('video', 'lesson-video'); media.controls = true; media.preload = 'metadata'; media.src = videoUrls[id]; media.setAttribute('playsinline', ''); }
   else { media = el('div', 'media' + (m.area === 'well' ? ' well' : '')); media.append(el('b', null, l.title), el('span', null, t(l.format === 'Video' ? 'mediaV' : l.format === 'Audio' ? 'mediaA' : 'mediaR')), el('span', null, t('noVideoYet'))); }
   const acts = el('div', 'row'); acts.style.justifyContent = 'flex-start';
   acts.append(btn('▶ ' + t('present'), m.area === 'well' ? 'rose' : '', () => present(l.id)));
@@ -2872,7 +3183,7 @@ function renderLesson(id) {
   const list = questions.filter((q) => q.lesson === id);
   if (!list.length) qs.append(el('p', 'muted small', t('noQ')));
   list.forEach((q) => qs.append(qItem(q)));
-  box.append(chips, el('h1', null, l.title), media, acts, el('p', 'small muted', t('videoNote')), ...(actFor(id) ? [actCard(id)] : []), body, qs);
+  box.append(chips, el('h1', null, l.title), ...(l.tl ? [tlInfo(l)] : []), media, acts, el('p', 'small muted', t('videoNote')), ...(actFor(id) ? [actCard(id)] : []), body, qs);
 }
 
 
@@ -3287,7 +3598,7 @@ function setScene(box, key) {
 function present(id) {
   stopSpeech();
   const l = lesson(id); scLesson = l; const m = mod(l.mod);
-  slides = [{ kind: 'title' }, ...(videoUrls[id] ? [{ kind: 'video' }] : []), ...l.body.map((p) => ({ kind: 'text', p })), ...questions.filter((q) => q.lesson === id).map((q) => ({ kind: 'q', q, shown: false })), ...(actFor(id) ? [{ kind: 'act' }] : [])];
+  slides = [{ kind: 'title' }, ...(l.tl && tlHasMedia(l) ? [{ kind: 'embed' }] : videoUrls[id] ? [{ kind: 'video' }] : []), ...l.body.map((p) => ({ kind: 'text', p })), ...questions.filter((q) => q.lesson === id).map((q) => ({ kind: 'q', q, shown: false })), ...(actFor(id) ? [{ kind: 'act' }] : [])];
   si = 0; $('#screen').classList.toggle('well', m.area === 'well'); $('#screen').hidden = false;
   if (!presented.includes(id)) { presented.push(id); save(); }
   drawSlide();
@@ -3295,7 +3606,7 @@ function present(id) {
 function askOne(q) { const l = lesson(q.lesson); scLesson = l; slides = [{ kind: 'q', q, shown: false }]; si = 0; $('#screen').classList.toggle('well', mod(l.mod).area === 'well'); $('#screen').hidden = false; drawSlide(); }
 function slideText(s) {
   if (s.kind === 'title') return COVERS[scLesson.id] ? [scLesson.title, COVERS[scLesson.id].goal()] : [scLesson.title];
-  if (s.kind === 'video') return [];
+  if (s.kind === 'video' || s.kind === 'embed') return [];
   if (s.kind === 'act') return [tx(actFor(scLesson.id).title), t('actStartSlide')];
   if (s.kind === 'text') return [s.p];
   return [s.q.text, ...s.q.opts.map((o, i) => `${String.fromCharCode(65 + i)}. ${o}`)];
@@ -3308,9 +3619,11 @@ function drawSlide() {
   if (s.kind === 'title') {
     const eb = `${FORMAT[lang][l.format]} · ${LANGS[lang][l.lang]} · ${l.min} ${t('min')}${m.minAge ? ' · ' + t('age15') : ''}`, cov = lessonCover(l, eb);
     if (cov) { st.append(cov); if (videoUrls[l.id]) cov.querySelector('.sc-cover-txt').append(el('p', 'muted', t('videoNext'))); }
-    else st.append(el('span', 'eyebrow', eb), el('h2', null, l.title), el('p', 'big', videoUrls[l.id] ? t('videoNext') : t('mediaFile')));
+    else st.append(el('span', 'eyebrow', eb), el('h2', null, l.title), el('p', 'big', videoUrls[l.id] || (l.tl && tlHasMedia(l)) ? t('videoNext') : l.tl ? '' : t('mediaFile')));
   } else if (s.kind === 'video') {
     const v = el('video'); v.controls = true; v.src = videoUrls[l.id]; v.setAttribute('playsinline', ''); st.append(v);
+  } else if (s.kind === 'embed') {
+    st.append(tlMediaEl(l, true));
   } else if (s.kind === 'act') {
     const a = actFor(l.id), sid = regId && regSession() && regSession().lesson === l.id ? regId : null;
     st.append(el('span', 'eyebrow', '★ ' + t('actBtn')), el('h2', null, tx(a.title)), el('p', 'big', t('actStartSlide')), btn(t('actStart'), 'sun', () => openActivity(a.id, l.id, sid, sid ? eligibleFor(l.id).filter((g) => regState[g.id] && regState[g.id] !== 'a') : null)));

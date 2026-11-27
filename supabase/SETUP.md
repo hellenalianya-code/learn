@@ -10,6 +10,7 @@ This update replaces the `user1` / `1234` test login with real teacher accounts 
 | `admin/index.html` | New admin page: registered accounts, sign-ins per day (30 days), recent sign-ins, search/filters, CSV download. Admins only. |
 | `supabase-config.js` | Your Supabase project URL and anon key (shared by both pages). |
 | `supabase/schema.sql` | Tables, security rules and functions to run once in Supabase. |
+| `supabase/teacher-lessons.sql` | Lessons teachers add to the syllabus, the `lesson-media` storage bucket for their videos and audio, and the admin's notifications. Run once after `schema.sql`. |
 
 **Offline still works.** The first sign-in on a device needs internet. After that, the teacher's details stay on the device for 30 days, so the portal opens without internet (an "Offline" tag shows in the header). Each offline visit is queued and sent to Supabase when the device reconnects. Grades, attendance and quiz answers still stay on the device as before; nothing about the girls is sent to Supabase.
 
@@ -18,7 +19,7 @@ This update replaces the `user1` / `1234` test login with real teacher accounts 
 ## Setup (about 15 minutes)
 
 1. **Create a project** at <https://supabase.com> → New project. Pick the region closest to Kenya (e.g. *Europe West* or *South Africa* if offered).
-2. **Run the schema.** In the project: *SQL Editor* → *New query* → paste all of `supabase/schema.sql` → *Run*. It should finish with "Success. No rows returned".
+2. **Run the schema.** In the project: *SQL Editor* → *New query* → paste all of `supabase/schema.sql` → *Run*. It should finish with "Success. No rows returned". Then do the same with `supabase/teacher-lessons.sql`.
 3. **Set the website address** so email links come back to your site. *Authentication* → *URL Configuration*:
    - Site URL: `https://hellenalianya-code.github.io/learn/teacher-portal/`
    - Redirect URLs: add `https://hellenalianya-code.github.io/learn/**`

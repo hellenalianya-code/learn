@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LearnReach Admin · Teachers and sign-ins</title>
+<title>LearnReach Admin · Teachers, lessons and sign-ins</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Nunito:wght@400;600;700&display=swap">
 <style>
@@ -73,6 +73,22 @@ td.n, th.n { text-align: right; }
 @keyframes sk { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
 .loading-row td { color: var(--muted); padding: 18px 10px; }
+/* lessons added by teachers */
+.badge { display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; padding: 0 .45em; border-radius: 999px; background: var(--rose); color: #fff; font: 700 .85rem var(--body); vertical-align: middle; margin-left: 6px; }
+.badge:empty { display: none; }
+.tl-list { display: flex; flex-direction: column; gap: 10px; }
+.tl-item { background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.tl-item.new { border-left-color: var(--rose); }
+.tl-item.hidden-l { opacity: .7; border-left-color: var(--muted); }
+.tl-item h3 { font-size: 1.05rem; }
+.tl-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; flex-wrap: wrap; }
+.tl-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.tl-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.tl-prev { background: var(--bg); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.tl-prev ol { margin: 0; padding-left: 20px; } .tl-prev li { margin: 2px 0; }
+.tl-prev .right { color: var(--ok); font-weight: 700; }
+.chip.new { background: var(--rose-soft); color: var(--rose); }
+.stat.alert b { color: var(--rose); }
 </style>
 </head>
 <body>
@@ -102,7 +118,7 @@ td.n, th.n { text-align: right; }
   <main class="wrap">
     <div>
       <p class="label" id="updated"></p>
-      <h1>Teachers and sign-ins</h1>
+      <h1>Teachers, lessons and sign-ins</h1>
       <p class="muted">Live from Supabase. Only adult staff accounts are listed; no learner data is held here.</p>
     </div>
     <p class="note" id="demo-banner" hidden>Sample data. Connect Supabase in <code>supabase-config.js</code> to see real accounts.</p>
@@ -115,7 +131,16 @@ td.n, th.n { text-align: right; }
       <div class="stat"><span class="muted small">Sign-ins, last 30 days</span><b id="k-sign30">–</b><span class="small muted" id="k-off"></span></div>
       <div class="stat"><span class="muted small">Email not confirmed</span><b id="k-unconf">–</b></div>
       <div class="stat"><span class="muted small">Never signed in</span><b id="k-never">–</b></div>
+      <div class="stat" id="k-tl-box"><span class="muted small">New lessons from teachers</span><b id="k-tl">–</b><a class="small" href="#lessons-sec">See them ↓</a></div>
     </div>
+
+    <section class="stack" id="lessons-sec">
+      <div class="row"><h2>Lessons added by teachers <span class="badge" id="tl-badge"></span></h2>
+        <div class="row"><div class="field"><label class="small" for="tl-show">Show</label><select id="tl-show"><option value="new">New and changed</option><option value="all">All lessons</option><option value="hidden">Hidden</option></select></div>
+        <button class="btn ghost sm" id="tl-seen-all" type="button">Mark all as seen</button></div></div>
+      <p class="small muted">Teachers add lessons straight into their syllabus; no approval is needed. Every new or changed lesson is marked here so you know about it. Hide a lesson if it should not be shared with other teachers (the teacher who wrote it still sees it).</p>
+      <div class="tl-list" id="tl-list"></div>
+    </section>
 
     <section class="stack">
       <h2>Sign-ins per day, last 30 days</h2>
@@ -156,7 +181,7 @@ if (!DEMO && window.supabase && window.supabase.createClient) { try { sb = windo
 const DAY = 864e5;
 const USERNAMES = { admin: 'hellenalianya@gmail.com' }; // sign-in names that stand for an admin's email
 const deviceLabel = () => { const ua = navigator.userAgent || ''; const b = (ua.match(/(Edg|Chrome|Firefox|Safari)\/[\d]+/) || [''])[0]; const os = /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : /Windows/.test(ua) ? 'Windows' : /Mac/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : ''; return [os, b.replace('/', ' ')].filter(Boolean).join(' · '); };
-let users = [], signins = [], sortKey = 'registered_at', sortDir = -1;
+let users = [], signins = [], lessons = [], sortKey = 'registered_at', sortDir = -1;
 
 // ---------- Formatting ----------
 const fmtDate = (v) => v ? new Date(v).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '–';
@@ -205,6 +230,7 @@ function setLoading() {
   const ph = el('span', 'sk'); ph.style.cssText = 'width:100%;height:160px'; $('#chart').replaceChildren(ph);
   const row = (sel, cols, text) => { const tr = el('tr', 'loading-row'), td = el('td', null, text); td.colSpan = cols; tr.append(td); $(sel).replaceChildren(tr); };
   row('#users tbody', 11, 'Loading accounts…'); row('#signins tbody', 6, 'Loading sign-ins…');
+  $('#k-tl').replaceChildren(el('span', 'sk')); $('#tl-list').replaceChildren(el('p', 'muted small', 'Loading lessons…'));
 }
 $('#logout').addEventListener('click', async () => {
   if (sb) { try { await sb.auth.signOut(); } catch {} }
@@ -218,7 +244,7 @@ async function load() {
   const err = $('#load-err'); err.textContent = '';
   $('#refresh').disabled = true;
   try {
-    if (DEMO) ({ users, signins } = sampleData());
+    if (DEMO) ({ users, signins, lessons } = sampleData());
     else {
       const since = new Date(Date.now() - 30 * DAY).toISOString();
       const [u, s] = await Promise.all([
@@ -227,6 +253,8 @@ async function load() {
       ]);
       if (u.error) throw u.error; if (s.error) throw s.error;
       users = u.data || []; signins = s.data || [];
+      const l = await sb.from('teacher_lessons').select('*').order('updated_at', { ascending: false });
+      lessons = l.error ? [] : l.data || []; // before supabase/teacher-lessons.sql is run the table is missing: the rest still works
     }
     $('#updated').textContent = 'Updated ' + fmtDT(new Date());
     render();
@@ -235,7 +263,7 @@ async function load() {
   } finally { $('#refresh').disabled = false; }
 }
 
-function render() { renderKpis(); renderChart(); renderUsers(); renderSignins(); }
+function render() { renderKpis(); renderChart(); renderUsers(); renderSignins(); renderLessons(); }
 
 function renderKpis() {
   const now = Date.now(), within = (v, d) => v && now - new Date(v) <= d * DAY;
@@ -319,6 +347,52 @@ function renderSignins() {
   });
 }
 
+// ---------- Lessons added by teachers ----------
+const SUBJ = { maths: 'Maths', english: 'English', kiswahili: 'Kiswahili', science: 'Science', life: 'Life Skills' };
+const TOPIC = { men: 'Menstrual health', mind: 'Mental wellbeing', safe: 'Personal safety', self: 'Confidence and goals', repro: 'Reproductive health' };
+const MEDIA = { youtube: 'YouTube video', drive: 'Google Drive file', vimeo: 'Vimeo video', file: 'Uploaded file', link: 'Web link' };
+function renderLessons() {
+  const unseen = lessons.filter((x) => !x.admin_seen), show = $('#tl-show').value, box = $('#tl-list'); box.replaceChildren();
+  $('#tl-badge').textContent = unseen.length || ''; $('#k-tl').textContent = unseen.length; $('#k-tl-box').classList.toggle('alert', unseen.length > 0);
+  $('#tl-seen-all').disabled = !unseen.length;
+  const list = lessons.filter((x) => (show === 'new' ? !x.admin_seen : show === 'hidden' ? x.hidden : true));
+  if (!list.length) { box.append(el('p', 'empty', show === 'new' ? (lessons.length ? 'Nothing new. You have seen every lesson teachers added.' : 'No teacher has added a lesson yet.') : show === 'hidden' ? 'No hidden lessons.' : 'No teacher has added a lesson yet.')); return; }
+  const byId = Object.fromEntries(users.map((u) => [u.id, u]));
+  list.forEach((x) => {
+    const card = el('article', 'tl-item' + (!x.admin_seen ? ' new' : '') + (x.hidden ? ' hidden-l' : '')); card.id = 'tl-' + x.id;
+    const top = el('div', 'tl-top'), head = el('div', 'stack'); head.style.gap = '4px';
+    head.append(el('h3', null, x.title));
+    const meta = el('div', 'tl-meta');
+    if (!x.admin_seen) meta.append(el('span', 'chip new', Math.abs(new Date(x.updated_at) - new Date(x.created_at)) < 60000 ? 'New' : 'Changed'));
+    if (x.hidden) meta.append(el('span', 'chip line', 'Hidden from other teachers'));
+    meta.append(el('span', 'chip', SUBJ[x.subject] + (x.grade ? ' · Grade ' + x.grade : x.mod in TOPIC ? ' · ' + TOPIC[x.mod] : '')), el('span', 'chip line', x.shared ? 'Shared with all teachers' : 'Only her class'));
+    if (x.media) meta.append(el('span', 'chip line', '▶ ' + (MEDIA[x.media.kind] || 'Media')));
+    const u = byId[x.teacher_id] || {};
+    head.append(meta, el('span', 'small muted', 'By ' + (x.teacher_name || u.full_name || u.email || 'a teacher') + (u.site ? ' · ' + u.site : '') + ' · ' + (Math.abs(new Date(x.updated_at) - new Date(x.created_at)) < 60000 ? 'added ' : 'changed ') + ago(x.updated_at) + ' · ' + (x.body || []).length + ' slides, ' + (x.questions || []).length + ' questions'));
+    const acts = el('div', 'tl-acts');
+    const prev = el('div', 'tl-prev'); prev.hidden = true;
+    const pb = el('button', 'btn ghost sm', 'Preview'); pb.type = 'button'; pb.addEventListener('click', () => { prev.hidden = !prev.hidden; pb.textContent = prev.hidden ? 'Preview' : 'Close preview'; });
+    acts.append(pb);
+    if (!x.admin_seen) { const sb2 = el('button', 'btn sm', 'Mark as seen'); sb2.type = 'button'; sb2.addEventListener('click', () => setLesson(x, { admin_seen: true })); acts.append(sb2); }
+    const hb = el('button', 'btn ghost sm', x.hidden ? 'Show to other teachers' : 'Hide from other teachers'); hb.type = 'button'; hb.addEventListener('click', () => setLesson(x, { hidden: !x.hidden, admin_seen: true })); acts.append(hb);
+    top.append(head, acts);
+    const ol = el('ol'); (x.body || []).forEach((p) => ol.append(el('li', null, p))); prev.append(el('b', null, 'Slides'), ol);
+    if ((x.questions || []).length) { const qs = el('ol'); x.questions.forEach((q) => { const li = el('li', null, q.text + ' '); q.opts.forEach((o, i) => li.append(el('span', i === q.a ? 'right' : 'muted', (i ? ' · ' : '') + String.fromCharCode(65 + i) + '. ' + o + (i === q.a ? ' ✓' : '')))); qs.append(li); }); prev.append(el('b', null, 'Quiz questions'), qs); }
+    if (x.media && x.media.url) { const a = el('a', null, (MEDIA[x.media.kind] || 'Media') + ': open ↗'); a.href = x.media.url; a.target = '_blank'; a.rel = 'noopener'; prev.append(a); }
+    card.append(top, prev); box.append(card);
+  });
+}
+async function setLesson(x, change) {
+  if (!DEMO) { const { error } = await sb.from('teacher_lessons').update(change).eq('id', x.id); if (error) { $('#load-err').textContent = 'Could not update the lesson: ' + error.message; return; } }
+  Object.assign(x, change); renderLessons();
+}
+$('#tl-show').addEventListener('change', renderLessons);
+$('#tl-seen-all').addEventListener('click', async () => {
+  const ids = lessons.filter((x) => !x.admin_seen).map((x) => x.id); if (!ids.length) return;
+  if (!DEMO) { const { error } = await sb.from('teacher_lessons').update({ admin_seen: true }).in('id', ids); if (error) { $('#load-err').textContent = 'Could not update the lessons: ' + error.message; return; } }
+  lessons.forEach((x) => { if (ids.includes(x.id)) x.admin_seen = true; }); renderLessons();
+});
+
 // ---------- CSV export ----------
 function csv(name, header, rows) {
   const esc = (v) => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
@@ -341,7 +415,12 @@ function sampleData() {
   us.forEach((u, i) => { if (i === 6) return; for (let d = 0; d < 30; d++) if (rnd(i * 31 + d) < (i === 4 ? 0.05 : 0.35) && now - d * DAY > new Date(u.registered_at)) ss.push({ id: id++, user_id: u.id, signed_in_at: new Date(now - d * DAY - rnd(d + i) * 8 * 3600e3).toISOString(), app: i === 7 ? 'admin' : 'teacher-portal', device: ['Android · Chrome 131', 'Windows · Edg 131', 'Android · Chrome 130'][i % 3], was_offline: rnd(i + d * 7) < 0.2 }); });
   ss.sort((a, b) => b.signed_in_at.localeCompare(a.signed_in_at));
   us.forEach((u) => { const mine = ss.filter((s) => s.user_id === u.id); u.last_sign_in_at = mine[0]?.signed_in_at || null; u.sign_ins_30d = mine.length; u.sign_ins_total = mine.length + (mine.length ? 3 : 0); });
-  return { users: us, signins: ss };
+  const ls = [
+    { id: 'l1', teacher_id: 'u0', teacher_name: 'Grace Akai', subject: 'maths', mod: 'num', grade: 4, title: 'Fractions with mangoes', body: ['A fraction is a part of a whole.', 'If we cut a mango into 4 equal parts, each part is one quarter.', 'Two quarters make one half.'], questions: [{ text: 'How many quarters make a half?', opts: ['One', 'Two', 'Four'], a: 1 }], media: { kind: 'youtube', url: 'https://youtu.be/example' }, shared: true, hidden: false, admin_seen: false, created_at: new Date(now - 3 * 36e5).toISOString(), updated_at: new Date(now - 3 * 36e5).toISOString() },
+    { id: 'l2', teacher_id: 'u2', teacher_name: 'Faith Nanjala', subject: 'life', mod: 'mind', grade: null, title: 'Calm breathing before exams', body: ['Breathe in slowly for four counts.', 'Hold for two, then breathe out for six.'], questions: [], media: null, shared: true, hidden: false, admin_seen: false, created_at: new Date(now - 5 * DAY).toISOString(), updated_at: new Date(now - 20 * 6e4).toISOString() },
+    { id: 'l3', teacher_id: 'u1', teacher_name: 'Mercy Lokaale', subject: 'kiswahili', mod: 'kis', grade: 2, title: 'Vitendawili (riddles)', body: ['Kitendawili! Tega!'], questions: [], media: { kind: 'drive', url: 'https://drive.google.com/file/d/example/view' }, shared: false, hidden: false, admin_seen: true, created_at: new Date(now - 9 * DAY).toISOString(), updated_at: new Date(now - 9 * DAY).toISOString() },
+  ];
+  return { users: us, signins: ss, lessons: ls };
 }
 
 // ---------- Start: reuse a saved admin session ----------
